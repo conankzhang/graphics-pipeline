@@ -36,6 +36,9 @@
     <ClCompile Include="Direct3D\cShader.d3d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Direct3D\Graphics.d3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Direct3D\sContext.d3d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -46,6 +49,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OpenGL\cShader.gl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL\Graphics.gl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OpenGL\sContext.gl.cpp">
@@ -61,15 +67,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OpenGL\cMesh.gl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Graphics.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGL\View.gl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Direct3D\View.d3d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -111,9 +108,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cMesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="View.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

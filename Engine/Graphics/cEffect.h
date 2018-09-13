@@ -18,8 +18,8 @@
 #include <cstdint>
 #include <Engine/Assets/cHandle.h>
 #include <Engine/Assets/cManager.h>
-#include "cShader.h"
-#include "cRenderState.h"
+#include "../cShader.h"
+#include "../cRenderState.h"
 #include <Engine/Results/Results.h>
 
 #ifdef EAE6320_PLATFORM_GL
@@ -58,7 +58,7 @@ namespace eae6320
 
 			// Initialization / Clean Up
 			//--------------------------
-			eae6320::cResult InitializeShadingData( const char i_vertexShaderPath[], const char i_fragmentShaderPath[] );
+			eae6320::cResult InitializeShadingData();
 			eae6320::cResult CleanUp();
 			void RenderFrame();
 
