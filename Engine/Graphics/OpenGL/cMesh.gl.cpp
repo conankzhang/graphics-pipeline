@@ -29,8 +29,18 @@ namespace
 
 // Initialization / Clean Up
 //--------------------------
-eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry()
+eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry( std::vector<VertexFormats::sMesh> i_vertexData, std::vector<uint16_t> i_indexData )
 {
+	for (size_t i = 0; i < i_indexData.size(); i++)
+	{
+		if (i % 2 == 0 && i > 0)
+		{
+			uint16_t temp = i_indexData[i];
+			i_indexData[i] = i_indexData[i - 1];
+			i_indexData[i - 1] = temp;
+		}
+	}
+
 	auto result = eae6320::Results::Success;
 	// Create a vertex array object and make it active
 	{
@@ -88,38 +98,81 @@ eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry()
 	}
 	// Assign the data to the buffer
 	{
-		constexpr unsigned int triangleCount = 2;
-		constexpr unsigned int vertexCountPerTriangle = 3;
-		const auto vertexCount = triangleCount * vertexCountPerTriangle;
-		eae6320::Graphics::VertexFormats::sMesh vertexData[vertexCount];
-		{
-			vertexData[0].x = 0.0f;
-			vertexData[0].y = 0.0f;
-			vertexData[0].z = 0.0f;
-
-			vertexData[1].x = 1.0f;
-			vertexData[1].y = 0.0f;
-			vertexData[1].z = 0.0f;
-
-			vertexData[2].x = 1.0f;
-			vertexData[2].y = 1.0f;
-			vertexData[2].z = 0.0f;
-
-			vertexData[3].x = 0.0f;
-			vertexData[3].y = 0.0f;
-			vertexData[3].z = 0.0f;
-
-			vertexData[4].x = 1.0f;
-			vertexData[4].y = 1.0f;
-			vertexData[4].z = 0.0f;
-
-			vertexData[5].x = 0.0f;
-			vertexData[5].y = 1.0f;
-			vertexData[5].z = 0.0f;
-		}
-		const auto bufferSize = vertexCount * sizeof( *vertexData );
+		const auto bufferSize = i_vertexData.size() * sizeof( i_vertexData );
 		EAE6320_ASSERT( bufferSize < ( uint64_t( 1u ) << ( sizeof( GLsizeiptr ) * 8 ) ) );
-		glBufferData( GL_ARRAY_BUFFER, static_cast<GLsizeiptr>( bufferSize ), reinterpret_cast<GLvoid*>( vertexData ),
+		glBufferData( GL_ARRAY_BUFFER, static_cast<GLsizeiptr>( bufferSize ), reinterpret_cast<GLvoid*>( &i_vertexData[0] ),
+			// In our class we won't ever read from the buffer
+			GL_STATIC_DRAW );
+		const auto errorCode = glGetError();
+		if ( errorCode != GL_NO_ERROR )
+		{
+			result = eae6320::Results::Failure;
+			EAE6320_ASSERTF( false, reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
+			eae6320::Logging::OutputError( "OpenGL failed to allocate the vertex buffer: %s",
+				reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
+			goto OnExit;
+		}
+	}
+	// Create a index array object and make it active
+	{
+		constexpr GLsizei arrayCount = 1;
+		glGenVertexArrays( arrayCount, &m_indexArrayId );
+		const auto errorCode = glGetError();
+		if ( errorCode == GL_NO_ERROR )
+		{
+			glBindVertexArray( m_indexArrayId );
+			const auto errorCode = glGetError();
+			if ( errorCode != GL_NO_ERROR )
+			{
+				result = eae6320::Results::Failure;
+				EAE6320_ASSERTF( false, reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
+				eae6320::Logging::OutputError( "OpenGL failed to bind a new vertex array: %s",
+					reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
+				goto OnExit;
+			}
+		}
+		else
+		{
+			result = eae6320::Results::Failure;
+			EAE6320_ASSERTF( false, reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
+			eae6320::Logging::OutputError( "OpenGL failed to get an unused vertex array ID: %s",
+				reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
+			goto OnExit;
+		}
+	}
+	// Create a index buffer object and make it active
+	{
+		constexpr GLsizei bufferCount = 1;
+		glGenBuffers( bufferCount, &m_indexBufferId );
+		const auto errorCode = glGetError();
+		if ( errorCode == GL_NO_ERROR )
+		{
+			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, m_indexBufferId );
+			const auto errorCode = glGetError();
+			if ( errorCode != GL_NO_ERROR )
+			{
+				result = eae6320::Results::Failure;
+				EAE6320_ASSERTF( false, reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
+				eae6320::Logging::OutputError( "OpenGL failed to bind a new vertex buffer: %s",
+					reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
+				goto OnExit;
+			}
+		}
+		else
+		{
+			result = eae6320::Results::Failure;
+			EAE6320_ASSERTF( false, reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
+			eae6320::Logging::OutputError( "OpenGL failed to get an unused vertex buffer ID: %s",
+				reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
+			goto OnExit;
+		}
+	}
+	// Assign the data to the buffer
+	{
+		m_indexCountToRender = i_indexData.size();
+		const auto bufferSize = m_indexCountToRender * sizeof( i_indexData );
+		EAE6320_ASSERT( bufferSize < ( uint64_t( 1u ) << ( sizeof( GLsizeiptr ) * 8 ) ) );
+		glBufferData( GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>( bufferSize ), reinterpret_cast<GLvoid*>( &i_indexData[0] ),
 			// In our class we won't ever read from the buffer
 			GL_STATIC_DRAW );
 		const auto errorCode = glGetError();
@@ -231,11 +284,74 @@ eae6320::cResult eae6320::Graphics::cMesh::CleanUp()
 		}
 		m_vertexArrayId = 0;
 	}
+
+	if ( m_indexBufferId != 0 )
+	{
+		constexpr GLsizei bufferCount = 1;
+		glDeleteBuffers( bufferCount, &m_indexBufferId );
+		const auto errorCode = glGetError();
+		if ( errorCode != GL_NO_ERROR )
+		{
+			if ( result )
+			{
+				result = Results::Failure;
+			}
+			EAE6320_ASSERTF( false, reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
+			Logging::OutputError( "OpenGL failed to delete the vertex buffer: %s",
+				reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
+		}
+		m_indexBufferId = 0;
+	}
+	if ( m_indexArrayId != 0 )
+	{
+		// Make sure that the vertex array isn't bound
+		{
+			// Unbind the vertex array
+			glBindVertexArray( 0 );
+			const auto errorCode = glGetError();
+			if ( errorCode != GL_NO_ERROR )
+			{
+				if ( result )
+				{
+					result = Results::Failure;
+				}
+				EAE6320_ASSERTF( false, reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
+				Logging::OutputError( "OpenGL failed to unbind all vertex arrays before cleaning up geometry: %s",
+					reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
+			}
+		}
+		constexpr GLsizei arrayCount = 1;
+		glDeleteVertexArrays( arrayCount, &m_indexArrayId );
+		const auto errorCode = glGetError();
+		if ( errorCode != GL_NO_ERROR )
+		{
+			if ( result )
+			{
+				result = Results::Failure;
+			}
+			EAE6320_ASSERTF( false, reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
+			Logging::OutputError( "OpenGL failed to delete the vertex array: %s",
+				reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
+		}
+		m_indexArrayId = 0;
+	}
 	return result;
 }
 
 void eae6320::Graphics::cMesh::RenderFrame()
 {
-	glBindVertexArray( m_vertexArrayId );
+	glBindVertexArray( m_indexArrayId );
 	EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
+
+	// Render triangles from the currently-bound vertex buffer
+	{
+		// The mode defines how to interpret multiple vertices as a single "primitive";
+		// a triangle list is defined
+		// (meaning that every primitive is a triangle and will be defined by three vertices)
+		constexpr GLenum mode = GL_TRIANGLES;
+		// It's possible to start rendering primitives in the middle of the stream
+		const GLvoid* const offset = 0;
+		glDrawElements( mode, static_cast<GLsizei>( m_indexCountToRender ), GL_UNSIGNED_SHORT, offset );
+		EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
+	}
 }

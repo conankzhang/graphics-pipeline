@@ -5,8 +5,8 @@
 	that can be loaded and refered to on the CPU.
 */
 
-#ifndef EAE6320_GRAPHICS_CEFFECT_H
-#define EAE6320_GRAPHICS_CEFFECT_H
+#ifndef EAE6320_GRAPHICS_VIEW_H
+#define EAE6320_GRAPHICS_VIEW_H
 
 // Includes
 //=========
@@ -18,8 +18,6 @@
 #include <cstdint>
 #include <Engine/Assets/cHandle.h>
 #include <Engine/Assets/cManager.h>
-#include "cShader.h"
-#include "cRenderState.h"
 #include <Engine/Results/Results.h>
 
 #ifdef EAE6320_PLATFORM_GL
@@ -35,6 +33,11 @@ namespace eae6320
 	{
 		struct sDataFromFile;
 	}
+
+	namespace Graphics
+	{
+		struct sInitializationParameters;
+	}
 }
 
 // Class Declaration
@@ -44,7 +47,7 @@ namespace eae6320
 {
 	namespace Graphics
 	{
-		class cEffect
+		class View 
 		{
 			// Interface
 			//==========
@@ -53,14 +56,13 @@ namespace eae6320
 			// Assets
 			//-------
 
-			using Handle = Assets::cHandle<cEffect>;
-			static Assets::cManager<cEffect> s_manager;
-
 			// Initialization / Clean Up
 			//--------------------------
-			eae6320::cResult InitializeShadingData( const char i_vertexShaderPath[], const char i_fragmentShaderPath[] );
-			eae6320::cResult CleanUp();
+			eae6320::cResult InitializeViews( const eae6320::Graphics::sInitializationParameters& i_initializationParameters );
+			void Swap();
+			void CleanUp();
 			void RenderFrame();
+			void ClearColor( float i_red, float i_green, float i_blue, float i_alpha );
 
 			// Data
 			//=====
@@ -69,15 +71,6 @@ namespace eae6320
 			// In future assignments you can make the data private and decide who needs access
 			// and the best way to provide it.
 		public:
-
-			eae6320::Graphics::cShader::Handle m_vertexShader;
-			eae6320::Graphics::cShader::Handle m_fragmentShader;
-
-			eae6320::Graphics::cRenderState m_renderState;
-
-#if defined( EAE6320_PLATFORM_GL )
-			GLuint m_programId = 0;
-#endif
 
 			// Implementation
 			//===============
@@ -90,4 +83,4 @@ namespace eae6320
 	}
 }
 
-#endif	// EAE6320_GRAPHICS_CEFFECT_H
+#endif	// EAE6320_GRAPHICS_VIEW_H

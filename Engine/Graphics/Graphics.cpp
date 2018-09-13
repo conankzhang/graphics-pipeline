@@ -1,17 +1,17 @@
 // Includes
 //=========
 
-#include "../Graphics.h"
+#include "Graphics.h"
 
-#include "Includes.h"
-#include "../cConstantBuffer.h"
-#include "../ConstantBufferFormats.h"
-#include "../cRenderState.h"
-#include "../cShader.h"
-#include "../cMesh.h"
-#include "../cEffect.h"
-#include "../sContext.h"
-#include "../VertexFormats.h"
+#include "cConstantBuffer.h"
+#include "ConstantBufferFormats.h"
+#include "cRenderState.h"
+#include "cShader.h"
+#include "cMesh.h"
+#include "cEffect.h"
+#include "sContext.h"
+#include "VertexFormats.h"
+#include "View.h"
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Concurrency/cEvent.h>
@@ -26,6 +26,8 @@
 
 namespace
 {
+	eae6320::Graphics::View s_View;
+
 	// Constant buffer object
 	eae6320::Graphics::cConstantBuffer s_constantBuffer_perFrame( eae6320::Graphics::ConstantBufferTypes::PerFrame );
 
@@ -58,12 +60,14 @@ namespace
 	// Shading Data
 	//-------------
 
-	eae6320::Graphics::cEffect s_Effect;
+	eae6320::Graphics::cEffect s_Effect1;
+	eae6320::Graphics::cEffect s_Effect2;
 
 	// Geometry Data
 	//--------------
 
-	eae6320::Graphics::cMesh s_Mesh;
+	eae6320::Graphics::cMesh s_Mesh1;
+	eae6320::Graphics::cMesh s_Mesh2;
 }
 
 // Interface
@@ -124,85 +128,38 @@ void eae6320::Graphics::RenderFrame()
 		}
 	}
 
-	// Every frame an entirely new image will be created.
-	// Before drawing anything the previous image will be erased
-	// by "clearing" the image buffer (filling it with a solid color)
-	{
-		// Black is usually used
-		{
-			glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
-			EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
-		}
-		{
-			constexpr GLbitfield clearColor = GL_COLOR_BUFFER_BIT;
-			glClear( clearColor );
-			EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
-		}
-	}
-	// In addition to the color buffer there is also a hidden image called the "depth buffer"
-	// which is used to make it less important which order draw calls are made.
-	// It must also be "cleared" every frame just like the visible color buffer.
-	{
-		{
-			glDepthMask( GL_TRUE );
-			EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
-			constexpr GLclampd clearToFarDepth = 1.0;
-			glClearDepth( clearToFarDepth );
-			EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
-		}
-		{
-			constexpr GLbitfield clearDepth = GL_DEPTH_BUFFER_BIT;
-			glClear( clearDepth );
-			EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
-		}
-	}
+
+
+
+
+	s_View.ClearColor( 1.0f, 0.0f, 0.0f, 1.0f );
+
+
+
+
 
 	EAE6320_ASSERT( s_dataBeingRenderedByRenderThread );
 
 	// Update the per-frame constant buffer
 	{
 		// Copy the data from the system memory that the application owns to GPU memory
-		s_constantBuffer_perFrame.Update( &s_dataBeingRenderedByRenderThread->constantData_perFrame );
+		auto& constantData_perFrame = s_dataBeingRenderedByRenderThread->constantData_perFrame;
+		s_constantBuffer_perFrame.Update( &constantData_perFrame );
 	}
 
 	// Bind the shading data
-	{
-		s_Effect.RenderFrame();
-	}
+	s_Effect1.RenderFrame();
+	
 	// Draw the geometry
-	{
-		// Bind a specific vertex buffer to the device as a data source
-		{
-			s_Mesh.RenderFrame();
-		}
-		// Render triangles from the currently-bound vertex buffer
-		{
-			// The mode defines how to interpret multiple vertices as a single "primitive";
-			// a triangle list is defined
-			// (meaning that every primitive is a triangle and will be defined by three vertices)
-			constexpr GLenum mode = GL_TRIANGLES;
-			// It's possible to start rendering primitives in the middle of the stream
-			constexpr GLint indexOfFirstVertexToRender = 0;
-			// As of this comment we are only drawing a single triangle
-			// (you will have to update this code in future assignments!)
-			constexpr unsigned int triangleCount = 2;
-			constexpr unsigned int vertexCountPerTriangle = 3;
-			constexpr auto vertexCountToRender = triangleCount * vertexCountPerTriangle;
-			glDrawArrays( mode, indexOfFirstVertexToRender, vertexCountToRender );
-			EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
-		}
-	}
+	s_Mesh1.RenderFrame();
 
-	// Everything has been drawn to the "back buffer", which is just an image in memory.
-	// In order to display it the contents of the back buffer must be "presented"
-	// (or "swapped" with the "front buffer")
-	{
-		const auto deviceContext = sContext::g_context.deviceContext;
-		EAE6320_ASSERT( deviceContext != NULL );
+	// Bind the shading data
+	s_Effect2.RenderFrame();
+	
+	// Draw the geometry
+	s_Mesh2.RenderFrame();
 
-		const auto glResult = SwapBuffers( deviceContext );
-		EAE6320_ASSERT( glResult != FALSE );
-	}
+	s_View.Swap();
 
 	// Once everything has been drawn the data that was submitted for this frame
 	// should be cleaned up and cleared.
@@ -264,9 +221,56 @@ eae6320::cResult eae6320::Graphics::Initialize( const sInitializationParameters&
 			goto OnExit;
 		}
 	}
+
+	// Initialize the views
+	{
+		result = s_View.InitializeViews(i_initializationParameters);
+		if ( !( result ) )
+		{
+			EAE6320_ASSERT( false );
+			goto OnExit;
+		}
+	}
+
 	// Initialize the shading data
 	{
-		if ( !( result = s_Effect.InitializeShadingData() ) )
+		if ( !( result = s_Effect1.InitializeShadingData("data/Shaders/Vertex/standard.shader", "data/Shaders/Fragment/standard.shader") ) )
+		{
+			EAE6320_ASSERT( false );
+			goto OnExit;
+		}
+	}
+
+	// Initialize the geometry
+	{
+		std::vector<VertexFormats::sMesh> vertexData(3);
+		vertexData[0].x = 0.0f;
+		vertexData[0].y = 0.0f;
+		vertexData[0].z = 0.0f;
+
+		vertexData[1].x = 1.0f;
+		vertexData[1].y = 1.0f;
+		vertexData[1].z = 0.0f;
+
+		vertexData[2].x = 1.0f;
+		vertexData[2].y = 0.0f;
+		vertexData[2].z = 0.0f;
+
+		std::vector<uint16_t> indexData(3);
+		indexData[0] = 0;
+		indexData[1] = 1;
+		indexData[2] = 2;
+
+		if ( !( result = s_Mesh1.InitializeGeometry( vertexData, indexData ) ) )
+		{
+			EAE6320_ASSERT( false );
+			goto OnExit;
+		}
+	}
+
+	// Initialize the shading data
+	{
+		if ( !( result = s_Effect2.InitializeShadingData("data/Shaders/Vertex/standard.shader", "data/Shaders/Fragment/animated.shader") ) )
 		{
 			EAE6320_ASSERT( false );
 			goto OnExit;
@@ -274,12 +278,31 @@ eae6320::cResult eae6320::Graphics::Initialize( const sInitializationParameters&
 	}
 	// Initialize the geometry
 	{
-		if ( !( result = s_Mesh.InitializeGeometry() ) )
+		std::vector<VertexFormats::sMesh> vertexData(3);
+		vertexData[0].x = 0.0f;
+		vertexData[0].y = 0.0f;
+		vertexData[0].z = 0.0f;
+
+		vertexData[1].x = 0.0f;
+		vertexData[1].y = 1.0f;
+		vertexData[1].z = 0.0f;
+
+		vertexData[2].x = 1.0f;
+		vertexData[2].y = 1.0f;
+		vertexData[2].z = 0.0f;
+
+		std::vector<uint16_t> indexData(3);
+		indexData[0] = 0;
+		indexData[1] = 1;
+		indexData[2] = 2;
+
+		if ( !( result = s_Mesh2.InitializeGeometry( vertexData, indexData ) ) )
 		{
 			EAE6320_ASSERT( false );
 			goto OnExit;
 		}
 	}
+
 
 OnExit:
 
@@ -290,12 +313,15 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 {
 	auto result = Results::Success;
 
-	{
-		s_Mesh.CleanUp();
-	}
+	s_View.CleanUp();
 
-	s_Effect.CleanUp();
+	s_Mesh1.CleanUp();
 
+	s_Effect1.CleanUp();
+
+	s_Mesh2.CleanUp();
+
+	s_Effect2.CleanUp();
 	{
 		const auto localResult = s_constantBuffer_perFrame.CleanUp();
 		if ( !localResult )
