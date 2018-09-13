@@ -16,17 +16,17 @@
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::cResult eae6320::Graphics::cEffect::InitializeShadingData()
+eae6320::cResult eae6320::Graphics::cEffect::InitializeShadingData( const char i_vertexShaderPath[], const char i_fragmentShaderPath[] )
 {
 	auto result = eae6320::Results::Success;
 
-	if ( !( result = eae6320::Graphics::cShader::s_manager.Load( "data/Shaders/Vertex/standard.shader",
+	if ( !( result = eae6320::Graphics::cShader::s_manager.Load( i_vertexShaderPath,
 		m_vertexShader, eae6320::Graphics::ShaderTypes::Vertex ) ) )
 	{
 		EAE6320_ASSERT( false );
 		goto OnExit;
 	}
-	if ( !( result = eae6320::Graphics::cShader::s_manager.Load( "data/Shaders/Fragment/animated.shader",
+	if ( !( result = eae6320::Graphics::cShader::s_manager.Load( i_fragmentShaderPath,
 		m_fragmentShader, eae6320::Graphics::ShaderTypes::Fragment ) ) )
 	{
 		EAE6320_ASSERT( false );
