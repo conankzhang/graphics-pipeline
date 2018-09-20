@@ -39,6 +39,13 @@ namespace
 	struct sDataRequiredToRenderAFrame
 	{
 		eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
+		float m_red;
+		float m_green;
+		float m_blue;
+		float m_alpha;
+		eae6320::Graphics::cMesh* m_meshes[2];
+		eae6320::Graphics::cEffect* m_effects[2];
+		uint16_t m_count;
 	};
 	// In our class there will be two copies of the data required to render a frame:
 	//	* One of them will be getting populated by the data currently being submitted by the application loop thread
@@ -56,18 +63,6 @@ namespace
 	// and the application loop thread can start submitting data for the following frame
 	// (the application loop thread waits for the signal)
 	eae6320::Concurrency::cEvent s_whenDataForANewFrameCanBeSubmittedFromApplicationThread;
-
-	// Shading Data
-	//-------------
-
-	eae6320::Graphics::cEffect s_Effect1;
-	eae6320::Graphics::cEffect s_Effect2;
-
-	// Geometry Data
-	//--------------
-
-	eae6320::Graphics::cMesh s_Mesh1;
-	eae6320::Graphics::cMesh s_Mesh2;
 }
 
 // Interface
@@ -128,16 +123,6 @@ void eae6320::Graphics::RenderFrame()
 		}
 	}
 
-
-
-
-
-	s_View.ClearColor( 1.0f, 0.0f, 0.0f, 1.0f );
-
-
-
-
-
 	EAE6320_ASSERT( s_dataBeingRenderedByRenderThread );
 
 	// Update the per-frame constant buffer
@@ -147,17 +132,30 @@ void eae6320::Graphics::RenderFrame()
 		s_constantBuffer_perFrame.Update( &constantData_perFrame );
 	}
 
-	// Bind the shading data
-	s_Effect1.RenderFrame();
-	
-	// Draw the geometry
-	s_Mesh1.RenderFrame();
+	s_View.ClearColor( s_dataBeingRenderedByRenderThread->m_red, s_dataBeingRenderedByRenderThread->m_green, s_dataBeingRenderedByRenderThread->m_blue, s_dataBeingRenderedByRenderThread->m_alpha );
 
-	// Bind the shading data
-	s_Effect2.RenderFrame();
-	
-	// Draw the geometry
-	s_Mesh2.RenderFrame();
+	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->m_count; ++i)
+	{
+		s_dataBeingRenderedByRenderThread->m_effects[i]->RenderFrame();
+		s_dataBeingRenderedByRenderThread->m_meshes[i]->RenderFrame();
+	}
+
+	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->m_count; ++i)
+	{
+		if (s_dataBeingRenderedByRenderThread->m_effects[i])
+		{
+			s_dataBeingRenderedByRenderThread->m_effects[i]->DecrementReferenceCount();
+			s_dataBeingRenderedByRenderThread->m_effects[i] = nullptr;
+		}
+
+		if (s_dataBeingRenderedByRenderThread->m_meshes[i])
+		{
+			s_dataBeingRenderedByRenderThread->m_meshes[i]->DecrementReferenceCount();
+			s_dataBeingRenderedByRenderThread->m_meshes[i] = nullptr;
+		}
+	}
+
+	s_dataBeingRenderedByRenderThread->m_count = 0;
 
 	s_View.Swap();
 
@@ -207,6 +205,7 @@ eae6320::cResult eae6320::Graphics::Initialize( const sInitializationParameters&
 			goto OnExit;
 		}
 	}
+
 	// Initialize the events
 	{
 		if ( !( result = s_whenAllDataHasBeenSubmittedFromApplicationThread.Initialize( Concurrency::EventType::ResetAutomaticallyAfterBeingSignaled ) ) )
@@ -232,78 +231,6 @@ eae6320::cResult eae6320::Graphics::Initialize( const sInitializationParameters&
 		}
 	}
 
-	// Initialize the shading data
-	{
-		if ( !( result = s_Effect1.InitializeShadingData("data/Shaders/Vertex/standard.shader", "data/Shaders/Fragment/standard.shader") ) )
-		{
-			EAE6320_ASSERT( false );
-			goto OnExit;
-		}
-	}
-
-	// Initialize the geometry
-	{
-		std::vector<VertexFormats::sMesh> vertexData(3);
-		vertexData[0].x = 0.0f;
-		vertexData[0].y = 0.0f;
-		vertexData[0].z = 0.0f;
-
-		vertexData[1].x = 1.0f;
-		vertexData[1].y = 1.0f;
-		vertexData[1].z = 0.0f;
-
-		vertexData[2].x = 1.0f;
-		vertexData[2].y = 0.0f;
-		vertexData[2].z = 0.0f;
-
-		std::vector<uint16_t> indexData(3);
-		indexData[0] = 0;
-		indexData[1] = 1;
-		indexData[2] = 2;
-
-		if ( !( result = s_Mesh1.InitializeGeometry( vertexData, indexData ) ) )
-		{
-			EAE6320_ASSERT( false );
-			goto OnExit;
-		}
-	}
-
-	// Initialize the shading data
-	{
-		if ( !( result = s_Effect2.InitializeShadingData("data/Shaders/Vertex/standard.shader", "data/Shaders/Fragment/animated.shader") ) )
-		{
-			EAE6320_ASSERT( false );
-			goto OnExit;
-		}
-	}
-	// Initialize the geometry
-	{
-		std::vector<VertexFormats::sMesh> vertexData(3);
-		vertexData[0].x = 0.0f;
-		vertexData[0].y = 0.0f;
-		vertexData[0].z = 0.0f;
-
-		vertexData[1].x = 0.0f;
-		vertexData[1].y = 1.0f;
-		vertexData[1].z = 0.0f;
-
-		vertexData[2].x = 1.0f;
-		vertexData[2].y = 1.0f;
-		vertexData[2].z = 0.0f;
-
-		std::vector<uint16_t> indexData(3);
-		indexData[0] = 0;
-		indexData[1] = 1;
-		indexData[2] = 2;
-
-		if ( !( result = s_Mesh2.InitializeGeometry( vertexData, indexData ) ) )
-		{
-			EAE6320_ASSERT( false );
-			goto OnExit;
-		}
-	}
-
-
 OnExit:
 
 	return result;
@@ -315,13 +242,6 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 
 	s_View.CleanUp();
 
-	s_Mesh1.CleanUp();
-
-	s_Effect1.CleanUp();
-
-	s_Mesh2.CleanUp();
-
-	s_Effect2.CleanUp();
 	{
 		const auto localResult = s_constantBuffer_perFrame.CleanUp();
 		if ( !localResult )
@@ -333,6 +253,39 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 			}
 		}
 	}
+
+	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->m_count; ++i)
+	{
+		if (s_dataBeingRenderedByRenderThread->m_effects[i])
+		{
+			s_dataBeingRenderedByRenderThread->m_effects[i]->DecrementReferenceCount();
+			s_dataBeingRenderedByRenderThread->m_effects[i] = nullptr;
+		}
+
+		if (s_dataBeingRenderedByRenderThread->m_meshes[i])
+		{
+			s_dataBeingRenderedByRenderThread->m_meshes[i]->DecrementReferenceCount();
+			s_dataBeingRenderedByRenderThread->m_meshes[i] = nullptr;
+		}
+	}
+
+	for (uint16_t i = 0; i < s_dataBeingSubmittedByApplicationThread->m_count; ++i)
+	{
+		if (s_dataBeingSubmittedByApplicationThread->m_effects[i])
+		{
+			s_dataBeingSubmittedByApplicationThread->m_effects[i]->DecrementReferenceCount();
+			s_dataBeingSubmittedByApplicationThread->m_effects[i] = nullptr;
+		}
+
+		if (s_dataBeingSubmittedByApplicationThread->m_meshes[i])
+		{
+			s_dataBeingSubmittedByApplicationThread->m_meshes[i]->DecrementReferenceCount();
+			s_dataBeingSubmittedByApplicationThread->m_meshes[i] = nullptr;
+		}
+	}
+
+	s_dataBeingRenderedByRenderThread->m_count = 0;
+	s_dataBeingSubmittedByApplicationThread->m_count = 0;
 
 	{
 		const auto localResult = cShader::s_manager.CleanUp();
@@ -359,4 +312,23 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 	}
 
 	return result;
+}
+
+void eae6320::Graphics::SubmitBackgroundColor(float i_red, float i_green, float i_blue, float i_alpha)
+{
+	s_dataBeingSubmittedByApplicationThread->m_red = i_red;
+	s_dataBeingSubmittedByApplicationThread->m_green = i_green;
+	s_dataBeingSubmittedByApplicationThread->m_blue = i_blue;
+	s_dataBeingSubmittedByApplicationThread->m_alpha = i_alpha;
+}
+
+void eae6320::Graphics::SubmitMeshAndEffect(eae6320::Graphics::cMesh* i_mesh, eae6320::Graphics::cEffect* i_effect)
+{
+	i_mesh->IncrementReferenceCount();
+	s_dataBeingSubmittedByApplicationThread->m_meshes[s_dataBeingSubmittedByApplicationThread->m_count] = i_mesh;
+
+	i_effect->IncrementReferenceCount();
+	s_dataBeingSubmittedByApplicationThread->m_effects[s_dataBeingSubmittedByApplicationThread->m_count] = i_effect;
+
+	s_dataBeingSubmittedByApplicationThread->m_count++;
 }

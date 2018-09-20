@@ -16,6 +16,7 @@
 #include <Engine/Assets/ReferenceCountedAssets.h>
 
 #include <cstdint>
+#include <Engine/Assets/ReferenceCountedAssets.h>
 #include <Engine/Assets/cHandle.h>
 #include <Engine/Assets/cManager.h>
 #include "cShader.h"
@@ -58,10 +59,13 @@ namespace eae6320
 
 			// Initialization / Clean Up
 			//--------------------------
-			eae6320::cResult InitializeShadingData( const char i_vertexShaderPath[], const char i_fragmentShaderPath[] );
-			eae6320::cResult CleanUp();
+			static cResult Load( eae6320::Graphics::cEffect*& o_effect, const char i_vertexShaderPath[], const char i_fragmentShaderPath[] );
+
 			void RenderFrame();
 
+			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cEffect);
+			EAE6320_ASSETS_DECLAREREFERENCECOUNTINGFUNCTIONS();
+			
 			// Data
 			//=====
 
@@ -78,6 +82,7 @@ namespace eae6320
 #if defined( EAE6320_PLATFORM_GL )
 			GLuint m_programId = 0;
 #endif
+			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
 
 			// Implementation
 			//===============
@@ -86,6 +91,11 @@ namespace eae6320
 
 			// Initialization / Clean Up
 			//--------------------------
+			eae6320::cResult InitializeShadingData( const char i_vertexShaderPath[], const char i_fragmentShaderPath[] );
+			eae6320::cResult CleanUp();
+
+			cEffect();
+			~cEffect();
 		};
 	}
 }

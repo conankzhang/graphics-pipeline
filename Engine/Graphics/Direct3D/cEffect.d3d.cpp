@@ -91,6 +91,47 @@ eae6320::cResult eae6320::Graphics::cEffect::CleanUp()
 	return result;
 }
 
+eae6320::cResult eae6320::Graphics::cEffect::Load(eae6320::Graphics::cEffect*& o_effect, const char i_vertexShaderPath[], const char i_fragmentShaderPath[])
+{
+	auto result = Results::Success;
+
+	eae6320::Graphics::cEffect* newEffect = nullptr;
+
+	// Allocate a new shader
+	{
+		newEffect = new (std::nothrow) cEffect();
+		if ( !newEffect )
+		{
+			result = Results::OutOfMemory;
+			goto OnExit;
+		}
+	}
+	if ( !( result = newEffect->InitializeShadingData( i_vertexShaderPath, i_fragmentShaderPath ) ) )
+	{
+		EAE6320_ASSERTF( false, "Initialization of new mesh failed" );
+		goto OnExit;
+	}
+
+OnExit:
+
+	if ( result )
+	{
+		EAE6320_ASSERT( newEffect );
+		o_effect = newEffect;
+	}
+	else
+	{
+		if ( newEffect )
+		{
+			newEffect->DecrementReferenceCount();
+			newEffect = nullptr;
+		}
+		o_effect = nullptr;
+	}
+
+	return result;
+}
+
 void eae6320::Graphics::cEffect::RenderFrame()
 {
 	{
@@ -116,4 +157,14 @@ void eae6320::Graphics::cEffect::RenderFrame()
 	}
 
 	m_renderState.Bind();
+}
+
+eae6320::Graphics::cEffect::cEffect()
+{
+
+}
+
+eae6320::Graphics::cEffect::~cEffect()
+{
+	CleanUp();
 }
