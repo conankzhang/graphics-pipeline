@@ -17,6 +17,18 @@
 	#include <Engine/Windows/Includes.h>
 #endif
 
+// Forward Declarations
+//=====================
+
+namespace eae6320
+{
+	namespace Graphics
+	{
+		class cMesh;
+		class cEffect;
+	}
+}
+
 // Interface
 //==========
 
@@ -69,6 +81,9 @@ namespace eae6320
 
 		cResult Initialize( const sInitializationParameters& i_initializationParameters );
 		cResult CleanUp();
+
+		void SubmitBackgroundColor(float i_red, float i_green, float i_blue, float i_alpha);
+		void SubmitMeshAndEffect(eae6320::Graphics::cMesh* i_mesh, eae6320::Graphics::cEffect* i_effect);
 	}
 }
 

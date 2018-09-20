@@ -55,7 +55,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{DCAFB933-6112-4B0F-AEF4-3274C0B126D}</ProjectGuid>
+    <ProjectGuid>{DCAFB933-6112-4B0F-AEF4-3274C0B12600}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>MyGame</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>

@@ -14,6 +14,47 @@
 // Implementation
 //===============
 
+eae6320::cResult eae6320::Graphics::cMesh::Load(eae6320::Graphics::cMesh*& o_mesh, std::vector<VertexFormats::sMesh> i_vertexData, std::vector<uint16_t> i_indexData)
+{
+	auto result = Results::Success;
+
+	eae6320::Graphics::cMesh* newMesh = nullptr;
+
+	// Allocate a new shader
+	{
+		newMesh = new (std::nothrow) cMesh();
+		if ( !newMesh )
+		{
+			result = Results::OutOfMemory;
+			goto OnExit;
+		}
+	}
+	if ( !( result = newMesh->InitializeGeometry( i_vertexData, i_indexData ) ) )
+	{
+		EAE6320_ASSERTF( false, "Initialization of new mesh failed" );
+		goto OnExit;
+	}
+
+OnExit:
+
+	if ( result )
+	{
+		EAE6320_ASSERT( newMesh );
+		o_mesh = newMesh;
+	}
+	else
+	{
+		if ( newMesh )
+		{
+			newMesh->DecrementReferenceCount();
+			newMesh = nullptr;
+		}
+		o_mesh = nullptr;
+	}
+
+	return result;
+}
+
 // Initialization / Clean Up
 //--------------------------
 eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry( std::vector<VertexFormats::sMesh> i_vertexData, std::vector<uint16_t> i_indexData )
@@ -136,6 +177,16 @@ eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry( std::vector<Verte
 OnExit:
 
 	return result;
+}
+
+eae6320::Graphics::cMesh::cMesh()
+{
+
+}
+
+eae6320::Graphics::cMesh::~cMesh()
+{
+	CleanUp();
 }
 
 eae6320::cResult eae6320::Graphics::cMesh::CleanUp()

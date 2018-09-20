@@ -16,6 +16,7 @@
 #include <Engine/Assets/ReferenceCountedAssets.h>
 
 #include <cstdint>
+#include <Engine/Assets/ReferenceCountedAssets.h>
 #include <Engine/Assets/cHandle.h>
 #include <Engine/Assets/cManager.h>
 #include <Engine/Results/Results.h>
@@ -63,11 +64,13 @@ namespace eae6320
 
 			// Initialization / Clean Up
 			//--------------------------
+			static cResult Load( eae6320::Graphics::cMesh*& o_mesh, std::vector<VertexFormats::sMesh> i_vertexData, std::vector<uint16_t> i_indexData );
 
-			cResult InitializeGeometry( std::vector<VertexFormats::sMesh> i_vertexData, std::vector<uint16_t> i_indexData );
-			cResult CleanUp();
 			void RenderFrame();
 
+			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cMesh);
+			EAE6320_ASSETS_DECLAREREFERENCECOUNTINGFUNCTIONS();
+			
 			// Data
 			//=====
 
@@ -90,12 +93,17 @@ namespace eae6320
 			// An index array encapsulates the index data as well as the index input layout
 			GLuint m_indexArrayId = 0;
 #endif
+			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
 
 			// Implementation
 			//===============
 		private:
 			size_t m_indexCountToRender = 0;
+			cResult InitializeGeometry( std::vector<VertexFormats::sMesh> i_vertexData, std::vector<uint16_t> i_indexData );
+			cResult CleanUp();
 
+			cMesh();
+			~cMesh();
 		};
 	}
 }

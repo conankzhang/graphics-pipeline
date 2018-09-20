@@ -15,6 +15,18 @@
 	#include "Resource Files/Resource.h"
 #endif
 
+// Forward Declarations
+//=====================
+
+namespace eae6320
+{
+	namespace Graphics
+	{
+		class cMesh;
+		class cEffect;
+	}
+}
+
 // Class Declaration
 //==================
 
@@ -65,19 +77,36 @@ namespace eae6320
 		// If you want to try creating your own a convenient website that will help is: http://icoconvert.com/
 		virtual const WORD* GetLargeIconId() const override { static constexpr WORD iconId_large = IDI_EAEGAMEPAD; return &iconId_large; }
 		virtual const WORD* GetSmallIconId() const override { static constexpr WORD iconId_small = IDI_EAEALIEN; return &iconId_small; }
+			
+		virtual void SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate) override;
 #endif
 
 		// Run
 		//----
 
 		virtual void UpdateBasedOnInput() override;
+		virtual void UpdateSimulationBasedOnInput() override;
 
 		// Initialization / Clean Up
 		//--------------------------
 
+		// Shading Data
+		//-------------
+
+		eae6320::Graphics::cEffect* s_Effect1;
+		eae6320::Graphics::cEffect* s_Effect2;
+
+		// Geometry Data
+		//--------------
+
+		eae6320::Graphics::cMesh* s_Mesh1;
+		eae6320::Graphics::cMesh* s_Mesh2;
+
 		virtual cResult Initialize() override;
 		virtual cResult CleanUp() override;
 
+		bool m_f1IsPressed;
+		bool m_f2IsPressed;
 	};
 }
 
