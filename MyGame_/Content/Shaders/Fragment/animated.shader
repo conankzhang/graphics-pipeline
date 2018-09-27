@@ -22,6 +22,10 @@ cbuffer g_constantBuffer_perFrame : register( b0 )
 	float2 g_padding;
 };
 
+cbuffer g_constantBuffer_perDrawCall : register( b2 )
+{
+  float4x4 g_transform_localToWorld;
+};
 // Entry Point
 //============
 
@@ -36,10 +40,10 @@ void main(
 
 	)
 {
-	// Output solid blue 
+	// Output solid red
 	o_color = float4(
 		// RGB (color)
-		0.0, 0.0, 1.0,
+		1.0, 0.0, 0.0,
 		// Alpha (transparency)
 		1.0 );
 }
@@ -60,6 +64,11 @@ layout( std140, binding = 0 ) uniform g_constantBuffer_perFrame
 	vec2 g_padding;
 };
 
+layout( std140, binding = 2 ) uniform g_constantBuffer_perdrawCall
+{
+  mat4 g_transform_localToWorld;
+};
+
 // Output
 //=======
 
@@ -72,10 +81,10 @@ out vec4 o_color;
 
 void main()
 {
-	// Output solid blue 
+	// Output solid red
 	o_color = vec4(
 		// RGB (color)
-		0.0, 0.0, 1.0,
+		1.0, 0.0, 0.0,
 		// Alpha (transparency)
 		1.0 );
 }

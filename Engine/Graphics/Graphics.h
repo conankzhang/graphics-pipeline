@@ -27,6 +27,11 @@ namespace eae6320
 		class cMesh;
 		class cEffect;
 	}
+
+	namespace Math
+	{
+		class cMatrix_transformation;
+	}
 }
 
 // Interface
@@ -83,7 +88,8 @@ namespace eae6320
 		cResult CleanUp();
 
 		void SubmitBackgroundColor(float i_red, float i_green, float i_blue, float i_alpha);
-		void SubmitMeshAndEffect(eae6320::Graphics::cMesh* i_mesh, eae6320::Graphics::cEffect* i_effect);
+		void SubmitGameObject(eae6320::Graphics::cMesh* i_mesh, eae6320::Graphics::cEffect* i_effect, eae6320::Math::cMatrix_transformation& i_transform);
+		void SubmitCamera(eae6320::Math::cMatrix_transformation i_transform_worldToCamera, eae6320::Math::cMatrix_transformation i_transform_cameraToProjected, float i_elapsedSecondCount_systemTime, float i_elapsedSecondCount_simulationTime);
 	}
 }
 

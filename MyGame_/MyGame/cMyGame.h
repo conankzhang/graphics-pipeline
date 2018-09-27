@@ -7,6 +7,8 @@
 
 // Includes
 //=========
+#include "cGameObject.h"
+#include "cCamera.h"
 
 #include <Engine/Application/cbApplication.h>
 #include <Engine/Results/Results.h>
@@ -25,6 +27,8 @@ namespace eae6320
 		class cMesh;
 		class cEffect;
 	}
+
+	class cGameObject;
 }
 
 // Class Declaration
@@ -86,6 +90,7 @@ namespace eae6320
 
 		virtual void UpdateBasedOnInput() override;
 		virtual void UpdateSimulationBasedOnInput() override;
+		virtual void UpdateSimulationBasedOnTime(const float i_elapsedSecondCount_sinceLastUpdate) override;
 
 		// Initialization / Clean Up
 		//--------------------------
@@ -102,11 +107,15 @@ namespace eae6320
 		eae6320::Graphics::cMesh* s_Mesh1;
 		eae6320::Graphics::cMesh* s_Mesh2;
 
+		eae6320::cGameObject* m_object1;
+		eae6320::cGameObject* m_object2;
+
+		eae6320::cCamera* m_camera;
+
+		bool m_shiftPressed = false;
+
 		virtual cResult Initialize() override;
 		virtual cResult CleanUp() override;
-
-		bool m_f1IsPressed;
-		bool m_f2IsPressed;
 	};
 }
 

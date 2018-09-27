@@ -16,7 +16,7 @@
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::cResult eae6320::Graphics::cEffect::InitializeShadingData( const char i_vertexShaderPath[], const char i_fragmentShaderPath[] )
+eae6320::cResult eae6320::Graphics::cEffect::InitializeShadingData( const char i_vertexShaderPath[], const char i_fragmentShaderPath[], const uint8_t i_renderStateBits)
 {
 	auto result = eae6320::Results::Success;
 
@@ -33,8 +33,7 @@ eae6320::cResult eae6320::Graphics::cEffect::InitializeShadingData( const char i
 		goto OnExit;
 	}
 	{
-		constexpr uint8_t defaultRenderState = 0;
-		if ( !( result = m_renderState.Initialize( defaultRenderState ) ) )
+		if ( !( result = m_renderState.Initialize( i_renderStateBits ) ) )
 		{
 			EAE6320_ASSERT( false );
 			goto OnExit;
@@ -91,7 +90,7 @@ eae6320::cResult eae6320::Graphics::cEffect::CleanUp()
 	return result;
 }
 
-eae6320::cResult eae6320::Graphics::cEffect::Load(eae6320::Graphics::cEffect*& o_effect, const char i_vertexShaderPath[], const char i_fragmentShaderPath[])
+eae6320::cResult eae6320::Graphics::cEffect::Load(eae6320::Graphics::cEffect*& o_effect, const char i_vertexShaderPath[], const char i_fragmentShaderPath[], const uint8_t i_renderStateBits)
 {
 	auto result = Results::Success;
 
@@ -106,7 +105,7 @@ eae6320::cResult eae6320::Graphics::cEffect::Load(eae6320::Graphics::cEffect*& o
 			goto OnExit;
 		}
 	}
-	if ( !( result = newEffect->InitializeShadingData( i_vertexShaderPath, i_fragmentShaderPath ) ) )
+	if ( !( result = newEffect->InitializeShadingData( i_vertexShaderPath, i_fragmentShaderPath, i_renderStateBits ) ) )
 	{
 		EAE6320_ASSERTF( false, "Initialization of new mesh failed" );
 		goto OnExit;

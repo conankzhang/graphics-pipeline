@@ -59,7 +59,7 @@ namespace eae6320
 
 			// Initialization / Clean Up
 			//--------------------------
-			static cResult Load( eae6320::Graphics::cEffect*& o_effect, const char i_vertexShaderPath[], const char i_fragmentShaderPath[] );
+			static cResult Load(eae6320::Graphics::cEffect*& o_effect, const char i_vertexShaderPath[], const char i_fragmentShaderPath[], const uint8_t i_renderStateBits);
 
 			void RenderFrame();
 
@@ -91,7 +91,7 @@ namespace eae6320
 
 			// Initialization / Clean Up
 			//--------------------------
-			eae6320::cResult InitializeShadingData( const char i_vertexShaderPath[], const char i_fragmentShaderPath[] );
+			eae6320::cResult InitializeShadingData(const char i_vertexShaderPath[], const char i_fragmentShaderPath[], const uint8_t i_renderStateBits);
 			eae6320::cResult CleanUp();
 
 			cEffect();
