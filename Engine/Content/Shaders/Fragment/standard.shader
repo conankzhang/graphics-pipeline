@@ -22,6 +22,11 @@ cbuffer g_constantBuffer_perFrame : register( b0 )
 	float2 g_padding;
 };
 
+cbuffer g_constantBuffer_perDrawCall : register( b2 )
+{
+  float4x4 g_transform_localToWorld;
+};
+
 // Entry Point
 //============
 
@@ -60,6 +65,10 @@ layout( std140, binding = 0 ) uniform g_constantBuffer_perFrame
 	vec2 g_padding;
 };
 
+layout( std140, binding = 2 ) uniform g_constantBuffer_perdrawCall
+{
+  mat4 g_transform_localToWorld;
+};
 // Output
 //=======
 

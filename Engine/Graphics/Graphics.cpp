@@ -30,6 +30,7 @@ namespace
 
 	// Constant buffer object
 	eae6320::Graphics::cConstantBuffer s_constantBuffer_perFrame( eae6320::Graphics::ConstantBufferTypes::PerFrame );
+	eae6320::Graphics::cConstantBuffer s_constantBuffer_perDrawCalls( eae6320::Graphics::ConstantBufferTypes::PerDrawCall );
 
 	// Submission Data
 	//----------------
@@ -45,6 +46,7 @@ namespace
 		float m_alpha;
 		eae6320::Graphics::cMesh* m_meshes[2];
 		eae6320::Graphics::cEffect* m_effects[2];
+		eae6320::Graphics::ConstantBufferFormats::sPerDrawCall m_constantData[2];
 		uint16_t m_count;
 	};
 	// In our class there will be two copies of the data required to render a frame:
@@ -131,11 +133,15 @@ void eae6320::Graphics::RenderFrame()
 		auto& constantData_perFrame = s_dataBeingRenderedByRenderThread->constantData_perFrame;
 		s_constantBuffer_perFrame.Update( &constantData_perFrame );
 	}
-
+	size_t t = sizeof(*s_dataBeingRenderedByRenderThread);
 	s_View.ClearColor( s_dataBeingRenderedByRenderThread->m_red, s_dataBeingRenderedByRenderThread->m_green, s_dataBeingRenderedByRenderThread->m_blue, s_dataBeingRenderedByRenderThread->m_alpha );
 
 	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->m_count; ++i)
 	{
+		// Copy the data from the system memory that the application owns to GPU memory
+		auto& constantData_perDrawCall = s_dataBeingRenderedByRenderThread->m_constantData[i];
+		s_constantBuffer_perDrawCalls.Update( &constantData_perDrawCall );
+
 		s_dataBeingRenderedByRenderThread->m_effects[i]->RenderFrame();
 		s_dataBeingRenderedByRenderThread->m_meshes[i]->RenderFrame();
 	}
@@ -206,6 +212,23 @@ eae6320::cResult eae6320::Graphics::Initialize( const sInitializationParameters&
 		}
 	}
 
+	// Initialize the platform-independent graphics objects
+	{
+		if ( result = s_constantBuffer_perDrawCalls.Initialize() )
+		{
+			// There is only a single per-frame constant buffer that is re-used
+			// and so it can be bound at initialization time and never unbound
+			s_constantBuffer_perDrawCalls.Bind(
+				// In our class both vertex and fragment shaders use per-frame constant data
+				ShaderTypes::Vertex | ShaderTypes::Fragment );
+		}
+		else
+		{
+			EAE6320_ASSERT( false );
+			goto OnExit;
+		}
+	}
+
 	// Initialize the events
 	{
 		if ( !( result = s_whenAllDataHasBeenSubmittedFromApplicationThread.Initialize( Concurrency::EventType::ResetAutomaticallyAfterBeingSignaled ) ) )
@@ -244,6 +267,18 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 
 	{
 		const auto localResult = s_constantBuffer_perFrame.CleanUp();
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+	}
+
+	{
+		const auto localResult = s_constantBuffer_perDrawCalls.CleanUp();
 		if ( !localResult )
 		{
 			EAE6320_ASSERT( false );
@@ -322,7 +357,7 @@ void eae6320::Graphics::SubmitBackgroundColor(float i_red, float i_green, float 
 	s_dataBeingSubmittedByApplicationThread->m_alpha = i_alpha;
 }
 
-void eae6320::Graphics::SubmitMeshAndEffect(eae6320::Graphics::cMesh* i_mesh, eae6320::Graphics::cEffect* i_effect)
+void eae6320::Graphics::SubmitGameObject(eae6320::Graphics::cMesh* i_mesh, eae6320::Graphics::cEffect* i_effect, eae6320::Math::cMatrix_transformation& i_transform)
 {
 	i_mesh->IncrementReferenceCount();
 	s_dataBeingSubmittedByApplicationThread->m_meshes[s_dataBeingSubmittedByApplicationThread->m_count] = i_mesh;
@@ -330,5 +365,15 @@ void eae6320::Graphics::SubmitMeshAndEffect(eae6320::Graphics::cMesh* i_mesh, ea
 	i_effect->IncrementReferenceCount();
 	s_dataBeingSubmittedByApplicationThread->m_effects[s_dataBeingSubmittedByApplicationThread->m_count] = i_effect;
 
+	s_dataBeingSubmittedByApplicationThread->m_constantData[s_dataBeingSubmittedByApplicationThread->m_count].g_transform_localToWorld = i_transform;
+
 	s_dataBeingSubmittedByApplicationThread->m_count++;
+}
+
+void eae6320::Graphics::SubmitCamera(eae6320::Math::cMatrix_transformation i_transform_worldToCamera, eae6320::Math::cMatrix_transformation i_transform_cameraToProjected, float i_elapsedSecondCount_systemTime, float i_elapsedSecondCount_simulationTime)
+{
+	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_transform_worldToCamera = i_transform_worldToCamera;
+	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_transform_cameraToProjected = i_transform_cameraToProjected;
+	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_elapsedSecondCount_systemTime = i_elapsedSecondCount_systemTime;
+	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_elapsedSecondCount_simulationTime = i_elapsedSecondCount_simulationTime;
 }
