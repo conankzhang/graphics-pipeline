@@ -70,6 +70,7 @@ namespace eae6320
 			// Initialization / Clean Up
 			//--------------------------
 			static cResult Load( eae6320::Graphics::cMesh*& o_mesh, std::vector<VertexFormats::sMesh> i_vertexData, std::vector<uint16_t> i_indexData );
+			static cResult Load( const char* const i_path, cMesh*& o_mesh );
 
 			void RenderFrame();
 
@@ -105,6 +106,7 @@ namespace eae6320
 		private:
 			size_t m_indexCountToRender = 0;
 			cResult InitializeGeometry( std::vector<VertexFormats::sMesh> i_vertexData, std::vector<uint16_t> i_indexData );
+			cResult InitializeGeometry( const char* const i_path, const Platform::sDataFromFile& i_loadedMesh );
 			cResult CleanUp();
 
 			cMesh();
