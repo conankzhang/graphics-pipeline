@@ -61,6 +61,11 @@ namespace eae6320
 			//==========
 
 		public:
+			// Assets
+			//-------
+
+			using Handle = Assets::cHandle<cMesh>;
+			static Assets::cManager<cMesh> s_manager;
 
 			// Initialization / Clean Up
 			//--------------------------
