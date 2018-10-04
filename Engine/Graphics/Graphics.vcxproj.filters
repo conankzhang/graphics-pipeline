@@ -72,6 +72,9 @@
     <ClCompile Include="Direct3D\View.d3d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cConstantBuffer.h">

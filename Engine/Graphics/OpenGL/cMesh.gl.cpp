@@ -71,62 +71,6 @@ OnExit:
 	return result;
 }
 
-eae6320::cResult eae6320::Graphics::cMesh::Load(const char* const i_path, cMesh*& o_mesh)
-{
-	auto result = Results::Success;
-
-	Platform::sDataFromFile dataFromFile;
-	cMesh* newMesh = nullptr;
-
-	// Load the binary data
-	{
-		std::string errorMessage;
-		if ( !( result = Platform::LoadBinaryFile( i_path, dataFromFile, &errorMessage ) ) )
-		{
-			EAE6320_ASSERTF( false, errorMessage.c_str() );
-			Logging::OutputError( "Failed to load mesh from file %s: %s", i_path, errorMessage.c_str() );
-			goto OnExit;
-		}
-	}
-	// Allocate a new shader
-	{
-		newMesh = new (std::nothrow) cMesh();
-		if ( !newMesh )
-		{
-			result = Results::OutOfMemory;
-			EAE6320_ASSERTF( false, "Couldn't allocate memory for the mesh %s", i_path );
-			Logging::OutputError( "Failed to allocate memory for the mesh %s", i_path );
-			goto OnExit;
-		}
-	}
-	// Initialize the platform-specific graphics API shader object
-	if ( !( result = newMesh->InitializeGeometry( i_path, dataFromFile ) ) )
-	{
-		EAE6320_ASSERTF( false, "Initialization of new mesh failed" );
-		goto OnExit;
-	}
-
-OnExit:
-
-	if ( result )
-	{
-		EAE6320_ASSERT( newMesh );
-		o_mesh = newMesh;
-	}
-	else
-	{
-		if ( newMesh )
-		{
-			newMesh->DecrementReferenceCount();
-			newMesh = nullptr;
-		}
-		o_mesh = nullptr;
-	}
-	dataFromFile.Free();
-
-	return result;
-}
-
 eae6320::Graphics::cMesh::cMesh()
 {
 
@@ -336,11 +280,6 @@ eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry( std::vector<Verte
 OnExit:
 
 	return result;
-}
-
-eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry(const char* const i_path, const Platform::sDataFromFile& i_loadedMesh)
-{
-	return eae6320::Results::Success;
 }
 
 eae6320::cResult eae6320::Graphics::cMesh::CleanUp()

@@ -136,40 +136,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 
 	// Initialize the geometry
 	{
-		std::vector<eae6320::Graphics::VertexFormats::sMesh> vertexData(6);
-		vertexData[0].x = 0.0f;
-		vertexData[0].y = 0.0f;
-		vertexData[0].z = 0.0f;
-
-		vertexData[1].x = 0.0f;
-		vertexData[1].y = 1.0f;
-		vertexData[1].z = 0.0f;
-
-		vertexData[2].x = 1.0f;
-		vertexData[2].y = 1.0f;
-		vertexData[2].z = 0.0f;
-
-		vertexData[3].x = 0.0f;
-		vertexData[3].y = 0.0f;
-		vertexData[3].z = 0.0f;
-
-		vertexData[4].x = 1.0f;
-		vertexData[4].y = 1.0f;
-		vertexData[4].z = 0.0f;
-
-		vertexData[5].x = 1.0f;
-		vertexData[5].y = 0.0f;
-		vertexData[5].z = 0.0f;
-
-		std::vector<uint16_t> indexData(6);
-		indexData[0] = 0;
-		indexData[1] = 1;
-		indexData[2] = 2;
-		indexData[3] = 3;
-		indexData[4] = 4;
-		indexData[5] = 5;
-
-		if ( !( result = eae6320::Graphics::cMesh::Load( s_Mesh1, vertexData, indexData ) ) )
+		if ( !( result =  eae6320::Graphics::cMesh::Load( "data/Meshes/saw.mesh", s_Mesh1 ) ) )
 		{
 			EAE6320_ASSERT( false );
 			goto OnExit;
@@ -188,25 +155,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	}
 	// Initialize the geometry
 	{
-		std::vector<eae6320::Graphics::VertexFormats::sMesh> vertexData(3);
-		vertexData[0].x = 0.0f;
-		vertexData[0].y = 0.0f;
-		vertexData[0].z = 0.0f;
-
-		vertexData[1].x = 0.0f;
-		vertexData[1].y = 1.0f;
-		vertexData[1].z = 0.0f;
-
-		vertexData[2].x = 1.0f;
-		vertexData[2].y = 1.0f;
-		vertexData[2].z = 0.0f;
-
-		std::vector<uint16_t> indexData(3);
-		indexData[0] = 0;
-		indexData[1] = 1;
-		indexData[2] = 2;
-
-		if ( !( result =  eae6320::Graphics::cMesh::Load( s_Mesh2, vertexData, indexData ) ) )
+		if ( !( result =  eae6320::Graphics::cMesh::Load( "data/Meshes/triangle.mesh", s_Mesh2 ) ) )
 		{
 			EAE6320_ASSERT( false );
 			goto OnExit;

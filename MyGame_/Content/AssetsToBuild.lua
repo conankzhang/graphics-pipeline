@@ -15,6 +15,7 @@ return
 
 	meshes =
 	{
-		{ path = "Meshes/triangle.lua" },
+		{ path = "Meshes/triangle.mesh" },
+		{ path = "Meshes/saw.mesh" },
 	},
 }
