@@ -10,6 +10,7 @@
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Logging/Logging.h>
 #include <Engine/Platform/Platform.h>
+#include <External/Lua/Includes.h>
 
 // Implementation
 //===============
@@ -54,6 +55,7 @@ OnExit:
 
 	return result;
 }
+
 
 // Initialization / Clean Up
 //--------------------------

@@ -12,4 +12,10 @@ return
 
 		{ path = "Shaders/Vertex/vertexInputLayout.shader", arguments = { "vertex" } },
 	},
+
+	meshes =
+	{
+		{ path = "Meshes/triangle.mesh" },
+		{ path = "Meshes/saw.mesh" },
+	},
 }

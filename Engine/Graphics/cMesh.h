@@ -44,6 +44,8 @@ namespace eae6320
 	}
 }
 
+struct lua_State;
+
 #ifdef EAE6320_PLATFORM_D3D
 	struct ID3D11Buffer;
 	struct ID3D11InputLayout;
@@ -61,10 +63,16 @@ namespace eae6320
 			//==========
 
 		public:
+			// Assets
+			//-------
+
+			using Handle = Assets::cHandle<cMesh>;
+			static Assets::cManager<cMesh> s_manager;
 
 			// Initialization / Clean Up
 			//--------------------------
 			static cResult Load( eae6320::Graphics::cMesh*& o_mesh, std::vector<VertexFormats::sMesh> i_vertexData, std::vector<uint16_t> i_indexData );
+			static cResult Load( const char* const i_path, cMesh*& o_mesh );
 
 			void RenderFrame();
 
@@ -101,6 +109,17 @@ namespace eae6320
 			size_t m_indexCountToRender = 0;
 			cResult InitializeGeometry( std::vector<VertexFormats::sMesh> i_vertexData, std::vector<uint16_t> i_indexData );
 			cResult CleanUp();
+
+			static eae6320::cResult LoadAsset( const char* const i_path, std::vector<VertexFormats::sMesh>& io_vertexData, std::vector<uint16_t>& io_indexData );
+			static eae6320::cResult LoadTableValues( lua_State& io_luaState, std::vector<VertexFormats::sMesh>& io_vertexData, std::vector<uint16_t>& io_indexData );
+
+			static eae6320::cResult LoadTableValues_vertexArray(lua_State& io_luaState, std::vector<VertexFormats::sMesh>& io_vertexData);
+			static eae6320::cResult LoadTableValues_vertexArray_vertices( lua_State& io_luaState, std::vector<VertexFormats::sMesh>& io_vertexData);
+			static eae6320::cResult LoadTableValues_vertexArray_vertices_position( lua_State& io_luaState, std::vector<VertexFormats::sMesh>& io_vertexData);
+			static eae6320::cResult LoadTableValues_vertexArray_vertices_position_values( lua_State& io_luaState, std::vector<VertexFormats::sMesh>& io_vertexData);
+
+			static eae6320::cResult LoadTableValues_indexArray(lua_State& io_luaState, std::vector<uint16_t>& io_indexData);
+			static eae6320::cResult LoadTableValues_indexArray_indices( lua_State& io_luaState, std::vector<uint16_t>& io_indexData);
 
 			cMesh();
 			~cMesh();
