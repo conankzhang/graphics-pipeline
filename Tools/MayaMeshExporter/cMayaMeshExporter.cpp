@@ -796,16 +796,43 @@ namespace
 				"{" "\n";
 			{
 				// Write out the data using your mesh file format
-				fout << "vertexArray" "=\n"
-					"{" "\n";
+				fout << "	vertexArray =\n"
+					"	{" "\n";
 
-				fout << "}" "\n";
+				for (sVertexInfo vertex : i_vertexArray)
+				{
+					fout << "		{" "\n";
+					fout << "			position = { " << vertex.vertex.x << ", " << vertex.vertex.y << ", " << vertex.vertex.z << "}\n";
+					fout << "		}," "\n";
+				}
 
+				fout << "	}," "\n";
 
-				fout << "indexArray" "=\n"
-					"{" "\n";
+				fout << "\n";
 
-				fout << "}" "\n";
+				fout << "	indexArray =\n"
+					"	{" "\n";
+				int count = 0;
+				for (size_t index : i_indexArray)
+				{
+					count++;
+					if (count == 1)
+					{
+						fout << "		" << index << ", ";
+					}
+					else if (count == 2)
+					{
+						fout << index << ", ";
+					}
+					else if (count == 3)
+					{
+						fout << index;
+						count = 0;
+						fout << "\n";
+					}
+				}
+
+				fout << "	}" "\n";
 			}
 			// Close table
 			fout << "}" "\n";
