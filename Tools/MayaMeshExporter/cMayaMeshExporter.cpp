@@ -828,7 +828,7 @@ namespace
 					{
 						fout << index;
 						count = 0;
-						fout << "\n";
+						fout << ",\n";
 					}
 				}
 

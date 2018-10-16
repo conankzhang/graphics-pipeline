@@ -340,6 +340,7 @@ Global
 		{29932845-9B7B-4E7D-9194-AD4EE1A035C7}.Release|x64.ActiveCfg = Release|x64
 		{29932845-9B7B-4E7D-9194-AD4EE1A035C7}.Release|x64.Build.0 = Release|x64
 		{29932845-9B7B-4E7D-9194-AD4EE1A035C7}.Release|x86.ActiveCfg = Release|x64
+		{29932845-9B7B-4E7D-9194-AD4EE1A035C7}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

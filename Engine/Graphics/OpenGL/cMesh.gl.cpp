@@ -83,16 +83,6 @@ eae6320::Graphics::cMesh::~cMesh()
 
 eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry( std::vector<VertexFormats::sMesh> i_vertexData, std::vector<uint16_t> i_indexData )
 {
-	for (size_t i = 0; i < i_indexData.size(); i++)
-	{
-		if (i % 2 == 0 && i > 0)
-		{
-			uint16_t temp = i_indexData[i];
-			i_indexData[i] = i_indexData[i - 1];
-			i_indexData[i - 1] = temp;
-		}
-	}
-
 	auto result = eae6320::Results::Success;
 	// Create a vertex array object and make it active
 	{

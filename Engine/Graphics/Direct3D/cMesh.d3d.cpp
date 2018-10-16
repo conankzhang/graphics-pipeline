@@ -61,6 +61,11 @@ OnExit:
 //--------------------------
 eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry( std::vector<VertexFormats::sMesh> i_vertexData, std::vector<uint16_t> i_indexData )
 {
+	for (size_t i = 0; i < i_vertexData.size(); i++)
+	{
+		i_vertexData[i].z = -i_vertexData[i].z;
+	}
+
 	auto result = eae6320::Results::Success;
 
 	auto* const direct3dDevice = eae6320::Graphics::sContext::g_context.direct3dDevice;
