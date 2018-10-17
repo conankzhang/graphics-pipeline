@@ -100,15 +100,18 @@ namespace eae6320
 
 		eae6320::Graphics::cEffect* s_Effect1;
 		eae6320::Graphics::cEffect* s_Effect2;
+		eae6320::Graphics::cEffect* s_Effect3;
 
 		// Geometry Data
 		//--------------
 
 		eae6320::Graphics::cMesh* s_Mesh1;
 		eae6320::Graphics::cMesh* s_Mesh2;
+		eae6320::Graphics::cMesh* s_Mesh3;
 
 		eae6320::cGameObject* m_object1;
 		eae6320::cGameObject* m_object2;
+		eae6320::cGameObject* m_object3;
 
 		eae6320::cCamera* m_camera;
 

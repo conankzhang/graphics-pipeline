@@ -40,6 +40,14 @@ eae6320::cResult eae6320::Graphics::cMesh::Load(const char* const i_path, cMesh*
 		}
 	}
 
+	if (vertexData.size() > 65536)
+	{
+		EAE6320_ASSERTF( false, "Mesh has too many vertices." );
+		Logging::OutputError( "%s has too many vertices. Stopping application. ", i_path );
+		result = Results::Failure;
+		goto OnExit;
+	}
+
 	// Allocate a new mesh 
 	{
 		newMesh = new (std::nothrow) cMesh();
