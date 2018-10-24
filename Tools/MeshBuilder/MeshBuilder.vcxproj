@@ -152,10 +152,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cMeshBuilder.cpp" />
+    <ClCompile Include="cMeshLoader.cpp" />
     <ClCompile Include="EntryPoint.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cMeshBuilder.h" />
+    <ClInclude Include="cMeshLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Engine\Platform\Platform.vcxproj">

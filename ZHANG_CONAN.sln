@@ -87,6 +87,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BuildMyGameAssets", "MyGame
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshBuilder", "Tools\MeshBuilder\MeshBuilder.vcxproj", "{0BC3367F-72C4-411A-9789-ACBB24D40198}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FACEE468-411D-48E3-B0BC-120E1C980019} = {FACEE468-411D-48E3-B0BC-120E1C980019}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MayaMeshExporter", "Tools\MayaMeshExporter\MayaMeshExporter.vcxproj", "{29932845-9B7B-4E7D-9194-AD4EE1A035C7}"
 	ProjectSection(ProjectDependencies) = postProject
