@@ -7,6 +7,9 @@
 #include <Tools/AssetBuildLibrary/Functions.h>
 #include <Engine/Platform/Platform.h>
 #include <Engine/Graphics/VertexFormats.h>
+#include <fstream>
+#include <iostream>
+#include <Engine/Time/Time.h>
 
 // Inherited Implementation
 //=========================
@@ -21,6 +24,10 @@ eae6320::cResult eae6320::Assets::cMeshBuilder::Build( const std::vector<std::st
 
 	std::vector<Graphics::VertexFormats::sMesh> vertexData;
 	std::vector<uint16_t> indexData;
+	std::ofstream outFile ( m_path_target, std::ofstream::binary);
+	size_t vertexCount = 0;
+	size_t indexCount = 0;
+	int i = 0;
 
 	{
 		if ( !( result = cMeshLoader::LoadAsset( m_path_source, vertexData, indexData )) )
@@ -30,26 +37,30 @@ eae6320::cResult eae6320::Assets::cMeshBuilder::Build( const std::vector<std::st
 		}
 	}
 
-	if (vertexData.size() > 65536)
+	// write to outfile
+	if (!outFile.is_open())
 	{
-		EAE6320_ASSERTF( false, "Mesh has too many vertices." );
-		Logging::OutputError( "%s has too many vertices. Stopping application. ", m_path_source);
-		result = Results::Failure;
 		goto OnExit;
 	}
 
-	result = eae6320::Platform::CopyFile(m_path_source, m_path_target, false, true, &errorMessage);
+	vertexCount = vertexData.size();
+	indexCount = indexData.size();
 
-	{
-		if ( !( result = eae6320::Platform::CopyFile(m_path_source, m_path_target) ) )
-		{
-			OutputErrorMessageWithFileInfo( m_path_source, errorMessage.c_str());
-			EAE6320_ASSERT( false );
-			goto OnExit;
-		}
-	}
+	outFile.write ( (char *)&vertexCount, sizeof( uint16_t ) );
+	outFile.write ( (char *)&indexCount, sizeof( uint16_t ) );
+	outFile.write ( (char *)&vertexData[0], vertexCount * sizeof( Graphics::VertexFormats::sMesh ) );
+	outFile.write ( (char *)&indexData[0], indexCount * sizeof( uint16_t ) );
+
+	//if (vertexData.size() > 65536)
+	//{
+	//	EAE6320_ASSERTF( false, "Mesh has too many vertices." );
+	//	Logging::OutputError( "%s has too many vertices. Stopping application. ", m_path_source);
+	//	result = Results::Failure;
+	//	goto OnExit;
+	//}
 
 OnExit:
+	outFile.close();
 
 	return result;
 }

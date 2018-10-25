@@ -29,48 +29,6 @@ namespace
 
 // Initialization / Clean Up
 //--------------------------
-
-eae6320::cResult eae6320::Graphics::cMesh::Load(eae6320::Graphics::cMesh*& o_mesh, std::vector<VertexFormats::sMesh> i_vertexData, std::vector<uint16_t> i_indexData)
-{
-	auto result = Results::Success;
-
-	eae6320::Graphics::cMesh* newMesh = nullptr;
-
-	// Allocate a new shader
-	{
-		newMesh = new (std::nothrow) cMesh();
-		if ( !newMesh )
-		{
-			result = Results::OutOfMemory;
-			goto OnExit;
-		}
-	}
-	if ( !( result = newMesh->InitializeGeometry( i_vertexData, i_indexData ) ) )
-	{
-		EAE6320_ASSERTF( false, "Initialization of new mesh failed" );
-		goto OnExit;
-	}
-
-OnExit:
-
-	if ( result )
-	{
-		EAE6320_ASSERT( newMesh );
-		o_mesh = newMesh;
-	}
-	else
-	{
-		if ( newMesh )
-		{
-			newMesh->DecrementReferenceCount();
-			newMesh = nullptr;
-		}
-		o_mesh = nullptr;
-	}
-
-	return result;
-}
-
 eae6320::Graphics::cMesh::cMesh()
 {
 
@@ -81,7 +39,7 @@ eae6320::Graphics::cMesh::~cMesh()
 	CleanUp();
 }
 
-eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry( std::vector<VertexFormats::sMesh> i_vertexData, std::vector<uint16_t> i_indexData )
+eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry(VertexFormats::sMesh* i_vertexData, uint16_t* i_indexData, uint16_t i_vertexCount, uint16_t i_indexCount)
 {
 	auto result = eae6320::Results::Success;
 	// Create a vertex array object and make it active
@@ -140,7 +98,7 @@ eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry( std::vector<Verte
 	}
 	// Assign the data to the buffer
 	{
-		const auto bufferSize = i_vertexData.size() * sizeof( i_vertexData );
+		const auto bufferSize = i_vertexCount * sizeof( i_vertexData );
 		EAE6320_ASSERT( bufferSize < ( uint64_t( 1u ) << ( sizeof( GLsizeiptr ) * 8 ) ) );
 		glBufferData( GL_ARRAY_BUFFER, static_cast<GLsizeiptr>( bufferSize ), reinterpret_cast<GLvoid*>( &i_vertexData[0] ),
 			// In our class we won't ever read from the buffer
@@ -211,7 +169,7 @@ eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry( std::vector<Verte
 	}
 	// Assign the data to the buffer
 	{
-		m_indexCountToRender = i_indexData.size();
+		m_indexCountToRender = i_indexCount;
 		const auto bufferSize = m_indexCountToRender * sizeof( i_indexData );
 		EAE6320_ASSERT( bufferSize < ( uint64_t( 1u ) << ( sizeof( GLsizeiptr ) * 8 ) ) );
 		glBufferData( GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>( bufferSize ), reinterpret_cast<GLvoid*>( &i_indexData[0] ),

@@ -107,19 +107,8 @@ namespace eae6320
 			//===============
 		private:
 			size_t m_indexCountToRender = 0;
-			cResult InitializeGeometry( std::vector<VertexFormats::sMesh> i_vertexData, std::vector<uint16_t> i_indexData );
+			cResult InitializeGeometry( VertexFormats::sMesh* i_vertexData, uint16_t* i_indexData, uint16_t i_vertexCount, uint16_t i_indexCount);
 			cResult CleanUp();
-
-			static eae6320::cResult LoadAsset( const char* const i_path, std::vector<VertexFormats::sMesh>& io_vertexData, std::vector<uint16_t>& io_indexData );
-			static eae6320::cResult LoadTableValues( lua_State& io_luaState, std::vector<VertexFormats::sMesh>& io_vertexData, std::vector<uint16_t>& io_indexData );
-
-			static eae6320::cResult LoadTableValues_vertexArray(lua_State& io_luaState, std::vector<VertexFormats::sMesh>& io_vertexData);
-			static eae6320::cResult LoadTableValues_vertexArray_vertices( lua_State& io_luaState, std::vector<VertexFormats::sMesh>& io_vertexData);
-			static eae6320::cResult LoadTableValues_vertexArray_vertices_position( lua_State& io_luaState, std::vector<VertexFormats::sMesh>& io_vertexData);
-			static eae6320::cResult LoadTableValues_vertexArray_vertices_position_values( lua_State& io_luaState, std::vector<VertexFormats::sMesh>& io_vertexData);
-
-			static eae6320::cResult LoadTableValues_indexArray(lua_State& io_luaState, std::vector<uint16_t>& io_indexData);
-			static eae6320::cResult LoadTableValues_indexArray_indices( lua_State& io_luaState, std::vector<uint16_t>& io_indexData);
 
 			cMesh();
 			~cMesh();

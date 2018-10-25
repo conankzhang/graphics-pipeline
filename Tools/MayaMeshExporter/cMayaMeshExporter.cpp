@@ -802,7 +802,7 @@ namespace
 				for (sVertexInfo vertex : i_vertexArray)
 				{
 					fout << "		{" "\n";
-					fout << "			position = { " << vertex.vertex.x << ", " << vertex.vertex.y << ", " << vertex.vertex.z << "}\n";
+					fout << "			position = { " << vertex.vertex.x << ", " << vertex.vertex.y << ", " << -vertex.vertex.z << "}\n";
 					fout << "		}," "\n";
 				}
 
