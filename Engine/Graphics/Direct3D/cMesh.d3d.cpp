@@ -15,57 +15,10 @@
 // Implementation
 //===============
 
-eae6320::cResult eae6320::Graphics::cMesh::Load(eae6320::Graphics::cMesh*& o_mesh, std::vector<VertexFormats::sMesh> i_vertexData, std::vector<uint16_t> i_indexData)
-{
-	auto result = Results::Success;
-
-	eae6320::Graphics::cMesh* newMesh = nullptr;
-
-	// Allocate a new shader
-	{
-		newMesh = new (std::nothrow) cMesh();
-		if ( !newMesh )
-		{
-			result = Results::OutOfMemory;
-			goto OnExit;
-		}
-	}
-	if ( !( result = newMesh->InitializeGeometry( i_vertexData, i_indexData ) ) )
-	{
-		EAE6320_ASSERTF( false, "Initialization of new mesh failed" );
-		goto OnExit;
-	}
-
-OnExit:
-
-	if ( result )
-	{
-		EAE6320_ASSERT( newMesh );
-		o_mesh = newMesh;
-	}
-	else
-	{
-		if ( newMesh )
-		{
-			newMesh->DecrementReferenceCount();
-			newMesh = nullptr;
-		}
-		o_mesh = nullptr;
-	}
-
-	return result;
-}
-
-
 // Initialization / Clean Up
 //--------------------------
-eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry( std::vector<VertexFormats::sMesh> i_vertexData, std::vector<uint16_t> i_indexData )
+eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry(VertexFormats::sMesh* i_vertexData, uint16_t* i_indexData, uint16_t i_vertexCount, uint16_t i_indexCount)
 {
-	for (size_t i = 0; i < i_vertexData.size(); i++)
-	{
-		i_vertexData[i].z = -i_vertexData[i].z;
-	}
-
 	auto result = eae6320::Results::Success;
 
 	auto* const direct3dDevice = eae6320::Graphics::sContext::g_context.direct3dDevice;
@@ -129,7 +82,7 @@ eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry( std::vector<Verte
 	{
 		D3D11_BUFFER_DESC bufferDescription{};
 		{
-			const auto bufferSize = i_indexData.size() * sizeof( eae6320::Graphics::VertexFormats::sMesh );
+			const auto bufferSize = i_indexCount * sizeof( eae6320::Graphics::VertexFormats::sMesh );
 			EAE6320_ASSERT( bufferSize < ( uint64_t( 1u ) << ( sizeof( bufferDescription.ByteWidth ) * 8 ) ) );
 			bufferDescription.ByteWidth = static_cast<unsigned int>( bufferSize );
 			bufferDescription.Usage = D3D11_USAGE_IMMUTABLE;	// In our class the buffer will never change after it's been created
@@ -153,11 +106,11 @@ eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry( std::vector<Verte
 			goto OnExit;
 		}
 
-		m_indexCountToRender = i_indexData.size();
+		m_indexCountToRender = i_indexCount;
 		
 		D3D11_BUFFER_DESC indexBufferDescription{};
 		{
-			const auto bufferSize = i_indexData.size() * sizeof( eae6320::Graphics::VertexFormats::sMesh );
+			const auto bufferSize = i_indexCount * sizeof( eae6320::Graphics::VertexFormats::sMesh );
 			EAE6320_ASSERT( bufferSize < ( uint64_t( 1u ) << ( sizeof( bufferDescription.ByteWidth ) * 8 ) ) );
 			indexBufferDescription.ByteWidth = static_cast<unsigned int>( bufferSize );
 			indexBufferDescription.Usage = D3D11_USAGE_IMMUTABLE;	// In our class the buffer will never change after it's been created

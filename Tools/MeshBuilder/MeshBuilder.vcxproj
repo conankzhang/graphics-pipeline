@@ -152,14 +152,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cMeshBuilder.cpp" />
+    <ClCompile Include="cMeshLoader.cpp" />
     <ClCompile Include="EntryPoint.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cMeshBuilder.h" />
+    <ClInclude Include="cMeshLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Engine\Platform\Platform.vcxproj">
       <Project>{7462d3a7-9936-442e-877c-89efda754596}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Engine\Time\Time.vcxproj">
+      <Project>{674d3e72-cbd0-4ebd-bd0c-cf9326489421}</Project>
     </ProjectReference>
     <ProjectReference Include="..\AssetBuildLibrary\AssetBuildLibrary.vcxproj">
       <Project>{4438bc28-0c79-4907-bd5c-abad0dd78aec}</Project>
