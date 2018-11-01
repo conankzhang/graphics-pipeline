@@ -29,7 +29,7 @@ namespace
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::cResult eae6320::Graphics::cEffect::Load(eae6320::Graphics::cEffect*& o_effect, const char i_effectPath[], const uint8_t i_renderStateBits)
+eae6320::cResult eae6320::Graphics::cEffect::Load(eae6320::Graphics::cEffect*& o_effect, const char i_effectPath[])
 {
 	auto result = Results::Success;
 
@@ -44,6 +44,9 @@ eae6320::cResult eae6320::Graphics::cEffect::Load(eae6320::Graphics::cEffect*& o
     const auto vertexShaderPathSize = *reinterpret_cast<uint16_t*>( currentOffset );
 
 	currentOffset += sizeof( vertexShaderPathSize );
+    const auto renderStateBits = *reinterpret_cast<uint8_t*>( currentOffset );
+
+	currentOffset += sizeof( renderStateBits );
 	char* vertexShaderPath = reinterpret_cast<char*>( currentOffset );
 
 	currentOffset += vertexShaderPathSize * sizeof( char );
@@ -58,7 +61,7 @@ eae6320::cResult eae6320::Graphics::cEffect::Load(eae6320::Graphics::cEffect*& o
 			goto OnExit;
 		}
 	}
-	if ( !( result = newEffect->InitializeShadingData( vertexShaderPath, fragmentShaderPath, i_renderStateBits ) ) )
+	if ( !( result = newEffect->InitializeShadingData( vertexShaderPath, fragmentShaderPath, renderStateBits ) ) )
 	{
 		EAE6320_ASSERTF( false, "Initialization of new mesh failed" );
 		goto OnExit;

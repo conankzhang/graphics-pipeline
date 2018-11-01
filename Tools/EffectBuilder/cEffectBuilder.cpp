@@ -9,6 +9,7 @@
 #include <fstream>
 #include <iostream>
 #include <Engine/Time/Time.h>
+#include <Engine/Graphics/cRenderState.h>
 
 // Inherited Implementation
 //=========================
@@ -23,12 +24,13 @@ eae6320::cResult eae6320::Assets::cEffectBuilder::Build( const std::vector<std::
 
 	std::string vertexShaderPath;
 	std::string fragmentShaderPath;
-	size_t vertexShaderPathSize = 0;
+	size_t vertexShaderPathSize = 0; 
+	uint8_t renderStateBits = 0;
 
 	std::ofstream outFile ( m_path_target, std::ofstream::binary);
 
 	{
-		if ( !( result = cEffectLoader::LoadAsset( m_path_source, vertexShaderPath, fragmentShaderPath )) )
+		if ( !( result = cEffectLoader::LoadAsset( m_path_source, vertexShaderPath, fragmentShaderPath, renderStateBits)) )
 		{
 			EAE6320_ASSERTF( false, "Loading effect failed" );
 			goto OnExit;
@@ -48,6 +50,7 @@ eae6320::cResult eae6320::Assets::cEffectBuilder::Build( const std::vector<std::
 	}
 
 	outFile.write ( (char *)&vertexShaderPathSize, sizeof( uint16_t ) );
+	outFile.write ( (char *)&renderStateBits, sizeof( uint8_t ) );
 	outFile.write ( vertexShaderPath.c_str(), vertexShaderPath.size() );
 	outFile.put('\0');
 	outFile.write ( fragmentShaderPath.c_str(), fragmentShaderPath.size());

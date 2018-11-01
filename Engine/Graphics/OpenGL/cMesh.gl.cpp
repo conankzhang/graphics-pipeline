@@ -98,7 +98,7 @@ eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry(VertexFormats::sMe
 	}
 	// Assign the data to the buffer
 	{
-		const auto bufferSize = i_vertexCount * sizeof( i_vertexData );
+		const auto bufferSize = i_vertexCount * sizeof( eae6320::Graphics::VertexFormats::sMesh );
 		EAE6320_ASSERT( bufferSize < ( uint64_t( 1u ) << ( sizeof( GLsizeiptr ) * 8 ) ) );
 		glBufferData( GL_ARRAY_BUFFER, static_cast<GLsizeiptr>( bufferSize ), reinterpret_cast<GLvoid*>( &i_vertexData[0] ),
 			// In our class we won't ever read from the buffer
@@ -170,7 +170,7 @@ eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry(VertexFormats::sMe
 	// Assign the data to the buffer
 	{
 		m_indexCountToRender = i_indexCount;
-		const auto bufferSize = m_indexCountToRender * sizeof( i_indexData );
+		const auto bufferSize = i_indexCount * sizeof( uint16_t );
 		EAE6320_ASSERT( bufferSize < ( uint64_t( 1u ) << ( sizeof( GLsizeiptr ) * 8 ) ) );
 		glBufferData( GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>( bufferSize ), reinterpret_cast<GLvoid*>( &i_indexData[0] ),
 			// In our class we won't ever read from the buffer

@@ -43,7 +43,7 @@ namespace eae6320
 			// Inherited Implementation
 			//=========================
 		public:
-			static eae6320::cResult LoadAsset( const char* const i_path, std::string& io_vertexShaderPath, std::string& io_fragmentShaderPath );
+			static eae6320::cResult LoadAsset( const char* const i_path, std::string& io_vertexShaderPath, std::string& io_fragmentShaderPath, uint8_t& io_renderStateBits );
 
 
 		private:
@@ -54,7 +54,7 @@ namespace eae6320
 
 			// Implementation
 			//===============
-			static eae6320::cResult LoadTableValues( lua_State& io_luaState, std::string& io_vertexShaderPath, std::string& io_fragmentShaderPath );
+			static eae6320::cResult LoadTableValues( lua_State& io_luaState, std::string& io_vertexShaderPath, std::string& io_fragmentShaderPath, uint8_t& io_renderStateBits);
 
 		};
 	}

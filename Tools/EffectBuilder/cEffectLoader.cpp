@@ -8,6 +8,7 @@
 #include <Engine/Platform/Platform.h>
 #include <iostream>
 #include <Engine/Graphics/VertexFormats.h>
+#include <Engine/Graphics/cRenderState.h>
 
 // Inherited Implementation
 //=========================
@@ -15,7 +16,7 @@
 // Build
 //------
 
-eae6320::cResult eae6320::Assets::cEffectLoader::LoadAsset(const char* const i_path, std::string& io_vertexShaderPath, std::string& io_fragmentShaderPath)
+eae6320::cResult eae6320::Assets::cEffectLoader::LoadAsset(const char* const i_path, std::string& io_vertexShaderPath, std::string& io_fragmentShaderPath, uint8_t& io_renderStateBits)
 {
 	auto result = eae6320::Results::Success;
 
@@ -91,7 +92,7 @@ eae6320::cResult eae6320::Assets::cEffectLoader::LoadAsset(const char* const i_p
 
 	// If this code is reached the asset file was loaded successfully,
 	// and its table is now at index -1
-	result = LoadTableValues( *luaState, io_vertexShaderPath, io_fragmentShaderPath );
+	result = LoadTableValues( *luaState, io_vertexShaderPath, io_fragmentShaderPath, io_renderStateBits );
 
 	// Pop the table
 	lua_pop( luaState, 1 );
@@ -112,7 +113,7 @@ OnExit:
 	return result;
 }
 
-eae6320::cResult eae6320::Assets::cEffectLoader::LoadTableValues(lua_State& io_luaState, std::string& io_vertexShaderPath, std::string& io_fragmentShaderPath)
+eae6320::cResult eae6320::Assets::cEffectLoader::LoadTableValues(lua_State& io_luaState, std::string& io_vertexShaderPath, std::string& io_fragmentShaderPath, uint8_t& io_renderStateBits)
 {
 	auto result = eae6320::Results::Success;
 
@@ -151,6 +152,87 @@ eae6320::cResult eae6320::Assets::cEffectLoader::LoadTableValues(lua_State& io_l
 			"(instead of a " << luaL_typename( &io_luaState, -1 ) << ")" << std::endl;
 		goto OnExit;
 	}
+
+	key = "AlphaTransparency";
+	lua_pushstring( &io_luaState, key );
+	lua_gettable( &io_luaState, -2 );
+
+	if ( lua_isboolean( &io_luaState, -1 ) )
+	{
+		const auto value = lua_toboolean( &io_luaState, -1 );
+		bool hasAlphaTransparency = static_cast<bool>(value);
+		if (hasAlphaTransparency)
+		{
+			eae6320::Graphics::RenderStates::EnableAlphaTransparency(io_renderStateBits);
+		}
+		else
+		{
+			eae6320::Graphics::RenderStates::DisableAlphaTransparency(io_renderStateBits);
+		}
+		lua_pop( &io_luaState, 1 );
+	}
+	else
+	{
+		result = eae6320::Results::InvalidFile;
+		std::cerr << "The value at \"" << key << "\" must be a table "
+			"(instead of a " << luaL_typename( &io_luaState, -1 ) << ")" << std::endl;
+		goto OnExit;
+	}
+
+	key = "DepthBuffering";
+	lua_pushstring( &io_luaState, key );
+	lua_gettable( &io_luaState, -2 );
+
+	if ( lua_isboolean( &io_luaState, -1 ) )
+	{
+		const auto value = lua_toboolean( &io_luaState, -1 );
+		bool hasDepthBuffering = static_cast<bool>(value);
+		if (hasDepthBuffering)
+		{
+			eae6320::Graphics::RenderStates::EnableDepthBuffering(io_renderStateBits);
+		}
+		else
+		{
+			eae6320::Graphics::RenderStates::DisableDepthBuffering(io_renderStateBits);
+		}
+		lua_pop( &io_luaState, 1 );
+	}
+	else
+	{
+		result = eae6320::Results::InvalidFile;
+		std::cerr << "The value at \"" << key << "\" must be a table "
+			"(instead of a " << luaL_typename( &io_luaState, -1 ) << ")" << std::endl;
+		goto OnExit;
+	}
+
+	key = "DrawBothTriangleSides";
+	lua_pushstring( &io_luaState, key );
+	lua_gettable( &io_luaState, -2 );
+
+	if ( lua_isboolean( &io_luaState, -1 ) )
+	{
+		const auto value = lua_toboolean( &io_luaState, -1 );
+		bool shouldDrawBothTriangleSides = static_cast<bool>(value);
+		if (shouldDrawBothTriangleSides)
+		{
+			eae6320::Graphics::RenderStates::EnableDrawingBothTriangleSides(io_renderStateBits);
+		}
+		else
+		{
+			eae6320::Graphics::RenderStates::DisableDrawingBothTriangleSides(io_renderStateBits);
+		}
+		lua_pop( &io_luaState, 1 );
+	}
+	else
+	{
+		result = eae6320::Results::InvalidFile;
+		std::cerr << "The value at \"" << key << "\" must be a table "
+			"(instead of a " << luaL_typename( &io_luaState, -1 ) << ")" << std::endl;
+		goto OnExit;
+	}
+
+
+
 OnExit:
 
 	return result;
