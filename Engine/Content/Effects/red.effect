@@ -1,0 +1,5 @@
+return
+{
+	path_vertexShader = "Shaders/Vertex/standard.shader",
+	path_fragmentShader = "Shaders/Fragment/animated.shader",
+}
