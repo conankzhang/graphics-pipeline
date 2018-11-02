@@ -110,7 +110,7 @@ eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry(VertexFormats::sMe
 		
 		D3D11_BUFFER_DESC indexBufferDescription{};
 		{
-			const auto bufferSize = i_indexCount * sizeof( eae6320::Graphics::VertexFormats::sMesh );
+			const auto bufferSize = i_indexCount * sizeof( uint16_t );
 			EAE6320_ASSERT( bufferSize < ( uint64_t( 1u ) << ( sizeof( bufferDescription.ByteWidth ) * 8 ) ) );
 			indexBufferDescription.ByteWidth = static_cast<unsigned int>( bufferSize );
 			indexBufferDescription.Usage = D3D11_USAGE_IMMUTABLE;	// In our class the buffer will never change after it's been created

@@ -286,6 +286,31 @@ NewAssetTypeInfo( "meshes",
 	}
 )
 
+-- Effect Asset Type
+--------------------
+
+NewAssetTypeInfo( "effects",
+  {
+    RegisterReferencedAssets = function( i_sourceRelativePath )
+      local sourceAbsolutePath = FindSourceContentAbsolutePathFromRelativePath( i_sourceRelativePath )
+      if DoesFileExist( sourceAbsolutePath ) then
+        local effect = dofile( sourceAbsolutePath )
+        RegisterAssetToBeBuilt( effect.path_vertexShader, "shaders", { "vertex" } )
+        RegisterAssetToBeBuilt( effect.path_fragmentShader, "shaders", { "fragment" } )
+      end
+    end,
+	ConvertSourceRelativePathToBuiltRelativePath = function( i_sourceRelativePath )
+		-- Change the source file extension to the binary version
+		local relativeDirectory, file = i_sourceRelativePath:match( "(.-)([^/\\]+)$" )
+		local fileName, extensionWithPeriod = file:match( "([^%.]+)(.*)" )
+		return relativeDirectory .. fileName .. extensionWithPeriod
+	end,
+	GetBuilderRelativePath = function()
+		return "EffectBuilder.exe"
+	end,
+  }
+)
+
 -- Local Function Definitions
 --===========================
 

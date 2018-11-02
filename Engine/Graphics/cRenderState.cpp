@@ -6,48 +6,6 @@
 // Interface
 //==========
 
-// Alpha Transparency
-constexpr bool eae6320::Graphics::RenderStates::IsAlphaTransparencyEnabled( const uint8_t i_renderStateBits )
-{
-	return ( i_renderStateBits & AlphaTransparency ) != 0;
-}
-void eae6320::Graphics::RenderStates::EnableAlphaTransparency( uint8_t& io_renderStateBits )
-{
-	io_renderStateBits |= AlphaTransparency;
-}
-void eae6320::Graphics::RenderStates::DisableAlphaTransparency( uint8_t& io_renderStateBits )
-{
-	io_renderStateBits &= ~AlphaTransparency;
-}
-
-// Depth Buffering
-constexpr bool eae6320::Graphics::RenderStates::IsDepthBufferingEnabled( const uint8_t i_renderStateBits )
-{
-	return ( i_renderStateBits & DepthBuffering ) != 0;
-}
-void eae6320::Graphics::RenderStates::EnableDepthBuffering( uint8_t& io_renderStateBits )
-{
-	io_renderStateBits |= DepthBuffering;
-}
-void eae6320::Graphics::RenderStates::DisableDepthBuffering( uint8_t& io_renderStateBits )
-{
-	io_renderStateBits &= ~DepthBuffering;
-}
-
-// Draw Both Triangle Sides
-constexpr bool eae6320::Graphics::RenderStates::ShouldBothTriangleSidesBeDrawn( const uint8_t i_renderStateBits )
-{
-	return ( i_renderStateBits & DrawBothTriangleSides ) != 0;
-}
-void eae6320::Graphics::RenderStates::EnableDrawingBothTriangleSides( uint8_t& io_renderStateBits )
-{
-	io_renderStateBits |= DrawBothTriangleSides;
-}
-void eae6320::Graphics::RenderStates::DisableDrawingBothTriangleSides( uint8_t& io_renderStateBits )
-{
-	io_renderStateBits &= ~DrawBothTriangleSides;
-}
-
 // Access
 //-------
 

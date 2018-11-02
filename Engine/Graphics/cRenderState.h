@@ -129,4 +129,6 @@ namespace eae6320
 	}
 }
 
+#include "cRenderState.inl"
+
 #endif	// EAE6320_GRAPHICS_CRENDERSTATE_H
