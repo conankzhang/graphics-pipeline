@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{796ba2c8-e6e1-43a9-bb3f-582c29bb4ca5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components">
+      <UniqueIdentifier>{46fbf1d1-cc78-401f-884a-a3a418ff1702}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities">
+      <UniqueIdentifier>{98a0eafa-a348-4ac9-9978-6240fa0879e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Systems">
+      <UniqueIdentifier>{48f911da-02e4-4fe5-8f0d-ec6db6b018e3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resource Files\eaeAlien.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resource Files\eaeGamePad.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resource Files\vsDefault_large.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resource Files\vsDefault_small.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource Files\ECSBoids.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Resource Files\Resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource Files\targetver.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cECSBoids.h" />
+    <ClInclude Include="cCameraComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="cRenderComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="cCamera.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="cBoid.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="cRenderSystem.h">
+      <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="cInputSystem.h">
+      <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="cGoal.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="cGoalComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="cBoidSystem.h">
+      <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="cBoidComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="cFloor.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="cECSBoids.cpp" />
+    <ClCompile Include="EntryPoint.cpp" />
+    <ClCompile Include="cCameraComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="cRenderComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="cBoid.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="cCamera.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="cRenderSystem.cpp">
+      <Filter>Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="cInputSystem.cpp">
+      <Filter>Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="cGoal.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="cGoalComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="cBoidSystem.cpp">
+      <Filter>Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="cBoidComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="cFloor.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

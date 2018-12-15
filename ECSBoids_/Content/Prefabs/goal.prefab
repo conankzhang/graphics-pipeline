@@ -1,0 +1,15 @@
+return
+{
+	isActive = true,
+	components =
+	{
+		{
+			class = "Mesh",
+			path = "meshes/goal.mesh",
+		},
+		{
+			class = "Effect",
+			path = "effects/yellow.effect",
+		},
+	},
+}

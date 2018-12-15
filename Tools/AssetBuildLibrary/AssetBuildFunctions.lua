@@ -311,6 +311,31 @@ NewAssetTypeInfo( "effects",
   }
 )
 
+-- Prefab Asset Type
+--------------------
+
+NewAssetTypeInfo( "prefabs",
+  {
+    RegisterReferencedAssets = function( i_sourceRelativePath )
+      local sourceAbsolutePath = FindSourceContentAbsolutePathFromRelativePath( i_sourceRelativePath )
+      if DoesFileExist( sourceAbsolutePath ) then
+        local prefab = dofile( sourceAbsolutePath )
+        RegisterAssetToBeBuilt( prefab.components[1].path, "meshes" )
+        RegisterAssetToBeBuilt( prefab.components[2].path, "effects" )
+      end
+    end,
+	ConvertSourceRelativePathToBuiltRelativePath = function( i_sourceRelativePath )
+		-- Change the source file extension to the binary version
+		local relativeDirectory, file = i_sourceRelativePath:match( "(.-)([^/\\]+)$" )
+		local fileName, extensionWithPeriod = file:match( "([^%.]+)(.*)" )
+		return relativeDirectory .. fileName .. extensionWithPeriod
+	end,
+	GetBuilderRelativePath = function()
+		return "PrefabBuilder.exe"
+	end,
+  }
+)
+
 -- Local Function Definitions
 --===========================
 
@@ -494,6 +519,32 @@ function BuildAssets( i_path_assetsToBuild )
 			wereThereErrors = true
 		end
 	end
+
+	-- Copy the User Settings to the installation location
+	do
+		local fileName = "settings.ini"
+		local sourcePath = OutputDir .. fileName
+		local targetPath = GameInstallDir .. fileName
+		local shouldSourceBeCopied
+		do
+			shouldSourceBeCopied = not DoesFileExist( targetPath )
+			if not shouldSourceBeCopied then
+				local lastWriteTime_source = GetLastWriteTime( sourcePath )
+				local lastWriteTime_target = GetLastWriteTime( targetPath )
+				shouldSourceBeCopied = lastWriteTime_source > lastWriteTime_target
+			end
+		end
+		if shouldSourceBeCopied then
+			local result, errorMessage = CopyFile( sourcePath, targetPath )
+			if result then
+				print( "Installed " .. fileName )
+			else
+				wereThereErrors = true
+				OutputErrorMessage( "The user settings\"" .. sourcePath .. "\" couldn't be copied to \"" .. targetPath .. "\": " .. errorMessage )
+			end
+		end
+	end
+
 
 	-- Copy the licenses to the installation location
 	do
