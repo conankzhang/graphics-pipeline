@@ -51,8 +51,17 @@
     <CustomBuild Include="settings.ini">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">copy "%(FullPath)" "$(OutputDir)%(Filename)%(Extension)" /y</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Copy settings.ini</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Copying settings.ini file.</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutputDir)%(Filename)%(Extension)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">copy "%(FullPath)" "$(OutputDir)%(Filename)%(Extension)" /y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">copy "%(FullPath)" "$(OutputDir)%(Filename)%(Extension)" /y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">copy "%(FullPath)" "$(OutputDir)%(Filename)%(Extension)" /y</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Copying settings.ini file.</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutputDir)%(Filename)%(Extension)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Copying settings.ini file.</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutputDir)%(Filename)%(Extension)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Copying settings.ini file.</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutputDir)%(Filename)%(Extension)</Outputs>
     </CustomBuild>
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -159,6 +159,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="ComponentManager.h" />
+    <ClInclude Include="ECS.h" />
+    <ClInclude Include="Engine.h" />
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="EntityManager.h" />
+    <ClInclude Include="IComponent.h" />
+    <ClInclude Include="IEntity.h" />
+    <ClInclude Include="ISystem.h" />
+    <ClInclude Include="System.h" />
+    <ClInclude Include="SystemManager.h" />
+    <ClInclude Include="TypeManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ComponentManager.win.cpp" />
+    <ClCompile Include="Engine.win.cpp" />
+    <ClCompile Include="EntityManager.win.cpp" />
+    <ClCompile Include="IComponent.win.cpp" />
+    <ClCompile Include="IEntity.win.cpp" />
+    <ClCompile Include="ISystem.win.cpp" />
+    <ClCompile Include="SystemManager.win.cpp" />
+    <ClCompile Include="TypeManager.win.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

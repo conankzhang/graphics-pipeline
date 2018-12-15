@@ -29,15 +29,25 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cCamera.h" />
+    <ClInclude Include="cEffectComponent.h" />
     <ClInclude Include="cGameObject.h" />
+    <ClInclude Include="cMeshComponent.h" />
     <ClInclude Include="cMyGame.h" />
+    <ClInclude Include="cPhysicsSystem.h" />
+    <ClInclude Include="cPrefab.h" />
+    <ClInclude Include="cRigidbodyComponent.h" />
     <ClInclude Include="Resource Files\Resource.h" />
     <ClInclude Include="Resource Files\targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cCamera.cpp" />
+    <ClCompile Include="cEffectComponent.cpp" />
     <ClCompile Include="cGameObject.cpp" />
+    <ClCompile Include="cMeshComponent.cpp" />
     <ClCompile Include="cMyGame.cpp" />
+    <ClCompile Include="cPhysicsSystem.cpp" />
+    <ClCompile Include="cPrefab.cpp" />
+    <ClCompile Include="cRigidbodyComponent.cpp" />
     <ClCompile Include="EntryPoint.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -46,6 +56,9 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Engine\Asserts\Asserts.vcxproj">
       <Project>{464a6551-fca9-4027-bd9e-2b26914782ab}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Engine\EntityComponentSystem\EntityComponentSystem.vcxproj">
+      <Project>{cb1fa5cf-d384-4638-83f0-5b27f4d1b29a}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\Engine\Math\Math.vcxproj">
       <Project>{999c3d5f-7f79-4bd7-ae21-92eeed0c5962}</Project>
