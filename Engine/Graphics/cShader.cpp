@@ -19,7 +19,7 @@ eae6320::Assets::cManager<eae6320::Graphics::cShader> eae6320::Graphics::cShader
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::cResult eae6320::Graphics::cShader::Load( const char* const i_path, cShader*& o_shader, const ShaderTypes::eType i_type )
+eae6320::cResult eae6320::Graphics::cShader::Load( const std::string& i_path, cShader*& o_shader, const ShaderTypes::eType i_type )
 {
 	auto result = Results::Success;
 
@@ -43,7 +43,7 @@ eae6320::cResult eae6320::Graphics::cShader::Load( const char* const i_path, cSh
 	// Load the binary data
 	{
 		std::string errorMessage;
-		if ( !( result = Platform::LoadBinaryFile( i_path, dataFromFile, &errorMessage ) ) )
+		if ( !( result = Platform::LoadBinaryFile( i_path.c_str(), dataFromFile, &errorMessage ) ) )
 		{
 			EAE6320_ASSERTF( false, errorMessage.c_str() );
 			Logging::OutputError( "Failed to load shader from file %s: %s", i_path, errorMessage.c_str() );
@@ -62,7 +62,7 @@ eae6320::cResult eae6320::Graphics::cShader::Load( const char* const i_path, cSh
 		}
 	}
 	// Initialize the platform-specific graphics API shader object
-	if ( !( result = newShader->Initialize( i_path, dataFromFile ) ) )
+	if ( !( result = newShader->Initialize( i_path.c_str(), dataFromFile ) ) )
 	{
 		EAE6320_ASSERTF( false, "Initialization of new shader failed" );
 		goto OnExit;

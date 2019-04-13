@@ -91,7 +91,7 @@ namespace eae6320
 			// Initialization / Clean Up
 			//--------------------------
 
-			static cResult Load( const char* const i_path, cShader*& o_shader, const ShaderTypes::eType i_type );
+			static cResult Load( const std::string& i_path, cShader*& o_shader, const ShaderTypes::eType i_type );
 
 			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS( cShader );
 
