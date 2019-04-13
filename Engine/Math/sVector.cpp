@@ -70,7 +70,7 @@ eae6320::Math::sVector& eae6320::Math::sVector::operator *=( const float i_rhs )
 	return *this;
 }
 
-eae6320::Math::sVector operator *( const float i_lhs, const eae6320::Math::sVector i_rhs )
+eae6320::Math::sVector eae6320::Math::operator *( const float i_lhs, const eae6320::Math::sVector i_rhs )
 {
 	return i_rhs * i_lhs;
 }

@@ -31,6 +31,20 @@ eae6320::Math::cQuaternion eae6320::Math::cQuaternion::operator *( const cQuater
 		( m_w * i_rhs.m_z ) + ( m_z * i_rhs.m_w ) + ( ( m_x * i_rhs.m_y ) - ( m_y * i_rhs.m_x ) ) );
 }
 
+eae6320::Math::sVector eae6320::Math::cQuaternion::operator *( const sVector i_rhs ) const
+{
+	const auto factor_quaternion = 2.0f * ( ( m_x * i_rhs.x ) + ( m_y * i_rhs.y ) + ( m_z * i_rhs.z ) );
+	const auto factor_crossProduct = 2.0f * m_w;
+	const auto factor_vector = ( factor_crossProduct * m_w ) - 1.0f;
+	return sVector(
+		( factor_vector * i_rhs.x ) + ( factor_quaternion * m_x )
+			+ ( factor_crossProduct * ( ( m_y * i_rhs.z ) - ( m_z * i_rhs.y ) ) ),
+		( factor_vector * i_rhs.y ) + ( factor_quaternion * m_y )
+			+ ( factor_crossProduct * ( ( m_z * i_rhs.x ) - ( m_x * i_rhs.z ) ) ),
+		( factor_vector * i_rhs.z ) + ( factor_quaternion * m_z )
+			+ ( factor_crossProduct * ( ( m_x * i_rhs.y ) - ( m_y * i_rhs.x ) ) ) );
+}
+
 // Inversion
 //----------
 

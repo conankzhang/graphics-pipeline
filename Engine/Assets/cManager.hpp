@@ -9,6 +9,7 @@
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Logging/Logging.h>
 #include <limits>
+#include <sstream>
 
 // Interface
 //==========
@@ -16,8 +17,8 @@
 // Access
 //-------
 
-	template <class tAsset>
-tAsset* eae6320::Assets::cManager<tAsset>::Get( const cHandle<tAsset> i_handle )
+	template <class tAsset, class tKey>
+tAsset* eae6320::Assets::cManager<tAsset, tKey>::Get( const cHandle<tAsset> i_handle )
 {
 	EAE6320_ASSERTF( i_handle, "This handle is invalid (it has never been associated with a valid asset)" );
 	// Lock the collections
@@ -50,19 +51,16 @@ tAsset* eae6320::Assets::cManager<tAsset>::Get( const cHandle<tAsset> i_handle )
 	return nullptr;
 }
 
-// Initialization / Clean Up
-//--------------------------
-
-	template <class tAsset> template <typename... tConstructorArguments>
-eae6320::cResult eae6320::Assets::cManager<tAsset>::Load( const char* const i_path, cHandle<tAsset>& o_handle, tConstructorArguments&&... i_constructorArguments )
+	template <class tAsset, class tKey> template <typename... tConstructorArguments>
+eae6320::cResult eae6320::Assets::cManager<tAsset, tKey>::Load( const tKey& i_key, cHandle<tAsset>& o_handle, tConstructorArguments&&... i_constructorArguments )
 {
 	// Get the existing asset if the path has already been loaded
 	{
 		// Lock the collections
 		Concurrency::cMutex::cScopeLock autoLock( m_mutex );
 		{
-			auto iterator = m_map_pathsToHandles.find( i_path );
-			if ( iterator != m_map_pathsToHandles.end() )
+			auto iterator = m_map_keysToHandles.find( i_key );
+			if ( iterator != m_map_keysToHandles.end() )
 			{
 				// Even if an entry exists it may no longer be valid
 				// (the map doesn't get cleared when an asset is deleted)
@@ -86,15 +84,16 @@ eae6320::cResult eae6320::Assets::cManager<tAsset>::Load( const char* const i_pa
 						}
 						else
 						{
-							EAE6320_ASSERTF( false,
-								"The asset \"%s\" has been loaded too many times (the manager's reference count is too big)", i_path );
-							Logging::OutputError( "A new instance of \"%s\" couldn't be loaded because the manager's reference count was too big", i_path );
+							EAE6320_ASSERTF( false, "An asset has been loaded too many times (the manager's reference count is too big)" );
+							std::ostringstream errorMessage;
+							errorMessage << "A new instance of " << i_key << " couldn't be loaded because the manager's regerence count was too big";
+							Logging::OutputError( errorMessage.str().c_str() );
 							return Results::Failure;
 						}
 					}
 				}
 				// If this code is reached it means that the existing entry is invalid
-				m_map_pathsToHandles.erase( iterator );
+				m_map_keysToHandles.erase( iterator );
 			}
 		}
 	}
@@ -102,8 +101,8 @@ eae6320::cResult eae6320::Assets::cManager<tAsset>::Load( const char* const i_pa
 	// If the asset hasn't already been loaded load it now
 	auto result = Results::Success;
 
-	tAsset* newAsset;
-	if ( result = tAsset::Load( i_path, newAsset, std::forward<tConstructorArguments>( i_constructorArguments )... ) )
+	tAsset* newAsset = nullptr;
+	if ( result = tAsset::Load( i_key, newAsset, std::forward<tConstructorArguments>( i_constructorArguments )... ) )
 	{
 		// Lock the collections
 		Concurrency::cMutex::cScopeLock autoLock( m_mutex );
@@ -131,7 +130,7 @@ eae6320::cResult eae6320::Assets::cManager<tAsset>::Load( const char* const i_pa
 					constexpr uint16_t id = 0;
 					{
 						constexpr uint16_t referenceCount = 1;
-						m_assetRecords.push_back( sAssetRecord( newAsset, id, referenceCount ) );
+						m_assetRecords.emplace_back( newAsset, id, referenceCount );
 					}
 					{
 						const auto index = static_cast<uint_fast32_t>( assetRecordCount );
@@ -147,7 +146,7 @@ eae6320::cResult eae6320::Assets::cManager<tAsset>::Load( const char* const i_pa
 			}
 			if ( result )
 			{
-				m_map_pathsToHandles.insert( std::make_pair( i_path, o_handle ) );
+				m_map_keysToHandles.insert( std::make_pair( i_key, o_handle ) );
 			}
 		}
 	}
@@ -161,8 +160,8 @@ eae6320::cResult eae6320::Assets::cManager<tAsset>::Load( const char* const i_pa
 	return result;
 }
 
-	template <class tAsset>
-eae6320::cResult eae6320::Assets::cManager<tAsset>::Release( cHandle<tAsset>& o_handle )
+	template <class tAsset, class tKey>
+eae6320::cResult eae6320::Assets::cManager<tAsset, tKey>::Release( cHandle<tAsset>& o_handle )
 {
 	auto result = Results::Success;
 
@@ -185,20 +184,7 @@ eae6320::cResult eae6320::Assets::cManager<tAsset>::Release( cHandle<tAsset>& o_
 					const auto newReferenceCount = --assetRecord.referenceCount;
 					if ( newReferenceCount == 0 )
 					{
-						// If the manager's reference count is zero it means that
-						// every client that has asked to load the asset has now released it,
-						// and the manager can free the asset itself
-						{
-							EAE6320_ASSERT( assetRecord.asset );
-							assetRecord.asset->DecrementReferenceCount();
-						}
-						// The existing asset record has already been allocated,
-						// and can be re-used for a new asset
-						{
-							assetRecord.asset = nullptr;
-							assetRecord.id = static_cast<uint16_t>( cHandle<tAsset>::IncrementId( id_assetRecord ) );
-							m_unusedAssetRecordIndices.push_back( index );
-						}
+						OnAssetReferenceCountDecrementedToZero( index );
 					}
 				}
 				else
@@ -222,14 +208,57 @@ eae6320::cResult eae6320::Assets::cManager<tAsset>::Release( cHandle<tAsset>& o_
 	return result;
 }
 
-	template <class tAsset>
-eae6320::cResult eae6320::Assets::cManager<tAsset>::Initialize()
+// Unsafe Access
+//--------------
+
+	template <class tAsset, class tKey>
+tAsset* eae6320::Assets::cManager<tAsset, tKey>::UnsafeGet( const uint_fast32_t i_index )
+{
+	// Lock the collections
+	Concurrency::cMutex::cScopeLock autoLock( m_mutex );
+	{
+		EAE6320_ASSERT( i_index < m_assetRecords.size() );
+		return m_assetRecords[i_index].asset;
+	}
+}
+
+	template <class tAsset, class tKey>
+void eae6320::Assets::cManager<tAsset, tKey>::UnsafeIncrementReferenceCount( const uint_fast32_t i_index )
+{
+	// Lock the collections
+	Concurrency::cMutex::cScopeLock autoLock( m_mutex );
+	{
+		EAE6320_ASSERT( i_index < m_assetRecords.size() );
+		++m_assetRecords[i_index].referenceCount;
+	}
+}
+
+	template <class tAsset, class tKey>
+void eae6320::Assets::cManager<tAsset, tKey>::UnsafeDecrementReferenceCount( const uint_fast32_t i_index )
+{
+	// Lock the collections
+	Concurrency::cMutex::cScopeLock autoLock( m_mutex );
+	{
+		EAE6320_ASSERT( i_index < m_assetRecords.size() );
+		const auto newReferenceCount = --m_assetRecords[i_index].referenceCount;
+		if ( newReferenceCount == 0 )
+		{
+			OnAssetReferenceCountDecrementedToZero( i_index );
+		}
+	}
+}
+
+// Initialization / Clean Up
+//--------------------------
+
+	template <class tAsset, class tKey>
+eae6320::cResult eae6320::Assets::cManager<tAsset, tKey>::Initialize()
 {
 	return Results::Success;
 }
 
-	template <class tAsset>
-eae6320::cResult eae6320::Assets::cManager<tAsset>::CleanUp()
+	template <class tAsset, class tKey>
+eae6320::cResult eae6320::Assets::cManager<tAsset, tKey>::CleanUp()
 {
 	auto result = Results::Success;
 
@@ -260,7 +289,7 @@ eae6320::cResult eae6320::Assets::cManager<tAsset>::CleanUp()
 
 				m_assetRecords.clear();
 				m_unusedAssetRecordIndices.clear();
-				m_map_pathsToHandles.clear();
+				m_map_keysToHandles.clear();
 			}
 		}
 
@@ -273,8 +302,8 @@ eae6320::cResult eae6320::Assets::cManager<tAsset>::CleanUp()
 	return result;
 }
 
-	template <class tAsset>
-eae6320::Assets::cManager<tAsset>::~cManager<tAsset>()
+	template <class tAsset, class tKey>
+eae6320::Assets::cManager<tAsset, tKey>::~cManager<tAsset, tKey>()
 {
 	const auto result = CleanUp();
 	EAE6320_ASSERT( result );
@@ -283,12 +312,39 @@ eae6320::Assets::cManager<tAsset>::~cManager<tAsset>()
 // Implementation
 //===============
 
-	template <class tAsset>
-eae6320::Assets::cManager<tAsset>::sAssetRecord::sAssetRecord( tAsset* const i_asset, const uint16_t i_id, const uint16_t i_referenceCount )
+	template <class tAsset, class tKey>
+eae6320::Assets::cManager<tAsset, tKey>::sAssetRecord::sAssetRecord( tAsset* const i_asset, const uint16_t i_id, const uint16_t i_referenceCount )
 	:
 	asset( i_asset ), id( i_id ), referenceCount( i_referenceCount )
 {
 
+}
+
+// Initialization / Clean Up
+//--------------------------
+
+	template <class tAsset, class tKey>
+void eae6320::Assets::cManager<tAsset, tKey>::OnAssetReferenceCountDecrementedToZero( const uint_fast32_t i_index )
+{
+	// The mutex should be locked when this function is called
+	EAE6320_ASSERT( m_assetRecords[i_index].referenceCount == 0 );
+
+	auto& assetRecord = m_assetRecords[i_index];
+
+	// If the manager's reference count is zero it means that
+	// every client that has asked to load the asset has now released it,
+	// and the manager can free the asset itself
+	{
+		EAE6320_ASSERT( assetRecord.asset );
+		assetRecord.asset->DecrementReferenceCount();
+	}
+	// The existing asset record has already been allocated,
+	// and can be re-used for a new asset
+	{
+		assetRecord.asset = nullptr;
+		assetRecord.id = static_cast<uint16_t>( cHandle<tAsset>::IncrementId( assetRecord.id ) );
+		m_unusedAssetRecordIndices.push_back( i_index );
+	}
 }
 
 #endif	// EAE6320_ASSETS_CMANAGER_INL
