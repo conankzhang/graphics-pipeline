@@ -100,9 +100,6 @@ namespace eae6320
 
 		eae6320::Graphics::cEffect* s_Effect1;
 		eae6320::Graphics::cEffect* s_Effect2;
-		eae6320::Graphics::cEffect* s_Effect3;
-		eae6320::Graphics::cEffect* s_Effect4;
-		eae6320::Graphics::cEffect* s_Effect5;
 
 		// Geometry Data
 		//--------------

@@ -48,6 +48,9 @@ namespace eae6320
 
 		eae6320::Physics::sRigidBodyState m_rigidBody;
 
+		//eae6320::Graphics::cMesh::Handle m_mesh;
+		//eae6320::Graphics::cEffect::Handle m_effect;
+
 		eae6320::Graphics::cMesh* m_mesh;
 		eae6320::Graphics::cEffect* m_effect;
 	};

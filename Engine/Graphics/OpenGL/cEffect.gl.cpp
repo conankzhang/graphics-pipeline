@@ -29,7 +29,7 @@ namespace
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::cResult eae6320::Graphics::cEffect::Load(const char i_effectPath[], eae6320::Graphics::cEffect*& o_effect, const char i_effectPath[])
+eae6320::cResult eae6320::Graphics::cEffect::Load(const char * const i_effectPath, eae6320::Graphics::cEffect*& o_effect, const char i_effectPath[])
 {
 	auto result = Results::Success;
 

@@ -59,7 +59,7 @@ namespace eae6320
 
 			// Initialization / Clean Up
 			//--------------------------
-			static cResult Load(const char i_effectPath[], eae6320::Graphics::cEffect*& o_effect);
+			static cResult Load(const char * const i_effectPath, eae6320::Graphics::cEffect*& o_effect);
 
 			void RenderFrame();
 

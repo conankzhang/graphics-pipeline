@@ -51,7 +51,7 @@ namespace
 	};
 	// In our class there will be two copies of the data required to render a frame:
 	//	* One of them will be getting populated by the data currently being submitted by the application loop thread
-	//	* One of them will be fully populated, 
+	//	* One of them will be fully populated,
 	sDataRequiredToRenderAFrame s_dataRequiredToRenderAFrame[2];
 	auto* s_dataBeingSubmittedByApplicationThread = &s_dataRequiredToRenderAFrame[0];
 	auto* s_dataBeingRenderedByRenderThread = &s_dataRequiredToRenderAFrame[1];
@@ -333,7 +333,7 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 			}
 		}
 	}
-	
+
 	{
 		const auto localResult = sContext::g_context.CleanUp();
 		if ( !localResult )

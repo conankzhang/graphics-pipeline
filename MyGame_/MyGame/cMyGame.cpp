@@ -165,14 +165,6 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 
 	m_object2->SetMeshAndEffect(s_Mesh2, s_Effect2);
 
-	// Initialize the shading data
-	{
-		if ( !( result = eae6320::Graphics::cEffect::Load( "data/Effects/white.effect", s_Effect3) ) )
-		{
-			EAE6320_ASSERT( false );
-			goto OnExit;
-		}
-	}
 	// Initialize the geometry
 	{
 		if ( !( result =  eae6320::Graphics::cMesh::Load( "data/Meshes/sphere.mesh", s_Mesh3 ) ) )
@@ -182,16 +174,8 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 		}
 	}
 
-	m_object3->SetMeshAndEffect(s_Mesh3, s_Effect3);
+	m_object3->SetMeshAndEffect(s_Mesh3, s_Effect1);
 
-	// Initialize the shading data
-	{
-		if ( !( result = eae6320::Graphics::cEffect::Load( "data/Effects/red.effect", s_Effect4) ) )
-		{
-			EAE6320_ASSERT( false );
-			goto OnExit;
-		}
-	}
 	// Initialize the geometry
 	{
 		if ( !( result =  eae6320::Graphics::cMesh::Load( "data/Meshes/sphere.mesh", s_Mesh4 ) ) )
@@ -201,16 +185,8 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 		}
 	}
 
-	m_object4->SetMeshAndEffect(s_Mesh4, s_Effect4);
+	m_object4->SetMeshAndEffect(s_Mesh4, s_Effect2);
 
-	// Initialize the shading data
-	{
-		if ( !( result = eae6320::Graphics::cEffect::Load( "data/Effects/white.effect", s_Effect5) ) )
-		{
-			EAE6320_ASSERT( false );
-			goto OnExit;
-		}
-	}
 	// Initialize the geometry
 	{
 		if ( !( result =  eae6320::Graphics::cMesh::Load( "data/Meshes/plane.mesh", s_Mesh5 ) ) )
@@ -220,7 +196,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 		}
 	}
 
-	m_object5->SetMeshAndEffect(s_Mesh5, s_Effect5);
+	m_object5->SetMeshAndEffect(s_Mesh5, s_Effect1);
 
 OnExit:
 

@@ -90,7 +90,7 @@ eae6320::cResult eae6320::Graphics::cEffect::CleanUp()
 	return result;
 }
 
-eae6320::cResult eae6320::Graphics::cEffect::Load(const char i_effectPath[], eae6320::Graphics::cEffect*& o_effect)
+eae6320::cResult eae6320::Graphics::cEffect::Load(const char * const i_effectPath, eae6320::Graphics::cEffect*& o_effect)
 {
 	auto result = Results::Success;
 
