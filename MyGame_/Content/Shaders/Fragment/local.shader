@@ -28,6 +28,11 @@ cbuffer g_constantBuffer_perDrawCall : register( b2 )
 //============
 
 void main(
+	// Input
+	//=======
+
+	in const float4 i_vertexPosition_local : SV_POSITION,
+
 
 	// Output
 	//=======
@@ -39,8 +44,8 @@ void main(
 	)
 {
 	o_color = float4(
-		// RGB (color)
-		0.0, 1.0, 0.0,
-		// Alpha (transparency)
-		1.0 );
+		sin(i_vertexPosition_local.x / 3),
+		sin(i_vertexPosition_local.y / 3),
+		sin(i_vertexPosition_local.z / 3),
+		1.0);
 }
