@@ -47,5 +47,6 @@ void main(
 		sin(i_vertexPosition.x * 50),
 		sin(i_vertexPosition.y * 50),
 		sin(i_vertexPosition.z * 50),
-		1.0);
+		1.0
+	);
 }
