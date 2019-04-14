@@ -166,7 +166,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 {
 	auto result = Results::Success;
 
-	m_player = new eae6320::cGameObject(eae6320::Math::sVector(0.0f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/local.effect");
+	m_player = new eae6320::cGameObject(eae6320::Math::sVector(0.0f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/world.effect");
 	//m_object2 = new eae6320::cGameObject(eae6320::Math::sVector(-0.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/red.effect");
 	//m_object3 = new eae6320::cGameObject(eae6320::Math::sVector(0.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/white.effect");
 	//m_object4 = new eae6320::cGameObject(eae6320::Math::sVector(1.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/red.effect");

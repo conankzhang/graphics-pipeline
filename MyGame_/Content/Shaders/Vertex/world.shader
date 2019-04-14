@@ -46,7 +46,7 @@ void main(
 	// Output
 	//=======
 
-	out float4 o_vertexPosition_local : VERTEX_POSITION,
+	out float4 o_vertexPosition_world : VERTEX_POSITION,
 	// An SV_POSITION value must always be output from every vertex shader
 	// so that the GPU can figure out which fragments need to be shaded
 	out float4 o_vertexPosition_projected : SV_POSITION
@@ -54,15 +54,14 @@ void main(
 	)
 {
 	// Transform the local vertex into world space
-	float4 vertexPosition_world;
 	{
-		o_vertexPosition_local = float4( i_vertexPosition_local, 1.0 );
-		vertexPosition_world = mul( g_transform_localToWorld, o_vertexPosition_local );
+		float4 vertexPosition_local = float4( i_vertexPosition_local, 1.0 );
+		o_vertexPosition_world = mul( g_transform_localToWorld, vertexPosition_local );
 	}
 	// Calculate the position of this vertex projected onto the display
 	{
 		// Transform the vertex from world space into camera space
-		float4 vertexPosition_camera = mul( g_transform_worldToCamera, vertexPosition_world );
+		float4 vertexPosition_camera = mul( g_transform_worldToCamera, o_vertexPosition_world );
 		// Project the vertex from camera space into projected space
 		o_vertexPosition_projected = mul( g_transform_cameraToProjected, vertexPosition_camera );
 	}
