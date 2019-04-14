@@ -14,8 +14,9 @@ return
 		{ path = "Meshes/cube.mesh" },
 		{ path = "Meshes/plane.mesh" },
 		{ path = "Meshes/pyramid.mesh" },
+		{ path = "Meshes/sphere.mesh" },
 	},
-	
+
 	effects =
 	{
 		{ path = "Effects/red.effect" },

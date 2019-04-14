@@ -30,13 +30,6 @@ void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_s
 	eae6320::Graphics::SubmitGameObject(m_object1->GetMesh(), m_object1->GetEffect(), m_object1->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
 	eae6320::Graphics::SubmitGameObject(m_object2->GetMesh(), m_object2->GetEffect(), m_object2->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
 	eae6320::Graphics::SubmitGameObject(m_object3->GetMesh(), m_object3->GetEffect(), m_object3->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
-
-	eae6320::ECS::IEntity* entity = ECS->GetEntityManager()->GetEntity(demoEntityId);
-	eae6320::cPrefab* prefab = static_cast<eae6320::cPrefab*>(entity);
-	if (prefab && prefab->IsActive() && prefab->GetComponent<cRigidbodyComponent>())
-	{
-		eae6320::Graphics::SubmitGameObject(entity->GetComponent<cMeshComponent>()->GetMesh(), entity->GetComponent<cEffectComponent>()->GetEffect() , entity->GetComponent<cRigidbodyComponent>()->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
-	}
 }
 
 // Run
@@ -119,8 +112,6 @@ void eae6320::cMyGame::UpdateSimulationBasedOnTime(const float i_elapsedSecondCo
 	m_object2->Update(i_elapsedSecondCount_sinceLastUpdate);
 	m_object3->Update(i_elapsedSecondCount_sinceLastUpdate);
 	m_camera->Update(i_elapsedSecondCount_sinceLastUpdate);
-
-	ECS->Update(i_elapsedSecondCount_sinceLastUpdate);
 }
 
 // Initialization / Clean Up
@@ -129,13 +120,6 @@ void eae6320::cMyGame::UpdateSimulationBasedOnTime(const float i_elapsedSecondCo
 eae6320::cResult eae6320::cMyGame::Initialize()
 {
 	auto result = Results::Success;
-
-	ECS = new eae6320::ECS::ECSEngine();
-
-	eae6320::ECS::EntityManager* entityManager = ECS->GetEntityManager();
-	demoEntityId = entityManager->CreateEntity<eae6320::cPrefab>("data/Prefabs/red_pyramid.prefab", eae6320::Math::sVector(-1.0f, 0.0f, 0.0f), eae6320::Math::cQuaternion());
-
-	ECS->GetSystemManager()->AddSystem<cPhysicsSystem>();
 
 	m_object1 = new eae6320::cGameObject(eae6320::Math::sVector(), eae6320::Math::cQuaternion());
 	m_object2 = new eae6320::cGameObject(eae6320::Math::sVector(0.0f, -1.0f, 0.0f), eae6320::Math::cQuaternion());
@@ -208,8 +192,6 @@ OnExit:
 eae6320::cResult eae6320::cMyGame::CleanUp()
 {
 	auto result = Results::Success;
-
-	delete ECS;
 
 	if (m_object1)
 	{

@@ -12,7 +12,6 @@
 
 #include <Engine/Application/cbApplication.h>
 #include <Engine/Results/Results.h>
-#include <Engine/EntityComponentSystem/ECS.h>
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
 	#include "Resource Files/Resource.h"
@@ -82,7 +81,7 @@ namespace eae6320
 		// If you want to try creating your own a convenient website that will help is: http://icoconvert.com/
 		virtual const WORD* GetLargeIconId() const override { static constexpr WORD iconId_large = IDI_EAEGAMEPAD; return &iconId_large; }
 		virtual const WORD* GetSmallIconId() const override { static constexpr WORD iconId_small = IDI_EAEALIEN; return &iconId_small; }
-			
+
 		virtual void SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate) override;
 #endif
 
@@ -115,8 +114,6 @@ namespace eae6320
 		eae6320::cGameObject* m_object3;
 
 		eae6320::cCamera* m_camera;
-
-		eae6320::ECS::ECSEngine* ECS;
 
 		size_t demoEntityId;
 
