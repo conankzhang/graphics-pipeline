@@ -117,8 +117,8 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	auto result = Results::Success;
 
 	m_object1 = new eae6320::cGameObject(eae6320::Math::sVector(), eae6320::Math::cQuaternion());
-	m_object2 = new eae6320::cGameObject(eae6320::Math::sVector(0.0f, -1.0f, 0.0f), eae6320::Math::cQuaternion());
-	m_object3 = new eae6320::cGameObject(eae6320::Math::sVector(), eae6320::Math::cQuaternion());
+	m_object2 = new eae6320::cGameObject(eae6320::Math::sVector(-2.0f, 0.0f, 0.0f), eae6320::Math::cQuaternion());
+	m_object3 = new eae6320::cGameObject(eae6320::Math::sVector(2.0f, 0.0f, 0.0f), eae6320::Math::cQuaternion());
 	m_camera = new eae6320::cCamera(eae6320::Math::sVector(0.0f, 0.0f, 5.0f), eae6320::Math::cQuaternion());
 
 	// Initialize the shading data
