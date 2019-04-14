@@ -432,7 +432,7 @@ void eae6320::Graphics::SubmitCamera(eae6320::Math::cMatrix_transformation i_tra
 	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_elapsedSecondCount_simulationTime = i_elapsedSecondCount_simulationTime;
 }
 
-void eae6320::Graphics::SubmitDrawCommand(RenderCommand i_command, unsigned short i_effectId, unsigned short i_distance, unsigned short i_meshId, eae6320::Math::cMatrix_transformation& i_transform)
+void eae6320::Graphics::SubmitDrawCommand(RenderCommand i_command, unsigned int i_effectId, unsigned int i_distance, unsigned int i_meshId, eae6320::Math::cMatrix_transformation& i_transform)
 {
 	DrawCommand drawCommand;
 	drawCommand.nCommand = i_command;

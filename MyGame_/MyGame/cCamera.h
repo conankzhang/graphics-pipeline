@@ -34,7 +34,7 @@ namespace eae6320
 		eae6320::Math::cMatrix_transformation GetWorldToCameraTransform(const float i_elapsedSecondCount_sinceLastSimulationUpdate);
 		eae6320::Math::cMatrix_transformation GetCameraToProjectedTransform();
 
-		unsigned short CalculateNormalizedCameraDistance(const eae6320::Math::sVector& i_position);
+		unsigned int CalculateNormalizedCameraDistance(const eae6320::Math::sVector& i_position);
 
 	private:
 		const float m_verticalFieldOfView_inRadians = 45.0f;
