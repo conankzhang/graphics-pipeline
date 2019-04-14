@@ -47,7 +47,9 @@ namespace
 		eae6320::Graphics::cMesh* m_meshes[65536];
 		eae6320::Graphics::cEffect* m_effects[65536];
 		eae6320::Graphics::ConstantBufferFormats::sPerDrawCall m_constantData[65536];
-		uint16_t m_count;
+		uint64_t m_renderCommands[65536];
+		uint16_t m_renderCount;
+		uint_fast32_t m_currentBoundEffectId;
 	};
 	// In our class there will be two copies of the data required to render a frame:
 	//	* One of them will be getting populated by the data currently being submitted by the application loop thread
@@ -136,17 +138,29 @@ void eae6320::Graphics::RenderFrame()
 	size_t t = sizeof(*s_dataBeingRenderedByRenderThread);
 	s_View.ClearColor( s_dataBeingRenderedByRenderThread->m_red, s_dataBeingRenderedByRenderThread->m_green, s_dataBeingRenderedByRenderThread->m_blue, s_dataBeingRenderedByRenderThread->m_alpha );
 
-	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->m_count; ++i)
+	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->m_renderCount; ++i)
 	{
 		// Copy the data from the system memory that the application owns to GPU memory
 		auto& constantData_perDrawCall = s_dataBeingRenderedByRenderThread->m_constantData[i];
 		s_constantBuffer_perDrawCalls.Update( &constantData_perDrawCall );
 
+		// Make sure to bind effect before rendering mesh
+		// #TODO check effect id from render command and skip if it's the same
+
+		//if (s_dataBeingRenderedByRenderThread->m_currentBoundEffectId == -1)
+		//{
+		//	continue;
+		//}
+
+		// #TODO set currently bound effect to be current id
+		//s_dataBeingRenderedByRenderThread->m_currentBoundEffectId = -2;
+
 		s_dataBeingRenderedByRenderThread->m_effects[i]->RenderFrame();
 		s_dataBeingRenderedByRenderThread->m_meshes[i]->RenderFrame();
+
 	}
 
-	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->m_count; ++i)
+	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->m_renderCount; ++i)
 	{
 		if (s_dataBeingRenderedByRenderThread->m_effects[i])
 		{
@@ -161,7 +175,7 @@ void eae6320::Graphics::RenderFrame()
 		}
 	}
 
-	s_dataBeingRenderedByRenderThread->m_count = 0;
+	s_dataBeingRenderedByRenderThread->m_renderCount = 0;
 
 	s_View.Swap();
 
@@ -289,7 +303,7 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 		}
 	}
 
-	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->m_count; ++i)
+	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->m_renderCount; ++i)
 	{
 		if (s_dataBeingRenderedByRenderThread->m_effects[i])
 		{
@@ -304,7 +318,7 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 		}
 	}
 
-	for (uint16_t i = 0; i < s_dataBeingSubmittedByApplicationThread->m_count; ++i)
+	for (uint16_t i = 0; i < s_dataBeingSubmittedByApplicationThread->m_renderCount; ++i)
 	{
 		if (s_dataBeingSubmittedByApplicationThread->m_effects[i])
 		{
@@ -319,8 +333,8 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 		}
 	}
 
-	s_dataBeingRenderedByRenderThread->m_count = 0;
-	s_dataBeingSubmittedByApplicationThread->m_count = 0;
+	s_dataBeingRenderedByRenderThread->m_renderCount = 0;
+	s_dataBeingSubmittedByApplicationThread->m_renderCount = 0;
 
 	{
 		const auto localResult = cShader::s_manager.CleanUp();
@@ -360,14 +374,14 @@ void eae6320::Graphics::SubmitBackgroundColor(float i_red, float i_green, float 
 void eae6320::Graphics::SubmitGameObject(eae6320::Graphics::cMesh* i_mesh, eae6320::Graphics::cEffect* i_effect, eae6320::Math::cMatrix_transformation& i_transform)
 {
 	i_mesh->IncrementReferenceCount();
-	s_dataBeingSubmittedByApplicationThread->m_meshes[s_dataBeingSubmittedByApplicationThread->m_count] = i_mesh;
+	s_dataBeingSubmittedByApplicationThread->m_meshes[s_dataBeingSubmittedByApplicationThread->m_renderCount] = i_mesh;
 
 	i_effect->IncrementReferenceCount();
-	s_dataBeingSubmittedByApplicationThread->m_effects[s_dataBeingSubmittedByApplicationThread->m_count] = i_effect;
+	s_dataBeingSubmittedByApplicationThread->m_effects[s_dataBeingSubmittedByApplicationThread->m_renderCount] = i_effect;
 
-	s_dataBeingSubmittedByApplicationThread->m_constantData[s_dataBeingSubmittedByApplicationThread->m_count].g_transform_localToWorld = i_transform;
+	s_dataBeingSubmittedByApplicationThread->m_constantData[s_dataBeingSubmittedByApplicationThread->m_renderCount].g_transform_localToWorld = i_transform;
 
-	s_dataBeingSubmittedByApplicationThread->m_count++;
+	s_dataBeingSubmittedByApplicationThread->m_renderCount++;
 }
 
 void eae6320::Graphics::SubmitCamera(eae6320::Math::cMatrix_transformation i_transform_worldToCamera, eae6320::Math::cMatrix_transformation i_transform_cameraToProjected, float i_elapsedSecondCount_systemTime, float i_elapsedSecondCount_simulationTime)
@@ -376,4 +390,10 @@ void eae6320::Graphics::SubmitCamera(eae6320::Math::cMatrix_transformation i_tra
 	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_transform_cameraToProjected = i_transform_cameraToProjected;
 	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_elapsedSecondCount_systemTime = i_elapsedSecondCount_systemTime;
 	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_elapsedSecondCount_simulationTime = i_elapsedSecondCount_simulationTime;
+}
+
+void eae6320::Graphics::SubmitRenderCommand(uint64_t i_renderCommand)
+{
+	s_dataBeingSubmittedByApplicationThread->m_renderCommands[s_dataBeingSubmittedByApplicationThread->m_renderCount] = i_renderCommand;
+	s_dataBeingSubmittedByApplicationThread->m_renderCount++;
 }

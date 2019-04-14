@@ -41,6 +41,11 @@ namespace eae6320
 {
 	namespace Graphics
 	{
+		enum class RenderCommand : uint8_t
+		{
+			Draw
+		};
+
 		// Submission
 		//-----------
 
@@ -90,6 +95,7 @@ namespace eae6320
 		void SubmitBackgroundColor(float i_red, float i_green, float i_blue, float i_alpha);
 		void SubmitGameObject(eae6320::Graphics::cMesh* i_mesh, eae6320::Graphics::cEffect* i_effect, eae6320::Math::cMatrix_transformation& i_transform);
 		void SubmitCamera(eae6320::Math::cMatrix_transformation i_transform_worldToCamera, eae6320::Math::cMatrix_transformation i_transform_cameraToProjected, float i_elapsedSecondCount_systemTime, float i_elapsedSecondCount_simulationTime);
+		void SubmitRenderCommand(uint64_t i_renderCommand);
 	}
 }
 

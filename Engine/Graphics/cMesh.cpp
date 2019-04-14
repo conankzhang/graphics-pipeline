@@ -17,7 +17,7 @@
 // Static Data Initialization
 //===========================
 
-eae6320::Assets::cManager<eae6320::Graphics::cMesh> eae6320::Graphics::cMesh::m_manager;
+eae6320::Assets::cManager<eae6320::Graphics::cMesh> eae6320::Graphics::cMesh::s_manager;
 
 // Interface
 //==========
@@ -37,7 +37,7 @@ eae6320::cResult eae6320::Graphics::cMesh::Load(const std::string& i_path, cMesh
 	auto currentOffset = reinterpret_cast<uintptr_t>( dataFromFile.data );
 	const auto finalOffset = currentOffset + dataFromFile.size;
 
-    const auto vertexCount = *reinterpret_cast<uint16_t*>( currentOffset );
+	const auto vertexCount = *reinterpret_cast<uint16_t*>( currentOffset );
 
 	currentOffset += sizeof( vertexCount );
 	const auto indexCount = *reinterpret_cast<uint16_t*>( currentOffset );

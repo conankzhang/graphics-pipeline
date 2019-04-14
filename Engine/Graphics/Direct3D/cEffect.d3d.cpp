@@ -16,7 +16,7 @@
 // Static Data Initialization
 //===========================
 
-eae6320::Assets::cManager<eae6320::Graphics::cEffect> eae6320::Graphics::cEffect::e_manager;
+eae6320::Assets::cManager<eae6320::Graphics::cEffect> eae6320::Graphics::cEffect::s_manager;
 
 // Initialization / Clean Up
 //--------------------------

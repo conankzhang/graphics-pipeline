@@ -17,26 +17,26 @@ eae6320::cGameObject::cGameObject(eae6320::Math::sVector i_position, eae6320::Ma
 		auto result = Results::Success;
 
 		{
-			if ( !( result =  eae6320::Graphics::cMesh::m_manager.Load(i_meshPath, m_mesh) ) )
+			if ( !( result =  eae6320::Graphics::cMesh::s_manager.Load(i_meshPath, m_mesh) ) )
 			{
 				EAE6320_ASSERT( false );
 			}
 
 			if (m_mesh.IsValid())
 			{
-				Graphics::cMesh::m_manager.UnsafeIncrementReferenceCount(m_mesh.GetIndex());
+				Graphics::cMesh::s_manager.UnsafeIncrementReferenceCount(m_mesh.GetIndex());
 			}
 		}
 
 		{
-			if ( !( result = eae6320::Graphics::cEffect::e_manager.Load(i_effectPath, m_effect) ) )
+			if ( !( result = eae6320::Graphics::cEffect::s_manager.Load(i_effectPath, m_effect) ) )
 			{
 				EAE6320_ASSERT( false );
 			}
 
 			if (m_effect.IsValid())
 			{
-				Graphics::cEffect::e_manager.UnsafeIncrementReferenceCount(m_effect.GetIndex());
+				Graphics::cEffect::s_manager.UnsafeIncrementReferenceCount(m_effect.GetIndex());
 			}
 		}
 	}
@@ -46,12 +46,12 @@ void eae6320::cGameObject::CleanUp()
 {
 	if (m_mesh.IsValid())
 	{
-		Graphics::cMesh::m_manager.UnsafeDecrementReferenceCount(m_mesh.GetIndex());
+		Graphics::cMesh::s_manager.UnsafeDecrementReferenceCount(m_mesh.GetIndex());
 	}
 
 	if (m_effect.IsValid())
 	{
-		Graphics::cEffect::e_manager.UnsafeDecrementReferenceCount(m_effect.GetIndex());
+		Graphics::cEffect::s_manager.UnsafeDecrementReferenceCount(m_effect.GetIndex());
 	}
 }
 
@@ -72,12 +72,12 @@ void eae6320::cGameObject::SetAngularSpeed(float i_angularSpeed)
 
 eae6320::Graphics::cMesh* eae6320::cGameObject::GetMesh()
 {
-	return Graphics::cMesh::m_manager.Get(m_mesh);
+	return Graphics::cMesh::s_manager.Get(m_mesh);
 }
 
 eae6320::Graphics::cEffect* eae6320::cGameObject::GetEffect()
 {
-	return Graphics::cEffect::e_manager.Get(m_effect);
+	return Graphics::cEffect::s_manager.Get(m_effect);
 }
 
 eae6320::Math::cMatrix_transformation eae6320::cGameObject::GetTransform(const float i_elapsedSecondCount_sinceLastSimulationUpdate)

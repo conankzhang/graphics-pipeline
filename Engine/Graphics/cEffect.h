@@ -55,7 +55,7 @@ namespace eae6320
 			//-------
 
 			using Handle = Assets::cHandle<cEffect>;
-			static Assets::cManager<cEffect> e_manager;
+			static Assets::cManager<cEffect> s_manager;
 
 			// Initialization / Clean Up
 			//--------------------------
