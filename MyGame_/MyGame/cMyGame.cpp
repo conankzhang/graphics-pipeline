@@ -4,11 +4,6 @@
 #include "cMyGame.h"
 
 #include "cGameObject.h"
-#include "cPrefab.h"
-#include "cMeshComponent.h"
-#include "cEffectComponent.h"
-#include "cRigidbodyComponent.h"
-#include "cPhysicsSystem.h"
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/UserInput/UserInput.h>
