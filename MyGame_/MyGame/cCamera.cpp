@@ -19,3 +19,8 @@ eae6320::Math::cMatrix_transformation eae6320::cCamera::GetCameraToProjectedTran
 {
 	return eae6320::Math::cMatrix_transformation::CreateCameraToProjectedTransform_perspective(m_verticalFieldOfView_inRadians, m_aspectRatio, m_z_nearPlane, m_z_farPlane);
 }
+
+unsigned short eae6320::cCamera::CalculateNormalizedCameraDistance(const eae6320::Math::sVector& i_position)
+{
+	return 0;
+}

@@ -45,6 +45,7 @@ namespace eae6320
 
 		eae6320::Math::cMatrix_transformation GetTransform(const float i_elapsedSecondCount_sinceLastSimulationUpdate);
 		eae6320::Math::sVector GetForward();
+		eae6320::Math::sVector GetPosition();
 
 	protected:
 

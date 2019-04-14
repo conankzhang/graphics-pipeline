@@ -79,3 +79,8 @@ eae6320::Math::sVector eae6320::cGameObject::GetForward()
 {
 	return m_rigidBody.orientation.CalculateForwardDirection();
 }
+
+eae6320::Math::sVector eae6320::cGameObject::GetPosition()
+{
+	return m_rigidBody.position;
+}
