@@ -31,7 +31,7 @@ void main(
 	// Input
 	//=======
 
-	in const float4 i_vertexPosition_local : SV_POSITION,
+	in float4 i_vertexPosition_local : LOCAL_POSITION,
 
 
 	// Output
@@ -44,8 +44,8 @@ void main(
 	)
 {
 	o_color = float4(
-		sin(i_vertexPosition_local.x / 3),
-		sin(i_vertexPosition_local.y / 3),
-		sin(i_vertexPosition_local.z / 3),
+		sin(i_vertexPosition_local.x * 50),
+		sin(i_vertexPosition_local.y * 50),
+		sin(i_vertexPosition_local.z * 50),
 		1.0);
 }
