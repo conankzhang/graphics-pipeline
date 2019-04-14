@@ -21,5 +21,9 @@ return
 	{
 		{ path = "Effects/red.effect" },
 		{ path = "Effects/white.effect" },
+		{ path = "Effects/local.effect" },
+		{ path = "Effects/world.effect" },
+		{ path = "Effects/scale.effect" },
+		{ path = "Effects/distance.effect" },
 	},
 }
