@@ -44,61 +44,50 @@ void eae6320::cMyGame::UpdateBasedOnInput()
 void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 {
 	float z_camera = 0.0f;
-	if (UserInput::IsKeyPressed(UserInput::KeyCodes::Up))
-	{
-		z_camera = -1.0f;
-	}
-
-	if (UserInput::IsKeyPressed(UserInput::KeyCodes::Down))
-	{
-		z_camera = 1.0f;
-	}
-
-	float x_camera = 0.0f;
-	if (UserInput::IsKeyPressed(UserInput::KeyCodes::Left))
-	{
-		x_camera = -1.0f;
-	}
-
-	if (UserInput::IsKeyPressed(UserInput::KeyCodes::Right))
-	{
-		x_camera = 1.0f;
-	}
-
-	m_camera->SetVelocity(eae6320::Math::sVector(x_camera, 0.0f, z_camera));
-
-	float x_object = 0.0f;
-	if (UserInput::IsKeyPressed(UserInput::KeyCodes::A))
-	{
-		x_object = -1.0f;
-	}
-
-	if (UserInput::IsKeyPressed(UserInput::KeyCodes::D))
-	{
-		x_object = 1.0f;
-	}
-
-	float y_object = 0.0f;
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::W))
 	{
-		y_object = 1.0f;
+		z_camera = -cameraMoveSpeed;
 	}
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::S))
 	{
-		y_object = -1.0f;
+		z_camera = cameraMoveSpeed;
 	}
 
-	m_object1->SetVelocity(eae6320::Math::sVector(x_object, y_object, 0.0f));
+	float x_camera = 0.0f;
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::A))
+	{
+		x_camera = -cameraMoveSpeed;
+	}
 
-	if (UserInput::IsKeyPressed(UserInput::KeyCodes::Shift))
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::D))
 	{
-		m_shiftPressed = true;
+		x_camera = cameraMoveSpeed;
 	}
-	else
+
+	float y_camera = 0.0f;
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::Up))
 	{
-		m_shiftPressed = false;
+		y_camera = cameraMoveSpeed;
 	}
+
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::Down))
+	{
+		y_camera = -cameraMoveSpeed;
+	}
+	m_camera->SetVelocity(eae6320::Math::sVector(x_camera, y_camera, z_camera));
+
+	float angularSpeed = 0.0f;
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::Left))
+	{
+		angularSpeed += 1.0f;
+	}
+
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::Right))
+	{
+		angularSpeed -= 1.0f;
+	}
+	//angularSpeed * m_keyboardRotationSpeed;
 }
 
 void eae6320::cMyGame::UpdateSimulationBasedOnTime(const float i_elapsedSecondCount_sinceLastUpdate)
