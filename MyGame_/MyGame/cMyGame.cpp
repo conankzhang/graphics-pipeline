@@ -19,7 +19,7 @@
 
 void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate)
 {
-	eae6320::Graphics::SubmitBackgroundColor(0.0f, 1.0f, 0.0f, 1.0f);
+	eae6320::Graphics::SubmitBackgroundColor(0.13f, 0.24f, 0.33f, 1.0f);
 	eae6320::Graphics::SubmitCamera(m_camera->GetWorldToCameraTransform(i_elapsedSecondCount_sinceLastSimulationUpdate), m_camera->GetCameraToProjectedTransform(), i_elapsedSecondCount_systemTime, i_elapsedSecondCount_sinceLastSimulationUpdate);
 
 	eae6320::Graphics::SubmitGameObject(m_object1->GetMesh(), m_object1->GetEffect(), m_object1->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
@@ -132,7 +132,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 
 	// Initialize the geometry
 	{
-		if ( !( result =  eae6320::Graphics::cMesh::Load( "data/Meshes/cube.mesh", s_Mesh1 ) ) )
+		if ( !( result =  eae6320::Graphics::cMesh::Load( "data/Meshes/sphere.mesh", s_Mesh1 ) ) )
 		{
 			EAE6320_ASSERT( false );
 			goto OnExit;
@@ -151,7 +151,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	}
 	// Initialize the geometry
 	{
-		if ( !( result =  eae6320::Graphics::cMesh::Load( "data/Meshes/plane.mesh", s_Mesh2 ) ) )
+		if ( !( result =  eae6320::Graphics::cMesh::Load( "data/Meshes/sphere.mesh", s_Mesh2 ) ) )
 		{
 			EAE6320_ASSERT( false );
 			goto OnExit;
@@ -170,7 +170,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	}
 	// Initialize the geometry
 	{
-		if ( !( result =  eae6320::Graphics::cMesh::Load( "data/Meshes/pyramid.mesh", s_Mesh3 ) ) )
+		if ( !( result =  eae6320::Graphics::cMesh::Load( "data/Meshes/sphere.mesh", s_Mesh3 ) ) )
 		{
 			EAE6320_ASSERT( false );
 			goto OnExit;
