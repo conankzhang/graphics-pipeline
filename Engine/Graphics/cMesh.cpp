@@ -56,7 +56,7 @@ eae6320::cResult eae6320::Graphics::cMesh::Load(const char* const i_path, cMesh*
 		goto OnExit;
 	}
 
-	// Allocate a new mesh 
+	// Allocate a new mesh
 	{
 		newMesh = new (std::nothrow) cMesh();
 		if ( !newMesh )

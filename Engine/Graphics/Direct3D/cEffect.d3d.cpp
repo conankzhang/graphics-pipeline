@@ -90,12 +90,12 @@ eae6320::cResult eae6320::Graphics::cEffect::CleanUp()
 	return result;
 }
 
-eae6320::cResult eae6320::Graphics::cEffect::Load(eae6320::Graphics::cEffect*& o_effect, const char i_effectPath[])
+eae6320::cResult eae6320::Graphics::cEffect::Load(const char i_effectPath[], eae6320::Graphics::cEffect*& o_effect)
 {
 	auto result = Results::Success;
 
 	eae6320::Graphics::cEffect* newEffect = nullptr;
-	
+
 	eae6320::Platform::sDataFromFile dataFromFile;
 	eae6320::Platform::LoadBinaryFile(i_effectPath, dataFromFile);
 

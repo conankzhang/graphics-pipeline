@@ -128,7 +128,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 
 	// Initialize the shading data
 	{
-		if ( !( result = eae6320::Graphics::cEffect::Load(s_Effect1, "data/Effects/white.effect") ) )
+		if ( !( result = eae6320::Graphics::cEffect::Load("data/Effects/white.effect", s_Effect1) ) )
 		{
 			EAE6320_ASSERT( false );
 			goto OnExit;
@@ -148,7 +148,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 
 	// Initialize the shading data
 	{
-		if ( !( result = eae6320::Graphics::cEffect::Load( s_Effect2, "data/Effects/red.effect") ) )
+		if ( !( result = eae6320::Graphics::cEffect::Load( "data/Effects/red.effect", s_Effect2) ) )
 		{
 			EAE6320_ASSERT( false );
 			goto OnExit;
@@ -167,7 +167,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 
 	// Initialize the shading data
 	{
-		if ( !( result = eae6320::Graphics::cEffect::Load( s_Effect3, "data/Effects/white.effect") ) )
+		if ( !( result = eae6320::Graphics::cEffect::Load( "data/Effects/white.effect", s_Effect3) ) )
 		{
 			EAE6320_ASSERT( false );
 			goto OnExit;
@@ -186,7 +186,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 
 	// Initialize the shading data
 	{
-		if ( !( result = eae6320::Graphics::cEffect::Load( s_Effect4, "data/Effects/red.effect") ) )
+		if ( !( result = eae6320::Graphics::cEffect::Load( "data/Effects/red.effect", s_Effect4) ) )
 		{
 			EAE6320_ASSERT( false );
 			goto OnExit;
@@ -205,7 +205,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 
 	// Initialize the shading data
 	{
-		if ( !( result = eae6320::Graphics::cEffect::Load( s_Effect5, "data/Effects/white.effect") ) )
+		if ( !( result = eae6320::Graphics::cEffect::Load( "data/Effects/white.effect", s_Effect5) ) )
 		{
 			EAE6320_ASSERT( false );
 			goto OnExit;

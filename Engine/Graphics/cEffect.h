@@ -59,13 +59,13 @@ namespace eae6320
 
 			// Initialization / Clean Up
 			//--------------------------
-			static cResult Load(eae6320::Graphics::cEffect*& o_effect, const char i_effectPath[]);
+			static cResult Load(const char i_effectPath[], eae6320::Graphics::cEffect*& o_effect);
 
 			void RenderFrame();
 
 			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cEffect);
 			EAE6320_ASSETS_DECLAREREFERENCECOUNTINGFUNCTIONS();
-			
+
 			// Data
 			//=====
 
