@@ -110,7 +110,7 @@ namespace eae6320
 		eae6320::Graphics::cMesh* s_Mesh4;
 		eae6320::Graphics::cMesh* s_Mesh5;
 
-		eae6320::cGameObject* m_object1;
+		eae6320::cGameObject* m_player;
 		eae6320::cGameObject* m_object2;
 		eae6320::cGameObject* m_object3;
 		eae6320::cGameObject* m_object4;
@@ -120,6 +120,7 @@ namespace eae6320
 
 		size_t demoEntityId;
 		float cameraMoveSpeed = 3.0f;
+		float playerMoveSpeed = 3.0f;
 
 		virtual cResult Initialize() override;
 		virtual cResult CleanUp() override;

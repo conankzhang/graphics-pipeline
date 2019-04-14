@@ -22,7 +22,7 @@ void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_s
 	eae6320::Graphics::SubmitBackgroundColor(0.13f, 0.24f, 0.33f, 1.0f);
 	eae6320::Graphics::SubmitCamera(m_camera->GetWorldToCameraTransform(i_elapsedSecondCount_sinceLastSimulationUpdate), m_camera->GetCameraToProjectedTransform(), i_elapsedSecondCount_systemTime, i_elapsedSecondCount_sinceLastSimulationUpdate);
 
-	eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object1->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object1->GetPosition()), m_object1->GetMesh(), m_object1->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
+	eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_player->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_player->GetPosition()), m_player->GetMesh(), m_player->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
 	//eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object2->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object2->GetPosition()), m_object2->GetMesh(), m_object2->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
 	//eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object3->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object3->GetPosition()), m_object3->GetMesh(), m_object3->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
 	//eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object4->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object4->GetPosition()), m_object4->GetMesh(), m_object4->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
@@ -45,17 +45,6 @@ void eae6320::cMyGame::UpdateBasedOnInput()
 
 void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 {
-	float z_camera = 0.0f;
-	if (UserInput::IsKeyPressed(UserInput::KeyCodes::W))
-	{
-		z_camera = cameraMoveSpeed;
-	}
-
-	if (UserInput::IsKeyPressed(UserInput::KeyCodes::S))
-	{
-		z_camera = -cameraMoveSpeed;
-	}
-
 	float x_camera = 0.0f;
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::A))
 	{
@@ -76,6 +65,17 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::Down))
 	{
 		y_camera = -cameraMoveSpeed;
+	}
+
+	float z_camera = 0.0f;
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::W))
+	{
+		z_camera = cameraMoveSpeed;
+	}
+
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::S))
+	{
+		z_camera = -cameraMoveSpeed;
 	}
 
 	Math::sVector forward = m_camera->GetForward() * z_camera;
@@ -102,11 +102,56 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 	}
 
 	m_camera->SetAngularSpeed(angularSpeed);
+
+	float x_player = 0.0f;
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::J))
+	{
+		x_player = -playerMoveSpeed;
+	}
+
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::L))
+	{
+		x_player = playerMoveSpeed;
+	}
+
+	float y_player = 0.0f;
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::U))
+	{
+		y_player = playerMoveSpeed;
+	}
+
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::O))
+	{
+		y_player = -playerMoveSpeed;
+	}
+
+	float z_player = 0.0f;
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::I))
+	{
+		z_player = playerMoveSpeed;
+	}
+
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::K))
+	{
+		z_player = -playerMoveSpeed;
+	}
+
+	Math::sVector forward_player = m_camera->GetForward() * z_player;
+
+	Math::sVector lateral_player = Math::Cross(m_camera->GetForward(), Math::sVector(0.0f, 1.0f, 0.0f));
+	lateral_player *= x_player;
+
+	Math::sVector vertical_player = Math::sVector(0.0f, 1.0f, 0.0f);
+	vertical_player *= y_player;
+
+	(forward_player + lateral_player + vertical_player);
+
+	m_player->SetVelocity(forward_player + lateral_player + vertical_player);
 }
 
 void eae6320::cMyGame::UpdateSimulationBasedOnTime(const float i_elapsedSecondCount_sinceLastUpdate)
 {
-	m_object1->Update(i_elapsedSecondCount_sinceLastUpdate);
+	m_player->Update(i_elapsedSecondCount_sinceLastUpdate);
 	//m_object2->Update(i_elapsedSecondCount_sinceLastUpdate);
 	//m_object3->Update(i_elapsedSecondCount_sinceLastUpdate);
 	//m_object4->Update(i_elapsedSecondCount_sinceLastUpdate);
@@ -121,7 +166,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 {
 	auto result = Results::Success;
 
-	m_object1 = new eae6320::cGameObject(eae6320::Math::sVector(0.0f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/local.effect");
+	m_player = new eae6320::cGameObject(eae6320::Math::sVector(0.0f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/local.effect");
 	//m_object2 = new eae6320::cGameObject(eae6320::Math::sVector(-0.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/red.effect");
 	//m_object3 = new eae6320::cGameObject(eae6320::Math::sVector(0.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/white.effect");
 	//m_object4 = new eae6320::cGameObject(eae6320::Math::sVector(1.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/red.effect");
@@ -137,11 +182,11 @@ eae6320::cResult eae6320::cMyGame::CleanUp()
 {
 	auto result = Results::Success;
 
-	if (m_object1)
+	if (m_player)
 	{
-		m_object1->CleanUp();
-		delete m_object1;
-		m_object1 = nullptr;
+		m_player->CleanUp();
+		delete m_player;
+		m_player = nullptr;
 	}
 
 	//if (m_object2)
