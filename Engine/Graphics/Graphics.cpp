@@ -20,6 +20,7 @@
 #include <Engine/Time/Time.h>
 #include <Engine/UserOutput/UserOutput.h>
 #include <utility>
+#include <algorithm>
 
 // Static Data Initialization
 //===========================
@@ -128,6 +129,7 @@ void eae6320::Graphics::RenderFrame()
 	}
 
 	EAE6320_ASSERT( s_dataBeingRenderedByRenderThread );
+	std::sort(&s_dataBeingRenderedByRenderThread->m_renderCommands[0], &s_dataBeingRenderedByRenderThread->m_renderCommands[0] + s_dataBeingRenderedByRenderThread->m_renderCount);
 
 	// Update the per-frame constant buffer
 	{
