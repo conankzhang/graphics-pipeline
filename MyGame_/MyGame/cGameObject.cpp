@@ -21,22 +21,12 @@ eae6320::cGameObject::cGameObject(eae6320::Math::sVector i_position, eae6320::Ma
 			{
 				EAE6320_ASSERT( false );
 			}
-
-			if (m_mesh.IsValid())
-			{
-				Graphics::cMesh::s_manager.UnsafeIncrementReferenceCount(m_mesh.GetIndex());
-			}
 		}
 
 		{
 			if ( !( result = eae6320::Graphics::cEffect::s_manager.Load(i_effectPath, m_effect) ) )
 			{
 				EAE6320_ASSERT( false );
-			}
-
-			if (m_effect.IsValid())
-			{
-				Graphics::cEffect::s_manager.UnsafeIncrementReferenceCount(m_effect.GetIndex());
 			}
 		}
 	}
