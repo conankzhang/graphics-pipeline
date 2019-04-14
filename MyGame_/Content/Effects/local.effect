@@ -1,6 +1,6 @@
 return
 {
-	path_vertexShader = "Shaders/Vertex/standard.shader",
+	path_vertexShader = "Shaders/Vertex/local.shader",
 	path_fragmentShader = "Shaders/Fragment/local.shader",
 	AlphaTransparency = true,
 	DepthBuffering = true,
