@@ -46,6 +46,15 @@ namespace eae6320
 			Draw
 		};
 
+		struct DrawCommand
+		{
+			unsigned short nSubmitIndex: 8;
+			unsigned short nMeshId: 8;
+			unsigned short nDistance: 8;
+			unsigned short nEffectId: 8;
+			RenderCommand nCommand : 8;
+		};
+
 		// Submission
 		//-----------
 
@@ -95,7 +104,7 @@ namespace eae6320
 		void SubmitBackgroundColor(float i_red, float i_green, float i_blue, float i_alpha);
 		void SubmitGameObject(eae6320::Graphics::cMesh* i_mesh, eae6320::Graphics::cEffect* i_effect, eae6320::Math::cMatrix_transformation& i_transform);
 		void SubmitCamera(eae6320::Math::cMatrix_transformation i_transform_worldToCamera, eae6320::Math::cMatrix_transformation i_transform_cameraToProjected, float i_elapsedSecondCount_systemTime, float i_elapsedSecondCount_simulationTime);
-		void SubmitRenderCommand(uint64_t i_renderCommand);
+		void SubmitDrawCommand(RenderCommand i_command, unsigned short i_effectId, unsigned short i_distance, unsigned short i_meshId, eae6320::Math::cMatrix_transformation& i_transform);
 	}
 }
 

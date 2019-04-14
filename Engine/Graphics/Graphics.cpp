@@ -50,7 +50,7 @@ namespace
 		eae6320::Graphics::ConstantBufferFormats::sPerDrawCall m_constantData[65536];
 		uint64_t m_renderCommands[65536];
 		uint16_t m_renderCount;
-		uint_fast32_t m_currentBoundEffectId;
+		uint_fast32_t m_currentBoundEffectId = 10000;
 	};
 	// In our class there will be two copies of the data required to render a frame:
 	//	* One of them will be getting populated by the data currently being submitted by the application loop thread
@@ -142,40 +142,38 @@ void eae6320::Graphics::RenderFrame()
 
 	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->m_renderCount; ++i)
 	{
-		// Copy the data from the system memory that the application owns to GPU memory
-		auto& constantData_perDrawCall = s_dataBeingRenderedByRenderThread->m_constantData[i];
-		s_constantBuffer_perDrawCalls.Update( &constantData_perDrawCall );
-
-		// Make sure to bind effect before rendering mesh
-		// #TODO check effect id from render command and skip if it's the same
-
-		//if (s_dataBeingRenderedByRenderThread->m_currentBoundEffectId == -1)
-		//{
-		//	continue;
-		//}
-
-		// #TODO set currently bound effect to be current id
-		//s_dataBeingRenderedByRenderThread->m_currentBoundEffectId = -2;
-
-		s_dataBeingRenderedByRenderThread->m_effects[i]->RenderFrame();
-		s_dataBeingRenderedByRenderThread->m_meshes[i]->RenderFrame();
-
-	}
-
-	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->m_renderCount; ++i)
-	{
-		if (s_dataBeingRenderedByRenderThread->m_effects[i])
+		DrawCommand drawCommand = *(DrawCommand *)&s_dataBeingRenderedByRenderThread->m_renderCommands[i];
+		if(drawCommand.nCommand == RenderCommand::Draw)
 		{
-			s_dataBeingRenderedByRenderThread->m_effects[i]->DecrementReferenceCount();
-			s_dataBeingRenderedByRenderThread->m_effects[i] = nullptr;
-		}
+			// Copy the data from the system memory that the application owns to GPU memory
+			auto& constantData_perDrawCall = s_dataBeingRenderedByRenderThread->m_constantData[drawCommand.nSubmitIndex];
+			s_constantBuffer_perDrawCalls.Update( &constantData_perDrawCall );
 
-		if (s_dataBeingRenderedByRenderThread->m_meshes[i])
-		{
-			s_dataBeingRenderedByRenderThread->m_meshes[i]->DecrementReferenceCount();
-			s_dataBeingRenderedByRenderThread->m_meshes[i] = nullptr;
+			// Make sure to bind effect before rendering mesh
+			if (s_dataBeingRenderedByRenderThread->m_currentBoundEffectId != drawCommand.nEffectId)
+			{
+				cEffect::s_manager.UnsafeGet(drawCommand.nEffectId)->RenderFrame();
+				s_dataBeingRenderedByRenderThread->m_currentBoundEffectId = drawCommand.nEffectId;
+			}
+
+			cMesh::s_manager.UnsafeGet(drawCommand.nMeshId)->RenderFrame();
 		}
 	}
+
+	//for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->m_renderCount; ++i)
+	//{
+	//	if (s_dataBeingRenderedByRenderThread->m_effects[i])
+	//	{
+	//		s_dataBeingRenderedByRenderThread->m_effects[i]->DecrementReferenceCount();
+	//		s_dataBeingRenderedByRenderThread->m_effects[i] = nullptr;
+	//	}
+
+	//	if (s_dataBeingRenderedByRenderThread->m_meshes[i])
+	//	{
+	//		s_dataBeingRenderedByRenderThread->m_meshes[i]->DecrementReferenceCount();
+	//		s_dataBeingRenderedByRenderThread->m_meshes[i] = nullptr;
+	//	}
+	//}
 
 	s_dataBeingRenderedByRenderThread->m_renderCount = 0;
 
@@ -394,8 +392,17 @@ void eae6320::Graphics::SubmitCamera(eae6320::Math::cMatrix_transformation i_tra
 	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_elapsedSecondCount_simulationTime = i_elapsedSecondCount_simulationTime;
 }
 
-void eae6320::Graphics::SubmitRenderCommand(uint64_t i_renderCommand)
+void eae6320::Graphics::SubmitDrawCommand(RenderCommand i_command, unsigned short i_effectId, unsigned short i_distance, unsigned short i_meshId, eae6320::Math::cMatrix_transformation& i_transform)
 {
-	s_dataBeingSubmittedByApplicationThread->m_renderCommands[s_dataBeingSubmittedByApplicationThread->m_renderCount] = i_renderCommand;
+	DrawCommand drawCommand;
+	drawCommand.nCommand = i_command;
+	drawCommand.nEffectId = i_effectId;
+	drawCommand.nDistance = i_distance;
+	drawCommand.nMeshId = i_meshId;
+	drawCommand.nSubmitIndex = s_dataBeingSubmittedByApplicationThread->m_renderCount;
+
+	s_dataBeingSubmittedByApplicationThread->m_constantData[s_dataBeingSubmittedByApplicationThread->m_renderCount].g_transform_localToWorld = i_transform;
+	s_dataBeingSubmittedByApplicationThread->m_renderCommands[s_dataBeingSubmittedByApplicationThread->m_renderCount] = *(uint64_t*)&drawCommand;
+
 	s_dataBeingSubmittedByApplicationThread->m_renderCount++;
 }

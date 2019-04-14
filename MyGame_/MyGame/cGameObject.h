@@ -40,8 +40,8 @@ namespace eae6320
 		void SetVelocity(eae6320::Math::sVector i_velocity);
 		void SetAngularSpeed(float i_angularSpeed);
 
-		eae6320::Graphics::cMesh* GetMesh();
-		eae6320::Graphics::cEffect* GetEffect();
+		uint_fast32_t GetMesh();
+		uint_fast32_t GetEffect();
 
 		eae6320::Math::cMatrix_transformation GetTransform(const float i_elapsedSecondCount_sinceLastSimulationUpdate);
 		eae6320::Math::sVector GetForward();
