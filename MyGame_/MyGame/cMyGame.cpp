@@ -109,6 +109,8 @@ void eae6320::cMyGame::UpdateSimulationBasedOnTime(const float i_elapsedSecondCo
 	m_object1->Update(i_elapsedSecondCount_sinceLastUpdate);
 	m_object2->Update(i_elapsedSecondCount_sinceLastUpdate);
 	m_object3->Update(i_elapsedSecondCount_sinceLastUpdate);
+	m_object4->Update(i_elapsedSecondCount_sinceLastUpdate);
+	m_object5->Update(i_elapsedSecondCount_sinceLastUpdate);
 	m_camera->Update(i_elapsedSecondCount_sinceLastUpdate);
 }
 
@@ -119,86 +121,14 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 {
 	auto result = Results::Success;
 
-	m_object1 = new eae6320::cGameObject(eae6320::Math::sVector(-1.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion());
-	m_object2 = new eae6320::cGameObject(eae6320::Math::sVector(-0.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion());
-	m_object3 = new eae6320::cGameObject(eae6320::Math::sVector(0.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion());
-	m_object4 = new eae6320::cGameObject(eae6320::Math::sVector(1.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion());
-	m_object5 = new eae6320::cGameObject(eae6320::Math::sVector(0.0f, -1.0f, 0.0f), eae6320::Math::cQuaternion());
+	m_object1 = new eae6320::cGameObject(eae6320::Math::sVector(-1.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/white.effect");
+	m_object2 = new eae6320::cGameObject(eae6320::Math::sVector(-0.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/red.effect");
+	m_object3 = new eae6320::cGameObject(eae6320::Math::sVector(0.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/white.effect");
+	m_object4 = new eae6320::cGameObject(eae6320::Math::sVector(1.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/red.effect");
+	m_object5 = new eae6320::cGameObject(eae6320::Math::sVector(0.0f, -1.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/plane.mesh", "data/Effects/white.effect");
+
+
 	m_camera = new eae6320::cCamera(eae6320::Math::sVector(0.0f, 0.0f, 5.0f), eae6320::Math::cQuaternion());
-
-	// Initialize the shading data
-	{
-		if ( !( result = eae6320::Graphics::cEffect::Load("data/Effects/white.effect", s_Effect1) ) )
-		{
-			EAE6320_ASSERT( false );
-			goto OnExit;
-		}
-	}
-
-	// Initialize the geometry
-	{
-		if ( !( result =  eae6320::Graphics::cMesh::Load( "data/Meshes/sphere.mesh", s_Mesh1 ) ) )
-		{
-			EAE6320_ASSERT( false );
-			goto OnExit;
-		}
-	}
-
-	m_object1->SetMeshAndEffect(s_Mesh1, s_Effect1);
-
-	// Initialize the shading data
-	{
-		if ( !( result = eae6320::Graphics::cEffect::Load( "data/Effects/red.effect", s_Effect2) ) )
-		{
-			EAE6320_ASSERT( false );
-			goto OnExit;
-		}
-	}
-	// Initialize the geometry
-	{
-		if ( !( result =  eae6320::Graphics::cMesh::Load( "data/Meshes/sphere.mesh", s_Mesh2 ) ) )
-		{
-			EAE6320_ASSERT( false );
-			goto OnExit;
-		}
-	}
-
-	m_object2->SetMeshAndEffect(s_Mesh2, s_Effect2);
-
-	// Initialize the geometry
-	{
-		if ( !( result =  eae6320::Graphics::cMesh::Load( "data/Meshes/sphere.mesh", s_Mesh3 ) ) )
-		{
-			EAE6320_ASSERT( false );
-			goto OnExit;
-		}
-	}
-
-	m_object3->SetMeshAndEffect(s_Mesh3, s_Effect1);
-
-	// Initialize the geometry
-	{
-		if ( !( result =  eae6320::Graphics::cMesh::Load( "data/Meshes/sphere.mesh", s_Mesh4 ) ) )
-		{
-			EAE6320_ASSERT( false );
-			goto OnExit;
-		}
-	}
-
-	m_object4->SetMeshAndEffect(s_Mesh4, s_Effect2);
-
-	// Initialize the geometry
-	{
-		if ( !( result =  eae6320::Graphics::cMesh::Load( "data/Meshes/plane.mesh", s_Mesh5 ) ) )
-		{
-			EAE6320_ASSERT( false );
-			goto OnExit;
-		}
-	}
-
-	m_object5->SetMeshAndEffect(s_Mesh5, s_Effect1);
-
-OnExit:
 
 	return result;
 }

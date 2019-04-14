@@ -55,11 +55,11 @@ namespace eae6320
 			//-------
 
 			using Handle = Assets::cHandle<cEffect>;
-			static Assets::cManager<cEffect> s_manager;
+			static Assets::cManager<cEffect> e_manager;
 
 			// Initialization / Clean Up
 			//--------------------------
-			static cResult Load(const char * const i_effectPath, eae6320::Graphics::cEffect*& o_effect);
+			static cResult Load(const std::string& i_effectPath, eae6320::Graphics::cEffect*& o_effect);
 
 			void RenderFrame();
 

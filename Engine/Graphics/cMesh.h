@@ -67,18 +67,18 @@ namespace eae6320
 			//-------
 
 			using Handle = Assets::cHandle<cMesh>;
-			static Assets::cManager<cMesh> s_manager;
+			static Assets::cManager<cMesh> m_manager;
 
 			// Initialization / Clean Up
 			//--------------------------
 			static cResult Load( eae6320::Graphics::cMesh*& o_mesh, std::vector<VertexFormats::sMesh> i_vertexData, std::vector<uint16_t> i_indexData );
-			static cResult Load( const char* const i_path, cMesh*& o_mesh );
+			static cResult Load( const std::string& i_path, cMesh*& o_mesh );
 
 			void RenderFrame();
 
 			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cMesh);
 			EAE6320_ASSETS_DECLAREREFERENCECOUNTINGFUNCTIONS();
-			
+
 			// Data
 			//=====
 

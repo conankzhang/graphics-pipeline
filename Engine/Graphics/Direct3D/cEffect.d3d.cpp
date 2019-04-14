@@ -13,6 +13,11 @@
 // Implementation
 //===============
 
+// Static Data Initialization
+//===========================
+
+eae6320::Assets::cManager<eae6320::Graphics::cEffect> eae6320::Graphics::cEffect::e_manager;
+
 // Initialization / Clean Up
 //--------------------------
 
@@ -90,14 +95,14 @@ eae6320::cResult eae6320::Graphics::cEffect::CleanUp()
 	return result;
 }
 
-eae6320::cResult eae6320::Graphics::cEffect::Load(const char * const i_effectPath, eae6320::Graphics::cEffect*& o_effect)
+eae6320::cResult eae6320::Graphics::cEffect::Load(const std::string& i_effectPath, eae6320::Graphics::cEffect*& o_effect)
 {
 	auto result = Results::Success;
 
 	eae6320::Graphics::cEffect* newEffect = nullptr;
 
 	eae6320::Platform::sDataFromFile dataFromFile;
-	eae6320::Platform::LoadBinaryFile(i_effectPath, dataFromFile);
+	eae6320::Platform::LoadBinaryFile(i_effectPath.c_str(), dataFromFile);
 
 	auto currentOffset = reinterpret_cast<uintptr_t>( dataFromFile.data );
 	const auto finalOffset = currentOffset + dataFromFile.size;

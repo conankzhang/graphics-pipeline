@@ -3,28 +3,55 @@
 
 #include "cGameObject.h"
 
-#include <Engine/Graphics/cEffect.h>
-#include <Engine/Graphics/cMesh.h>
 #include <Engine/Math/cMatrix_transformation.h>
 
-eae6320::cGameObject::cGameObject(eae6320::Math::sVector i_position, eae6320::Math::cQuaternion i_orientation)
+eae6320::cGameObject::cGameObject(eae6320::Math::sVector i_position, eae6320::Math::cQuaternion i_orientation, const char * const i_meshPath, const char * const i_effectPath)
 {
 	m_rigidBody.position = i_position;
 	m_rigidBody.orientation = i_orientation;
+
+	// Initialize the shading data
+	if (i_meshPath && i_effectPath)
+	{
+
+		auto result = Results::Success;
+
+		{
+			if ( !( result =  eae6320::Graphics::cMesh::m_manager.Load(i_meshPath, m_mesh) ) )
+			{
+				EAE6320_ASSERT( false );
+			}
+
+			if (m_mesh.IsValid())
+			{
+				Graphics::cMesh::m_manager.UnsafeIncrementReferenceCount(m_mesh.GetIndex());
+			}
+		}
+
+		{
+			if ( !( result = eae6320::Graphics::cEffect::e_manager.Load(i_effectPath, m_effect) ) )
+			{
+				EAE6320_ASSERT( false );
+			}
+
+			if (m_effect.IsValid())
+			{
+				Graphics::cEffect::e_manager.UnsafeIncrementReferenceCount(m_effect.GetIndex());
+			}
+		}
+	}
 }
 
 void eae6320::cGameObject::CleanUp()
 {
-	if (m_effect)
+	if (m_mesh.IsValid())
 	{
-		m_effect->DecrementReferenceCount();
-		m_effect = nullptr;
+		Graphics::cMesh::m_manager.UnsafeDecrementReferenceCount(m_mesh.GetIndex());
 	}
 
-	if (m_mesh)
+	if (m_effect.IsValid())
 	{
-		m_mesh->DecrementReferenceCount();
-		m_mesh = nullptr;
+		Graphics::cEffect::e_manager.UnsafeDecrementReferenceCount(m_effect.GetIndex());
 	}
 }
 
@@ -43,20 +70,14 @@ void eae6320::cGameObject::SetAngularSpeed(float i_angularSpeed)
 	m_rigidBody.angularSpeed = i_angularSpeed;
 }
 
-void eae6320::cGameObject::SetMeshAndEffect(eae6320::Graphics::cMesh* i_mesh, eae6320::Graphics::cEffect* i_effect)
-{
-	m_mesh = i_mesh;
-	m_effect = i_effect;
-}
-
 eae6320::Graphics::cMesh* eae6320::cGameObject::GetMesh()
 {
-	return m_mesh;
+	return Graphics::cMesh::m_manager.Get(m_mesh);
 }
 
 eae6320::Graphics::cEffect* eae6320::cGameObject::GetEffect()
 {
-	return m_effect;
+	return Graphics::cEffect::e_manager.Get(m_effect);
 }
 
 eae6320::Math::cMatrix_transformation eae6320::cGameObject::GetTransform(const float i_elapsedSecondCount_sinceLastSimulationUpdate)

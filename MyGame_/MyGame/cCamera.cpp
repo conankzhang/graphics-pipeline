@@ -5,7 +5,7 @@
 #include <Engine/Math/cMatrix_transformation.h>
 
 eae6320::cCamera::cCamera(eae6320::Math::sVector i_position, eae6320::Math::cQuaternion i_orientation)
-	:cGameObject(i_position, i_orientation)
+	:cGameObject(i_position, i_orientation, nullptr, nullptr)
 {
 
 }
