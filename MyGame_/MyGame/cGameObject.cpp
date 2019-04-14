@@ -38,6 +38,11 @@ void eae6320::cGameObject::SetVelocity(eae6320::Math::sVector i_velocity)
 	m_rigidBody.velocity = i_velocity;
 }
 
+void eae6320::cGameObject::SetAngularSpeed(float i_angularSpeed)
+{
+	m_rigidBody.angularSpeed = i_angularSpeed;
+}
+
 void eae6320::cGameObject::SetMeshAndEffect(eae6320::Graphics::cMesh* i_mesh, eae6320::Graphics::cEffect* i_effect)
 {
 	m_mesh = i_mesh;
@@ -57,4 +62,9 @@ eae6320::Graphics::cEffect* eae6320::cGameObject::GetEffect()
 eae6320::Math::cMatrix_transformation eae6320::cGameObject::GetTransform(const float i_elapsedSecondCount_sinceLastSimulationUpdate)
 {
 	return eae6320::Math::cMatrix_transformation(m_rigidBody.PredictFutureOrientation(i_elapsedSecondCount_sinceLastSimulationUpdate), m_rigidBody.PredictFuturePosition(i_elapsedSecondCount_sinceLastSimulationUpdate));
+}
+
+eae6320::Math::sVector eae6320::cGameObject::GetForward()
+{
+	return m_rigidBody.orientation.CalculateForwardDirection();
 }

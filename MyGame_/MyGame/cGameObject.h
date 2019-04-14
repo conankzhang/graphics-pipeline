@@ -31,16 +31,19 @@ namespace eae6320
 	public:
 		cGameObject(eae6320::Math::sVector i_position, eae6320::Math::cQuaternion i_orientation);
 		void CleanUp();
-		
+
 		void Update(const float i_elapsedSecondCount_sinceLastUpdate);
 
 		void SetVelocity(eae6320::Math::sVector i_velocity);
+		void SetAngularSpeed(float i_angularSpeed);
 
 		void SetMeshAndEffect(eae6320::Graphics::cMesh* i_mesh, eae6320::Graphics::cEffect* i_effect);
 		eae6320::Graphics::cMesh* GetMesh();
 		eae6320::Graphics::cEffect* GetEffect();
 
 		eae6320::Math::cMatrix_transformation GetTransform(const float i_elapsedSecondCount_sinceLastSimulationUpdate);
+		eae6320::Math::sVector GetForward();
+
 	protected:
 
 		eae6320::Physics::sRigidBodyState m_rigidBody;

@@ -46,12 +46,12 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 	float z_camera = 0.0f;
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::W))
 	{
-		z_camera = -cameraMoveSpeed;
+		z_camera = cameraMoveSpeed;
 	}
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::S))
 	{
-		z_camera = cameraMoveSpeed;
+		z_camera = -cameraMoveSpeed;
 	}
 
 	float x_camera = 0.0f;
@@ -75,7 +75,18 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 	{
 		y_camera = -cameraMoveSpeed;
 	}
-	m_camera->SetVelocity(eae6320::Math::sVector(x_camera, y_camera, z_camera));
+
+	Math::sVector forward = m_camera->GetForward() * z_camera;
+
+	Math::sVector lateral = Math::Cross(m_camera->GetForward(), Math::sVector(0.0f, 1.0f, 0.0f));
+	lateral *= x_camera;
+
+	Math::sVector vertical = Math::sVector(0.0f, 1.0f, 0.0f);
+	vertical *= y_camera;
+
+	(forward + lateral + vertical);
+
+	m_camera->SetVelocity(forward + lateral + vertical);
 
 	float angularSpeed = 0.0f;
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::Left))
@@ -87,7 +98,8 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 	{
 		angularSpeed -= 1.0f;
 	}
-	//angularSpeed * m_keyboardRotationSpeed;
+
+	m_camera->SetAngularSpeed(angularSpeed);
 }
 
 void eae6320::cMyGame::UpdateSimulationBasedOnTime(const float i_elapsedSecondCount_sinceLastUpdate)

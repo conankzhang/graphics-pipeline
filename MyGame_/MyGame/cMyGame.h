@@ -116,7 +116,7 @@ namespace eae6320
 		eae6320::cCamera* m_camera;
 
 		size_t demoEntityId;
-		float cameraMoveSpeed = 2.0f;
+		float cameraMoveSpeed = 3.0f;
 
 		virtual cResult Initialize() override;
 		virtual cResult CleanUp() override;
