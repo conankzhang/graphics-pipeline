@@ -147,13 +147,23 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 
 	(forward_player + lateral_player + vertical_player);
 
-	m_player->SetVelocity(forward_player + lateral_player + vertical_player);
+	if (m_player)
+	{
+		m_player->SetVelocity(forward_player + lateral_player + vertical_player);
+	}
 }
 
 void eae6320::cMyGame::UpdateSimulationBasedOnTime(const float i_elapsedSecondCount_sinceLastUpdate)
 {
-	m_player->Update(i_elapsedSecondCount_sinceLastUpdate);
-	m_camera->Update(i_elapsedSecondCount_sinceLastUpdate);
+	if (m_player)
+	{
+		m_player->Update(i_elapsedSecondCount_sinceLastUpdate);
+	}
+
+	if (m_camera)
+	{
+		m_camera->Update(i_elapsedSecondCount_sinceLastUpdate);
+	}
 }
 
 eae6320::cResult eae6320::cMyGame::DeleteGameObject(cGameObject* i_gameObject)
@@ -189,8 +199,8 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 
 	clearColor.SetColor(0.13f, 0.24f, 0.33f, 1.0f);
 
-	m_player = new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/standard.material");
-	m_gameObjects.push_back(m_player);
+	//m_player = new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/standard.material");
+	//m_gameObjects.push_back(m_player);
 
 	m_camera = new cCamera(Math::sVector(0.0f, 0.0f, 5.0f), Math::cQuaternion());
 

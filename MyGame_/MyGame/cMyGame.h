@@ -96,8 +96,8 @@ namespace eae6320
 		//-------------
 		Graphics::sColor clearColor;
 
-		cGameObject* m_player;
-		cCamera* m_camera;
+		cGameObject* m_player = nullptr;
+		cCamera* m_camera = nullptr;
 
 		std::vector<cGameObject*> m_gameObjects;
 
