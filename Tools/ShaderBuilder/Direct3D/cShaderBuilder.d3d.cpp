@@ -57,6 +57,7 @@ eae6320::cResult eae6320::Assets::cShaderBuilder::Build( const Graphics::ShaderT
 
 	Platform::sDataFromFile dataFromFile;
 	ID3DBlob* compiledCode = nullptr;
+	ID3DBlob* disassembledCode = nullptr;
 
 	// Load the source code
 	{
@@ -131,6 +132,79 @@ eae6320::cResult eae6320::Assets::cShaderBuilder::Build( const Graphics::ShaderT
 			eae6320::Assets::OutputErrorMessageWithFileInfo( m_path_source, errorMessage.c_str() );
 		}
 	}
+	// Create a disassembled version of the shader
+	if ( result )
+	{
+		// The following can be #defined
+		// in order to create a human-readable file with the shader instructions
+		// (this can be useful during development to see how code changes affect instruction count)
+//#define EAE6320_GRAPHICS_SHOULDDISASSEMBLYBECREATED
+#ifdef EAE6320_GRAPHICS_SHOULDDISASSEMBLYBECREATED
+		const auto path_disassembly = [i_shaderType]( const std::string& i_path_compiledShader )
+		{
+			const auto directory_disassembly = [i_shaderType, &i_path_compiledShader]()
+			{
+				std::string directory_disassembly;
+				if ( !eae6320::Platform::GetEnvironmentVariable( "IntermediateDir", directory_disassembly ) )
+				{
+					const auto pos_lastSlash = i_path_compiledShader.find_last_of( '/' );
+					if ( pos_lastSlash != i_path_compiledShader.npos )
+					{
+						directory_disassembly = i_path_compiledShader.substr( 0, pos_lastSlash + 1 );
+					}
+				}
+				switch ( i_shaderType )
+				{
+				case Graphics::ShaderTypes::Vertex:
+					directory_disassembly += "vertex/";
+					break;
+				case Graphics::ShaderTypes::Fragment:
+					directory_disassembly += "fragment/";
+					break;
+				}
+				return directory_disassembly;
+			}();
+			const auto filename = [&i_path_compiledShader]()
+			{
+				const auto filename_withExtension = [&i_path_compiledShader]
+				{
+					const auto pos_lastSlash = i_path_compiledShader.find_last_of( '/' );
+					if ( pos_lastSlash != i_path_compiledShader.npos )
+					{
+						return i_path_compiledShader.substr( pos_lastSlash + 1 );
+					}
+					else
+					{
+						return i_path_compiledShader;
+					}
+				}();
+				return filename_withExtension + ".dasm";
+			}();
+			return directory_disassembly + filename;
+		}( m_path_target );
+
+		constexpr unsigned int disassembleConstants = 0;
+		constexpr char* const noComment = nullptr;
+		if ( SUCCEEDED( D3DDisassemble( compiledCode->GetBufferPointer(), compiledCode->GetBufferSize(),
+			disassembleConstants, noComment, &disassembledCode ) ) )
+		{
+			std::string errorMessage;
+			if ( !eae6320::Platform::CreateDirectoryIfItDoesntExist( path_disassembly, &errorMessage ) )
+			{
+				eae6320::Assets::OutputWarningMessageWithFileInfo( path_disassembly.c_str(), errorMessage.c_str() );
+			}
+			if ( !eae6320::Platform::WriteBinaryFile( path_disassembly.c_str(),
+				disassembledCode->GetBufferPointer(), disassembledCode->GetBufferSize(), &errorMessage ) )
+			{
+				eae6320::Assets::OutputWarningMessageWithFileInfo( path_disassembly.c_str(), errorMessage.c_str() );
+			}
+		}
+		else
+		{
+			OutputWarningMessageWithFileInfo( path_disassembly.c_str(), "Failed to disassemble shader" );
+		}
+#endif
+	}
 
 OnExit:
 
@@ -138,6 +212,11 @@ OnExit:
 	{
 		compiledCode->Release();
 		compiledCode = nullptr;
+	}
+	if ( disassembledCode )
+	{
+		disassembledCode->Release();
+		disassembledCode = nullptr;
 	}
 	dataFromFile.Free();
 
