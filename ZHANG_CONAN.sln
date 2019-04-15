@@ -123,6 +123,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ControllerInput", "Engine\ControllerInput\ControllerInput.vcxproj", "{44F5810E-36A8-4571-8A74-8202E256763D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MaterialBuilder", "Tools\MaterialBuilder\MaterialBuilder.vcxproj", "{3EBD55FA-C142-4AC8-B9AC-6088CDF77F43}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FACEE468-411D-48E3-B0BC-120E1C980019} = {FACEE468-411D-48E3-B0BC-120E1C980019}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

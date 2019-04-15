@@ -147,6 +147,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Engine\Graphics\Graphics.vcxproj">
+      <Project>{facee468-411d-48e3-b0bc-120e1c980019}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\AssetBuildLibrary\AssetBuildLibrary.vcxproj">
       <Project>{4438bc28-0c79-4907-bd5c-abad0dd78aec}</Project>
     </ProjectReference>

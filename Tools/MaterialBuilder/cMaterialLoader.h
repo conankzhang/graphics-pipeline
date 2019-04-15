@@ -7,9 +7,7 @@
 
 // Includes
 //=========
-
 #include <Engine/Graphics/Configuration.h>
-#include <Engine/Graphics/cEffect.h>
 #include <Engine/Graphics/cMesh.h>
 
 // Forward Declarations
@@ -17,17 +15,9 @@
 
 namespace eae6320
 {
-	namespace Platform
-	{
-		struct sDataFromFile;
-	}
-
 	namespace Graphics
 	{
-		namespace VertexFormats
-		{
-			struct sMesh;
-		}
+		struct sColor;
 	}
 }
 
@@ -43,7 +33,7 @@ namespace eae6320
 			// Inherited Implementation
 			//=========================
 		public:
-			static eae6320::cResult LoadAsset( const char* const i_path, std::string& o_effectPath, std::vector<float>& o_colorData);
+			static cResult LoadAsset( const char* const i_path, std::string& o_effectPath, Graphics::sColor& o_color);
 
 		private:
 
@@ -53,7 +43,7 @@ namespace eae6320
 
 			// Implementation
 			//===============
-			static eae6320::cResult LoadTableValues(lua_State& io_luaState, std::string& o_effectPath, std::vector<float>& o_colorData);
+			static cResult LoadTableValues(lua_State& io_luaState, std::string& o_effectPath, Graphics::sColor& o_color);
 
 		};
 	}
