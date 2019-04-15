@@ -107,10 +107,10 @@ eae6320::cResult eae6320::Graphics::cEffect::Load(const std::string& i_effectPat
 	auto currentOffset = reinterpret_cast<uintptr_t>( dataFromFile.data );
 	const auto finalOffset = currentOffset + dataFromFile.size;
 
-    const auto vertexShaderPathSize = *reinterpret_cast<uint16_t*>( currentOffset );
+	const auto vertexShaderPathSize = *reinterpret_cast<uint16_t*>( currentOffset );
 
 	currentOffset += sizeof( vertexShaderPathSize );
-    const auto renderStateBits = *reinterpret_cast<uint8_t*>( currentOffset );
+	const auto renderStateBits = *reinterpret_cast<uint8_t*>( currentOffset );
 
 	currentOffset += sizeof( renderStateBits );
 	char* vertexShaderPath = reinterpret_cast<char*>( currentOffset );

@@ -32,17 +32,37 @@ eae6320::cGameObject::cGameObject(eae6320::Math::sVector i_position, eae6320::Ma
 	}
 }
 
-void eae6320::cGameObject::CleanUp()
+eae6320::cResult eae6320::cGameObject::CleanUp()
 {
-	if (m_mesh.IsValid())
+	auto result = Results::Success;
+
+	if ( m_mesh )
 	{
-		Graphics::cMesh::s_manager.UnsafeDecrementReferenceCount(m_mesh.GetIndex());
+		const auto localResult = Graphics::cMesh::s_manager.Release( m_mesh);
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
 	}
 
-	if (m_effect.IsValid())
+	if ( m_effect )
 	{
-		Graphics::cEffect::s_manager.UnsafeDecrementReferenceCount(m_effect.GetIndex());
+		const auto localResult = Graphics::cEffect::s_manager.Release( m_effect);
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
 	}
+
+	return result;
 }
 
 void eae6320::cGameObject::Update(const float i_elapsedSecondCount_sinceLastUpdate)

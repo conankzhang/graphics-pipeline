@@ -193,7 +193,17 @@ eae6320::cResult eae6320::cMyGame::CleanUp()
 
 	if (m_player)
 	{
-		m_player->CleanUp();
+		const auto localResult = m_player->CleanUp();
+
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+
 		delete m_player;
 		m_player = nullptr;
 	}
@@ -221,16 +231,37 @@ eae6320::cResult eae6320::cMyGame::CleanUp()
 
 	if (m_object5)
 	{
-		m_object5->CleanUp();
+		const auto localResult = m_object5->CleanUp();
+
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+
 		delete m_object5;
 		m_object5 = nullptr;
 	}
 
 	if (m_camera)
 	{
+		const auto localResult = m_camera->CleanUp();
+
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+
 		delete m_camera;
 		m_camera = nullptr;
 	}
 
-	return Results::Success;
+	return result;
 }

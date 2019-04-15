@@ -33,7 +33,7 @@ namespace eae6320
 	{
 	public:
 		cGameObject(eae6320::Math::sVector i_position, eae6320::Math::cQuaternion i_orientation, const char * const i_meshPath, const char * const i_effectPath);
-		void CleanUp();
+		eae6320::cResult CleanUp();
 
 		void Update(const float i_elapsedSecondCount_sinceLastUpdate);
 
