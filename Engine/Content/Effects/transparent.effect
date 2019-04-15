@@ -2,7 +2,7 @@ return
 {
 	path_vertexShader = "Shaders/Vertex/standard.shader",
 	path_fragmentShader = "Shaders/Fragment/standard.shader",
-	AlphaTransparency = false,
+	AlphaTransparency = true,
 	DepthBuffering = true,
 	DrawBothTriangleSides = false,
 }
