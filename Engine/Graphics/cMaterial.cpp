@@ -105,6 +105,11 @@ void eae6320::Graphics::cMaterial::RenderFrame()
 	}
 }
 
+uint_fast32_t eae6320::Graphics::cMaterial::GetEffectId()
+{
+	return m_effect.GetIndex();
+}
+
 eae6320::Graphics::cMaterial::cMaterial(const sColor& i_color) :
 	m_color(i_color)
 {

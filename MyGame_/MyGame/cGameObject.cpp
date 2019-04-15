@@ -80,12 +80,12 @@ void eae6320::cGameObject::SetAngularSpeed(float i_angularSpeed)
 	m_rigidBody.angularSpeed = i_angularSpeed;
 }
 
-uint_fast32_t eae6320::cGameObject::GetMesh()
+uint_fast32_t eae6320::cGameObject::GetMeshId()
 {
 	return m_mesh.GetIndex();
 }
 
-uint_fast32_t eae6320::cGameObject::GetMaterial()
+uint_fast32_t eae6320::cGameObject::GetMaterialId()
 {
 	return m_material.GetIndex();
 }

@@ -24,14 +24,14 @@ void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_s
 	Math::cMatrix_transformation transform_worldToProjected = transform_cameraToProjected * transform_worldToCamera;
 
 	Math::cMatrix_transformation transform_localToWorld = m_player->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
-	Graphics::SubmitDrawCommand(Graphics::RenderCommand::Draw, m_player->GetMaterial(), m_camera->CalculateNormalizedCameraDistance(m_player->GetPosition()), m_player->GetMesh(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
+	Graphics::SubmitDrawCommand(Graphics::RenderCommand::Draw, m_player->GetMaterialId(), m_camera->CalculateNormalizedCameraDistance(m_player->GetPosition()), m_player->GetMeshId(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
 
 	//eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object2->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object2->GetPosition()), m_object2->GetMesh(), m_object2->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
 	//eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object3->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object3->GetPosition()), m_object3->GetMesh(), m_object3->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
 	//eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object4->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object4->GetPosition()), m_object4->GetMesh(), m_object4->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
 
 	transform_localToWorld = m_object5->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
-	Graphics::SubmitDrawCommand(Graphics::RenderCommand::Draw, m_object5->GetMaterial(), m_camera->CalculateNormalizedCameraDistance(m_object5->GetPosition()), m_object5->GetMesh(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
+	Graphics::SubmitDrawCommand(Graphics::RenderCommand::Draw, m_object5->GetMaterialId(), m_camera->CalculateNormalizedCameraDistance(m_object5->GetPosition()), m_object5->GetMeshId(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
 }
 
 // Run

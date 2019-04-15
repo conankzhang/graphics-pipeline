@@ -80,6 +80,8 @@ namespace eae6320
 			// Implementation
 			//===============
 
+			uint_fast32_t GetEffectId();
+
 		private:
 
 			// Initialization / Clean Up
