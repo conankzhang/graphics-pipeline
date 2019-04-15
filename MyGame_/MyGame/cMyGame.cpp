@@ -8,34 +8,31 @@
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/UserInput/UserInput.h>
 #include <Engine/Graphics/Graphics.h>
-#include <Engine/Graphics/cEffect.h>
-#include <Engine/Graphics/cMesh.h>
-#include <Engine/Graphics/VertexFormats.h>
+#include <Engine/Graphics/sColor.h>
 #include <Engine/Math/cMatrix_transformation.h>
-#include <Engine/EntityComponentSystem/IEntity.h>
 
 // Inherited Implementation
 //=========================
 
 void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate)
 {
-	eae6320::Graphics::SubmitBackgroundColor(0.13f, 0.24f, 0.33f, 1.0f);
+	Graphics::SubmitBackgroundColor(*clearColor);
 	Math::cMatrix_transformation transform_worldToCamera = m_camera->GetWorldToCameraTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
 	Math::cMatrix_transformation transform_cameraToProjected = m_camera->GetCameraToProjectedTransform();
 
-	eae6320::Graphics::SubmitCamera(transform_worldToCamera, transform_cameraToProjected, m_camera->GetPosition(), i_elapsedSecondCount_systemTime, i_elapsedSecondCount_sinceLastSimulationUpdate);
+	Graphics::SubmitCamera(transform_worldToCamera, transform_cameraToProjected, m_camera->GetPosition(), i_elapsedSecondCount_systemTime, i_elapsedSecondCount_sinceLastSimulationUpdate);
 
 	Math::cMatrix_transformation transform_worldToProjected = transform_cameraToProjected * transform_worldToCamera;
 
 	Math::cMatrix_transformation transform_localToWorld = m_player->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
-	eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_player->GetMaterial(), m_camera->CalculateNormalizedCameraDistance(m_player->GetPosition()), m_player->GetMesh(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
+	Graphics::SubmitDrawCommand(Graphics::RenderCommand::Draw, m_player->GetMaterial(), m_camera->CalculateNormalizedCameraDistance(m_player->GetPosition()), m_player->GetMesh(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
 
 	//eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object2->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object2->GetPosition()), m_object2->GetMesh(), m_object2->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
 	//eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object3->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object3->GetPosition()), m_object3->GetMesh(), m_object3->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
 	//eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object4->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object4->GetPosition()), m_object4->GetMesh(), m_object4->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
 
 	transform_localToWorld = m_object5->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
-	eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object5->GetMaterial(), m_camera->CalculateNormalizedCameraDistance(m_object5->GetPosition()), m_object5->GetMesh(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
+	Graphics::SubmitDrawCommand(Graphics::RenderCommand::Draw, m_object5->GetMaterial(), m_camera->CalculateNormalizedCameraDistance(m_object5->GetPosition()), m_object5->GetMesh(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
 }
 
 // Run
@@ -175,14 +172,16 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 {
 	auto result = Results::Success;
 
-	m_player = new eae6320::cGameObject(eae6320::Math::sVector(0.0f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/standard.material");
+	clearColor = new Graphics::sColor(0.13f, 0.24f, 0.33f, 1.0f);
+
+	m_player = new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/standard.material");
 	//m_object2 = new eae6320::cGameObject(eae6320::Math::sVector(-0.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/red.effect");
 	//m_object3 = new eae6320::cGameObject(eae6320::Math::sVector(0.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/white.effect");
 	//m_object4 = new eae6320::cGameObject(eae6320::Math::sVector(1.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/red.effect");
-	m_object5 = new eae6320::cGameObject(eae6320::Math::sVector(0.0f, -1.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/plane.mesh", "data/Materials/standard.material");
+	m_object5 = new cGameObject(Math::sVector(0.0f, -1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/plane.mesh", "data/Materials/standard.material");
 
 
-	m_camera = new eae6320::cCamera(eae6320::Math::sVector(0.0f, 0.0f, 5.0f), eae6320::Math::cQuaternion());
+	m_camera = new cCamera(Math::sVector(0.0f, 0.0f, 5.0f), Math::cQuaternion());
 
 	return result;
 }
@@ -190,6 +189,12 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 eae6320::cResult eae6320::cMyGame::CleanUp()
 {
 	auto result = Results::Success;
+
+	if (clearColor)
+	{
+		delete clearColor;
+		clearColor = nullptr;
+	}
 
 	if (m_player)
 	{

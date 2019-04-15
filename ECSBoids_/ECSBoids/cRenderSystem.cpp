@@ -44,8 +44,6 @@ void eae6320::cRenderSystem::Update(float deltaTime)
 
 void eae6320::cRenderSystem::SubmitDataToBeRendered(const float i_deltaSystemTime, const float i_deltaTime)
 {
-	Graphics::SubmitBackgroundColor(0.13f, 0.24f, 0.33f, 1.0f);
-
 	Graphics::SubmitCamera(m_cameraComponent->GetWorldToCameraTransform(i_deltaTime), m_cameraComponent->GetCameraToProjectedTransform(), m_cameraComponent->GetPosition(), i_deltaSystemTime, i_deltaTime);
 
 	for (auto renderComponent = m_componentManager->begin<cRenderComponent>(); renderComponent != m_componentManager->end<cRenderComponent>(); ++renderComponent)

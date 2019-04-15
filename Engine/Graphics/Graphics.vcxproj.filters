@@ -15,6 +15,7 @@
     <ClCompile Include="Direct3D\cRenderState.d3d.cpp" />
     <ClCompile Include="Direct3D\cShader.d3d.cpp" />
     <ClCompile Include="Direct3D\sContext.d3d.cpp" />
+    <ClCompile Include="sColor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cConstantBuffer.h" />
@@ -31,6 +32,7 @@
     <ClInclude Include="View.h" />
     <ClInclude Include="Direct3D\Includes.h" />
     <ClInclude Include="Windows\ExternalLibraries.win.h" />
+    <ClInclude Include="sColor.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cRenderState.inl" />

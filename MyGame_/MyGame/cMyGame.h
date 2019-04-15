@@ -24,8 +24,7 @@ namespace eae6320
 {
 	namespace Graphics
 	{
-		class cMesh;
-		class cEffect;
+		struct sColor;
 	}
 
 	class cGameObject;
@@ -95,30 +94,18 @@ namespace eae6320
 		// Initialization / Clean Up
 		//--------------------------
 
-		// Shading Data
+		// Object Data
 		//-------------
+		Graphics::sColor* clearColor;
 
-		eae6320::Graphics::cEffect* s_Effect1;
-		eae6320::Graphics::cEffect* s_Effect2;
+		cGameObject* m_player;
+		cGameObject* m_object2;
+		cGameObject* m_object3;
+		cGameObject* m_object4;
+		cGameObject* m_object5;
 
-		// Geometry Data
-		//--------------
+		cCamera* m_camera;
 
-		eae6320::Graphics::cMesh* s_Mesh1;
-		eae6320::Graphics::cMesh* s_Mesh2;
-		eae6320::Graphics::cMesh* s_Mesh3;
-		eae6320::Graphics::cMesh* s_Mesh4;
-		eae6320::Graphics::cMesh* s_Mesh5;
-
-		eae6320::cGameObject* m_player;
-		eae6320::cGameObject* m_object2;
-		eae6320::cGameObject* m_object3;
-		eae6320::cGameObject* m_object4;
-		eae6320::cGameObject* m_object5;
-
-		eae6320::cCamera* m_camera;
-
-		size_t demoEntityId;
 		float cameraMoveSpeed = 3.0f;
 		float playerMoveSpeed = 3.0f;
 

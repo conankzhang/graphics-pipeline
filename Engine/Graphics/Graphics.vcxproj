@@ -181,6 +181,7 @@
     <ClCompile Include="Direct3D\sContext.d3d.cpp" />
     <ClCompile Include="Direct3D\View.d3d.cpp" />
     <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="sColor.cpp" />
     <ClCompile Include="sContext.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -194,6 +195,7 @@
     <ClInclude Include="cShader.h" />
     <ClInclude Include="Direct3D\Includes.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="sColor.h" />
     <ClInclude Include="sContext.h" />
     <ClInclude Include="VertexFormats.h" />
     <ClInclude Include="View.h" />

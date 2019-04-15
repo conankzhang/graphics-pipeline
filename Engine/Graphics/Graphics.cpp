@@ -9,6 +9,7 @@
 #include "cShader.h"
 #include "cMesh.h"
 #include "cEffect.h"
+#include "sColor.h"
 #include "sContext.h"
 #include "VertexFormats.h"
 #include "View.h"
@@ -40,17 +41,14 @@ namespace
 	// it must cache whatever is necessary in order to render a frame
 	struct sDataRequiredToRenderAFrame
 	{
-		eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
-		float m_red;
-		float m_green;
-		float m_blue;
-		float m_alpha;
+		eae6320::Graphics::ConstantBufferFormats::sPerDrawCall m_constantData[65536];
 		eae6320::Graphics::cMesh* m_meshes[65536];
 		eae6320::Graphics::cEffect* m_effects[65536];
-		eae6320::Graphics::ConstantBufferFormats::sPerDrawCall m_constantData[65536];
+		eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
 		uint64_t m_renderCommands[65536];
-		uint16_t m_renderCount;
 		uint_fast32_t m_currentBoundEffectId = 10000;
+		eae6320::Graphics::sColor m_color;
+		uint16_t m_renderCount;
 	};
 	// In our class there will be two copies of the data required to render a frame:
 	//	* One of them will be getting populated by the data currently being submitted by the application loop thread
@@ -138,7 +136,8 @@ void eae6320::Graphics::RenderFrame()
 		s_constantBuffer_perFrame.Update( &constantData_perFrame );
 	}
 	size_t t = sizeof(*s_dataBeingRenderedByRenderThread);
-	s_View.ClearColor( s_dataBeingRenderedByRenderThread->m_red, s_dataBeingRenderedByRenderThread->m_green, s_dataBeingRenderedByRenderThread->m_blue, s_dataBeingRenderedByRenderThread->m_alpha );
+	sColor clearColor = s_dataBeingRenderedByRenderThread->m_color;
+	s_View.ClearColor(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha);
 
 	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->m_renderCount; ++i)
 	{
@@ -403,12 +402,9 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 	return result;
 }
 
-void eae6320::Graphics::SubmitBackgroundColor(float i_red, float i_green, float i_blue, float i_alpha)
+void eae6320::Graphics::SubmitBackgroundColor(const sColor& i_color)
 {
-	s_dataBeingSubmittedByApplicationThread->m_red = i_red;
-	s_dataBeingSubmittedByApplicationThread->m_green = i_green;
-	s_dataBeingSubmittedByApplicationThread->m_blue = i_blue;
-	s_dataBeingSubmittedByApplicationThread->m_alpha = i_alpha;
+	s_dataBeingSubmittedByApplicationThread->m_color = i_color;
 }
 
 void eae6320::Graphics::SubmitGameObject(eae6320::Graphics::cMesh* i_mesh, eae6320::Graphics::cEffect* i_effect, eae6320::Math::cMatrix_transformation& i_transform)
