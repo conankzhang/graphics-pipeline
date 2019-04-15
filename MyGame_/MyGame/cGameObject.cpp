@@ -5,13 +5,13 @@
 
 #include <Engine/Math/cMatrix_transformation.h>
 
-eae6320::cGameObject::cGameObject(eae6320::Math::sVector i_position, eae6320::Math::cQuaternion i_orientation, const char * const i_meshPath, const char * const i_effectPath)
+eae6320::cGameObject::cGameObject(eae6320::Math::sVector i_position, eae6320::Math::cQuaternion i_orientation, const char * const i_meshPath, const char * const i_materialPath)
 {
 	m_rigidBody.position = i_position;
 	m_rigidBody.orientation = i_orientation;
 
-	// Initialize the shading data
-	if (i_meshPath && i_effectPath)
+	// Initialize the game object data
+	if (i_meshPath && i_materialPath)
 	{
 
 		auto result = Results::Success;
@@ -24,7 +24,7 @@ eae6320::cGameObject::cGameObject(eae6320::Math::sVector i_position, eae6320::Ma
 		}
 
 		{
-			if ( !( result = eae6320::Graphics::cEffect::s_manager.Load(i_effectPath, m_effect) ) )
+			if ( !( result = eae6320::Graphics::cMaterial::s_manager.Load(i_materialPath, m_material) ) )
 			{
 				EAE6320_ASSERT( false );
 			}
@@ -49,9 +49,9 @@ eae6320::cResult eae6320::cGameObject::CleanUp()
 		}
 	}
 
-	if ( m_effect )
+	if ( m_material )
 	{
-		const auto localResult = Graphics::cEffect::s_manager.Release( m_effect);
+		const auto localResult = Graphics::cMaterial::s_manager.Release( m_material);
 		if ( !localResult )
 		{
 			EAE6320_ASSERT( false );
@@ -85,9 +85,9 @@ uint_fast32_t eae6320::cGameObject::GetMesh()
 	return m_mesh.GetIndex();
 }
 
-uint_fast32_t eae6320::cGameObject::GetEffect()
+uint_fast32_t eae6320::cGameObject::GetMaterial()
 {
-	return m_effect.GetIndex();
+	return m_material.GetIndex();
 }
 
 eae6320::Math::cMatrix_transformation eae6320::cGameObject::GetTransform(const float i_elapsedSecondCount_sinceLastSimulationUpdate)
