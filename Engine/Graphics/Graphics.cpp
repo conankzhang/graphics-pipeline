@@ -33,6 +33,7 @@ namespace
 	// Constant buffer object
 	eae6320::Graphics::cConstantBuffer s_constantBuffer_perFrame( eae6320::Graphics::ConstantBufferTypes::PerFrame );
 	eae6320::Graphics::cConstantBuffer s_constantBuffer_perDrawCalls( eae6320::Graphics::ConstantBufferTypes::PerDrawCall );
+	eae6320::Graphics::cConstantBuffer s_constantBuffer_perMaterial( eae6320::Graphics::ConstantBufferTypes::PerMaterial );
 
 	// Submission Data
 	//----------------
@@ -135,6 +136,7 @@ void eae6320::Graphics::RenderFrame()
 		auto& constantData_perFrame = s_dataBeingRenderedByRenderThread->constantData_perFrame;
 		s_constantBuffer_perFrame.Update( &constantData_perFrame );
 	}
+
 	size_t t = sizeof(*s_dataBeingRenderedByRenderThread);
 	sColor clearColor = s_dataBeingRenderedByRenderThread->m_color;
 	s_View.ClearColor(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha);
@@ -159,31 +161,9 @@ void eae6320::Graphics::RenderFrame()
 		}
 	}
 
-	//for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->m_renderCount; ++i)
-	//{
-	//	if (s_dataBeingRenderedByRenderThread->m_effects[i])
-	//	{
-	//		s_dataBeingRenderedByRenderThread->m_effects[i]->DecrementReferenceCount();
-	//		s_dataBeingRenderedByRenderThread->m_effects[i] = nullptr;
-	//	}
-
-	//	if (s_dataBeingRenderedByRenderThread->m_meshes[i])
-	//	{
-	//		s_dataBeingRenderedByRenderThread->m_meshes[i]->DecrementReferenceCount();
-	//		s_dataBeingRenderedByRenderThread->m_meshes[i] = nullptr;
-	//	}
-	//}
-
 	s_dataBeingRenderedByRenderThread->m_renderCount = 0;
 
 	s_View.Swap();
-
-	// Once everything has been drawn the data that was submitted for this frame
-	// should be cleaned up and cleared.
-	// so that the struct can be re-used (i.e. so that data for a new frame can be submitted to it)
-	{
-		// (At this point in the class there isn't anything that needs to be cleaned up)
-	}
 }
 
 // Initialization / Clean Up
@@ -239,15 +219,26 @@ eae6320::cResult eae6320::Graphics::Initialize( const sInitializationParameters&
 			EAE6320_ASSERT( false );
 			goto OnExit;
 		}
-	}
 
-	// Initialize the platform-independent graphics objects
-	{
 		if ( result = s_constantBuffer_perDrawCalls.Initialize() )
 		{
 			// There is only a single per-frame constant buffer that is re-used
 			// and so it can be bound at initialization time and never unbound
 			s_constantBuffer_perDrawCalls.Bind(
+				// In our class both vertex and fragment shaders use per-frame constant data
+				ShaderTypes::Vertex | ShaderTypes::Fragment );
+		}
+		else
+		{
+			EAE6320_ASSERT( false );
+			goto OnExit;
+		}
+
+		if ( result = s_constantBuffer_perMaterial.Initialize() )
+		{
+			// There is only a single per-frame constant buffer that is re-used
+			// and so it can be bound at initialization time and never unbound
+			s_constantBuffer_perMaterial.Bind(
 				// In our class both vertex and fragment shaders use per-frame constant data
 				ShaderTypes::Vertex | ShaderTypes::Fragment );
 		}
@@ -308,6 +299,18 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 
 	{
 		const auto localResult = s_constantBuffer_perDrawCalls.CleanUp();
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+	}
+
+	{
+		const auto localResult = s_constantBuffer_perMaterial.CleanUp();
 		if ( !localResult )
 		{
 			EAE6320_ASSERT( false );
