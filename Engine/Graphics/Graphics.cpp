@@ -433,7 +433,7 @@ void eae6320::Graphics::SubmitCamera(eae6320::Math::cMatrix_transformation i_tra
 	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_vector_cameraPosition = i_vector_cameraPosition;;
 }
 
-void eae6320::Graphics::SubmitDrawCommand(RenderCommand i_command, unsigned int i_effectId, unsigned int i_distance, unsigned int i_meshId, eae6320::Math::cMatrix_transformation& i_transform)
+void eae6320::Graphics::SubmitDrawCommand(RenderCommand i_command, unsigned int i_effectId, unsigned int i_distance, unsigned int i_meshId, eae6320::Math::cMatrix_transformation& i_transform_localToWorld, const Math::cMatrix_transformation& i_transform_localToProjected)
 {
 	DrawCommand drawCommand;
 	drawCommand.nCommand = i_command;
@@ -442,7 +442,8 @@ void eae6320::Graphics::SubmitDrawCommand(RenderCommand i_command, unsigned int 
 	drawCommand.nMeshId = i_meshId;
 	drawCommand.nSubmitIndex = s_dataBeingSubmittedByApplicationThread->m_renderCount;
 
-	s_dataBeingSubmittedByApplicationThread->m_constantData[s_dataBeingSubmittedByApplicationThread->m_renderCount].g_transform_localToWorld = i_transform;
+	s_dataBeingSubmittedByApplicationThread->m_constantData[s_dataBeingSubmittedByApplicationThread->m_renderCount].g_transform_localToWorld = i_transform_localToWorld;
+	s_dataBeingSubmittedByApplicationThread->m_constantData[s_dataBeingSubmittedByApplicationThread->m_renderCount].g_transform_localToProjected = i_transform_localToProjected;
 	s_dataBeingSubmittedByApplicationThread->m_renderCommands[s_dataBeingSubmittedByApplicationThread->m_renderCount] = *(uint64_t*)&drawCommand;
 
 	s_dataBeingSubmittedByApplicationThread->m_renderCount++;

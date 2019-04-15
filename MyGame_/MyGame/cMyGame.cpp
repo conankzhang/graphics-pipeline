@@ -20,13 +20,22 @@
 void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate)
 {
 	eae6320::Graphics::SubmitBackgroundColor(0.13f, 0.24f, 0.33f, 1.0f);
-	eae6320::Graphics::SubmitCamera(m_camera->GetWorldToCameraTransform(i_elapsedSecondCount_sinceLastSimulationUpdate), m_camera->GetCameraToProjectedTransform(), m_camera->GetPosition(), i_elapsedSecondCount_systemTime, i_elapsedSecondCount_sinceLastSimulationUpdate);
+	Math::cMatrix_transformation transform_worldToCamera = m_camera->GetWorldToCameraTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
+	Math::cMatrix_transformation transform_cameraToProjected = m_camera->GetCameraToProjectedTransform();
 
-	eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_player->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_player->GetPosition()), m_player->GetMesh(), m_player->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
+	eae6320::Graphics::SubmitCamera(transform_worldToCamera, transform_cameraToProjected, m_camera->GetPosition(), i_elapsedSecondCount_systemTime, i_elapsedSecondCount_sinceLastSimulationUpdate);
+
+	Math::cMatrix_transformation transform_worldToProjected = transform_cameraToProjected * transform_worldToCamera;
+
+	Math::cMatrix_transformation transform_localToWorld = m_player->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
+	eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_player->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_player->GetPosition()), m_player->GetMesh(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
+
 	//eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object2->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object2->GetPosition()), m_object2->GetMesh(), m_object2->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
 	//eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object3->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object3->GetPosition()), m_object3->GetMesh(), m_object3->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
 	//eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object4->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object4->GetPosition()), m_object4->GetMesh(), m_object4->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
-	eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object5->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object5->GetPosition()), m_object5->GetMesh(), m_object5->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
+
+	transform_localToWorld = m_object5->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
+	eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object5->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object5->GetPosition()), m_object5->GetMesh(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
 }
 
 // Run
