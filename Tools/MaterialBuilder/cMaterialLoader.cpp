@@ -157,10 +157,12 @@ eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io
 	}
 	else
 	{
-		result = eae6320::Results::InvalidFile;
-		std::cerr << "The value at \"" << key << "\" must be a table "
-			"(instead of a " << luaL_typename( &io_luaState, -1 ) << ")" << std::endl;
-		goto OnExit;
+		o_colorData.push_back(1.0f);
+		o_colorData.push_back(1.0f);
+		o_colorData.push_back(1.0f);
+		o_colorData.push_back(1.0f);
+
+		lua_pop( &io_luaState, 1 );
 	}
 
 OnExit:

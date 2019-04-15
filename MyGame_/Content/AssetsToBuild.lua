@@ -11,9 +11,7 @@ return
 
 	meshes =
 	{
-		{ path = "Meshes/cube.mesh" },
 		{ path = "Meshes/plane.mesh" },
-		{ path = "Meshes/pyramid.mesh" },
 		{ path = "Meshes/sphere.mesh" },
 	},
 
