@@ -47,7 +47,7 @@ namespace
 		eae6320::Graphics::ConstantBufferFormats::sPerMaterial constantData_perMaterial[65536];
 		uint64_t renderCommands[65536];
 		eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
-		uint_fast32_t currentBoundEffectId = 65537;
+		uint_fast32_t currentBoundMaterialId = 65537;
 		eae6320::Graphics::sColor clearColor;
 		uint16_t renderCount;
 	};
@@ -152,10 +152,13 @@ void eae6320::Graphics::RenderFrame()
 			s_constantBuffer_perDrawCalls.Update( &constantData_perDrawCall );
 
 			// Make sure to bind effect before rendering mesh
-			if (s_dataBeingRenderedByRenderThread->currentBoundEffectId != drawCommand.nEffectId)
+			if (s_dataBeingRenderedByRenderThread->currentBoundMaterialId != drawCommand.nMaterialId)
 			{
-				cEffect::s_manager.UnsafeGet(drawCommand.nEffectId)->RenderFrame();
-				s_dataBeingRenderedByRenderThread->currentBoundEffectId = drawCommand.nEffectId;
+				auto& constantData_perMaterial = s_dataBeingRenderedByRenderThread->constantData_perMaterial[drawCommand.nMaterialId];
+				s_constantBuffer_perMaterial.Update( &constantData_perMaterial );
+
+				cMaterial::s_manager.UnsafeGet(drawCommand.nMaterialId)->RenderFrame();
+				s_dataBeingRenderedByRenderThread->currentBoundMaterialId = drawCommand.nMaterialId;
 			}
 
 			cMesh::s_manager.UnsafeGet(drawCommand.nMeshId)->RenderFrame();
@@ -400,7 +403,7 @@ void eae6320::Graphics::SubmitDrawCommand(RenderCommand i_command, unsigned int 
 	drawCommand.nMeshId = i_meshId;
 	drawCommand.nSubmitIndex = s_dataBeingSubmittedByApplicationThread->renderCount;
 
-	s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[s_dataBeingSubmittedByApplicationThread->renderCount].g_color = cMaterial::s_manager.UnsafeGet(i_materialId)->GetColor();
+	s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[i_materialId].g_color = cMaterial::s_manager.UnsafeGet(i_materialId)->GetColor();
 	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToWorld = i_transform_localToWorld;
 	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToProjected = i_transform_localToProjected;
 	s_dataBeingSubmittedByApplicationThread->renderCommands[s_dataBeingSubmittedByApplicationThread->renderCount] = *(uint64_t*)&drawCommand;
