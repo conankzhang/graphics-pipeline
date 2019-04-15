@@ -90,17 +90,16 @@ namespace eae6320
 		// Initialization / Clean Up
 		//--------------------------
 
+		cResult DeleteGameObject(cGameObject* i_gameObject);
+
 		// Object Data
 		//-------------
 		Graphics::sColor clearColor;
 
 		cGameObject* m_player;
-		cGameObject* m_object2;
-		cGameObject* m_object3;
-		cGameObject* m_object4;
-		cGameObject* m_object5;
-
 		cCamera* m_camera;
+
+		std::vector<cGameObject*> m_gameObjects;
 
 		float cameraMoveSpeed = 3.0f;
 		float playerMoveSpeed = 3.0f;

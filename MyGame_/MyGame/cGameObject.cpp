@@ -38,7 +38,7 @@ eae6320::cResult eae6320::cGameObject::CleanUp()
 
 	if ( m_mesh )
 	{
-		const auto localResult = Graphics::cMesh::s_manager.Release( m_mesh);
+		const auto localResult = Graphics::cMesh::s_manager.Release( m_mesh );
 		if ( !localResult )
 		{
 			EAE6320_ASSERT( false );
@@ -51,7 +51,7 @@ eae6320::cResult eae6320::cGameObject::CleanUp()
 
 	if ( m_material )
 	{
-		const auto localResult = Graphics::cMaterial::s_manager.Release( m_material);
+		const auto localResult = Graphics::cMaterial::s_manager.Release( m_material );
 		if ( !localResult )
 		{
 			EAE6320_ASSERT( false );
