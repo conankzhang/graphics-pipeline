@@ -17,16 +17,18 @@ cbuffer g_constantBuffer_perFrame : register( b0 )
 {
 	float4x4 g_transform_worldToCamera;
 	float4x4 g_transform_cameraToProjected;
+	float3 g_camera_position;
 
 	float g_elapsedSecondCount_systemTime;
 	float g_elapsedSecondCount_simulationTime;
 	// For float4 alignment
-	float2 g_padding;
+	float g_padding;
 };
 
 cbuffer g_constantBuffer_perDrawCall : register( b2 )
 {
   float4x4 g_transform_localToWorld;
+  float4x4 g_transform_localToProjected;
 };
 
 // Entry Point

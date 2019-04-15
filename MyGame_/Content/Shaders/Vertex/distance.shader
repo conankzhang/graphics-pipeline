@@ -29,6 +29,7 @@ cbuffer g_constantBuffer_perFrame : register( b0 )
 cbuffer g_constantBuffer_perDrawCall : register( b2 )
 {
   float4x4 g_transform_localToWorld;
+  float4x4 g_transform_localToProjected;
 };
 
 // Entry Point
