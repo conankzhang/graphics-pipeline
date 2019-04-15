@@ -3,28 +3,45 @@
 
 #include "cGameObject.h"
 
-#include <Engine/Graphics/cEffect.h>
-#include <Engine/Graphics/cMesh.h>
 #include <Engine/Math/cMatrix_transformation.h>
 
-eae6320::cGameObject::cGameObject(eae6320::Math::sVector i_position, eae6320::Math::cQuaternion i_orientation)
+eae6320::cGameObject::cGameObject(eae6320::Math::sVector i_position, eae6320::Math::cQuaternion i_orientation, const char * const i_meshPath, const char * const i_effectPath)
 {
 	m_rigidBody.position = i_position;
 	m_rigidBody.orientation = i_orientation;
+
+	// Initialize the shading data
+	if (i_meshPath && i_effectPath)
+	{
+
+		auto result = Results::Success;
+
+		{
+			if ( !( result =  eae6320::Graphics::cMesh::s_manager.Load(i_meshPath, m_mesh) ) )
+			{
+				EAE6320_ASSERT( false );
+			}
+		}
+
+		{
+			if ( !( result = eae6320::Graphics::cEffect::s_manager.Load(i_effectPath, m_effect) ) )
+			{
+				EAE6320_ASSERT( false );
+			}
+		}
+	}
 }
 
 void eae6320::cGameObject::CleanUp()
 {
-	if (m_effect)
+	if (m_mesh.IsValid())
 	{
-		m_effect->DecrementReferenceCount();
-		m_effect = nullptr;
+		Graphics::cMesh::s_manager.UnsafeDecrementReferenceCount(m_mesh.GetIndex());
 	}
 
-	if (m_mesh)
+	if (m_effect.IsValid())
 	{
-		m_mesh->DecrementReferenceCount();
-		m_mesh = nullptr;
+		Graphics::cEffect::s_manager.UnsafeDecrementReferenceCount(m_effect.GetIndex());
 	}
 }
 
@@ -38,23 +55,32 @@ void eae6320::cGameObject::SetVelocity(eae6320::Math::sVector i_velocity)
 	m_rigidBody.velocity = i_velocity;
 }
 
-void eae6320::cGameObject::SetMeshAndEffect(eae6320::Graphics::cMesh* i_mesh, eae6320::Graphics::cEffect* i_effect)
+void eae6320::cGameObject::SetAngularSpeed(float i_angularSpeed)
 {
-	m_mesh = i_mesh;
-	m_effect = i_effect;
+	m_rigidBody.angularSpeed = i_angularSpeed;
 }
 
-eae6320::Graphics::cMesh* eae6320::cGameObject::GetMesh()
+uint_fast32_t eae6320::cGameObject::GetMesh()
 {
-	return m_mesh;
+	return m_mesh.GetIndex();
 }
 
-eae6320::Graphics::cEffect* eae6320::cGameObject::GetEffect()
+uint_fast32_t eae6320::cGameObject::GetEffect()
 {
-	return m_effect;
+	return m_effect.GetIndex();
 }
 
 eae6320::Math::cMatrix_transformation eae6320::cGameObject::GetTransform(const float i_elapsedSecondCount_sinceLastSimulationUpdate)
 {
 	return eae6320::Math::cMatrix_transformation(m_rigidBody.PredictFutureOrientation(i_elapsedSecondCount_sinceLastSimulationUpdate), m_rigidBody.PredictFuturePosition(i_elapsedSecondCount_sinceLastSimulationUpdate));
+}
+
+eae6320::Math::sVector eae6320::cGameObject::GetForward()
+{
+	return m_rigidBody.orientation.CalculateForwardDirection();
+}
+
+eae6320::Math::sVector eae6320::cGameObject::GetPosition()
+{
+	return m_rigidBody.position;
 }

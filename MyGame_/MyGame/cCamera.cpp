@@ -5,7 +5,7 @@
 #include <Engine/Math/cMatrix_transformation.h>
 
 eae6320::cCamera::cCamera(eae6320::Math::sVector i_position, eae6320::Math::cQuaternion i_orientation)
-	:cGameObject(i_position, i_orientation)
+	:cGameObject(i_position, i_orientation, nullptr, nullptr)
 {
 
 }
@@ -18,4 +18,11 @@ eae6320::Math::cMatrix_transformation eae6320::cCamera::GetWorldToCameraTransfor
 eae6320::Math::cMatrix_transformation eae6320::cCamera::GetCameraToProjectedTransform()
 {
 	return eae6320::Math::cMatrix_transformation::CreateCameraToProjectedTransform_perspective(m_verticalFieldOfView_inRadians, m_aspectRatio, m_z_nearPlane, m_z_farPlane);
+}
+
+unsigned int eae6320::cCamera::CalculateNormalizedCameraDistance(const eae6320::Math::sVector& i_position)
+{
+	float CameraDistance = Math::Dot(GetForward(), i_position - GetPosition());
+	float NormalizedDistance = (CameraDistance - m_z_nearPlane) / (m_z_farPlane - m_z_nearPlane) * 255;
+	return static_cast<unsigned int>(NormalizedDistance);
 }

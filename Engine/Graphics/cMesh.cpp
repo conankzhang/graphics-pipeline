@@ -25,19 +25,19 @@ eae6320::Assets::cManager<eae6320::Graphics::cMesh> eae6320::Graphics::cMesh::s_
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::cResult eae6320::Graphics::cMesh::Load(const char* const i_path, cMesh*& o_mesh)
+eae6320::cResult eae6320::Graphics::cMesh::Load(const std::string& i_path, cMesh*& o_mesh)
 {
 	auto result = Results::Success;
 
 	cMesh* newMesh = nullptr;
 
 	eae6320::Platform::sDataFromFile dataFromFile;
-	eae6320::Platform::LoadBinaryFile(i_path, dataFromFile);
+	eae6320::Platform::LoadBinaryFile(i_path.c_str(), dataFromFile);
 
 	auto currentOffset = reinterpret_cast<uintptr_t>( dataFromFile.data );
 	const auto finalOffset = currentOffset + dataFromFile.size;
 
-    const auto vertexCount = *reinterpret_cast<uint16_t*>( currentOffset );
+	const auto vertexCount = *reinterpret_cast<uint16_t*>( currentOffset );
 
 	currentOffset += sizeof( vertexCount );
 	const auto indexCount = *reinterpret_cast<uint16_t*>( currentOffset );
@@ -56,7 +56,7 @@ eae6320::cResult eae6320::Graphics::cMesh::Load(const char* const i_path, cMesh*
 		goto OnExit;
 	}
 
-	// Allocate a new mesh 
+	// Allocate a new mesh
 	{
 		newMesh = new (std::nothrow) cMesh();
 		if ( !newMesh )

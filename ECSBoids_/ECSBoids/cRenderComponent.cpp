@@ -46,7 +46,7 @@ void eae6320::cRenderComponent::LoadPrefab(const char* const i_prefabPath)
 	char* effectPath = reinterpret_cast<char*>( currentOffset );
 
 	Graphics::cMesh::Load( meshPath, m_mesh );
-	Graphics::cEffect::Load(m_effect, effectPath );
+	Graphics::cEffect::Load(effectPath, m_effect);
 
 	SetActive(isActive);
 }

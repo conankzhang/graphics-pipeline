@@ -1,0 +1,8 @@
+return
+{
+	path_vertexShader = "Shaders/Vertex/local.shader",
+	path_fragmentShader = "Shaders/Fragment/crosshatch.shader",
+	AlphaTransparency = true,
+	DepthBuffering = true,
+	DrawBothTriangleSides = true,
+}

@@ -14,6 +14,7 @@
 #include "Configuration.h"
 
 #include <Engine/Math/cMatrix_transformation.h>
+#include <Engine/Math/sVector.h>
 
 // Format Definitions
 //===================
@@ -28,10 +29,11 @@ namespace eae6320
 			{
 				Math::cMatrix_transformation g_transform_worldToCamera;
 				Math::cMatrix_transformation g_transform_cameraToProjected;
+				Math::sVector g_vector_cameraPosition;
 
 				float g_elapsedSecondCount_systemTime = 0.0f;
 				float g_elapsedSecondCount_simulationTime = 0.0f;
-				float padding[2];	// For float4 alignment
+				float padding[1];	// For float4 alignment
 			};
 
 			struct sPerDrawCall

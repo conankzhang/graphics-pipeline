@@ -2,5 +2,5 @@ Opened log file "eae6320.log"
 Initialized time
 Registered main window class "ECS Boids Main Window Class"
 The user settings file "settings.ini" doesn't exist. Using default settings instead.
-Created main window "ECS Boids -- OpenGL -- Debug"
+Created main window "ECS Boids -- Direct3D -- Debug"
 Set main window resolution to 512 x 512

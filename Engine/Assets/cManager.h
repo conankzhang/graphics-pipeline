@@ -20,6 +20,7 @@
 #include <Engine/Concurrency/cMutex.h>
 #include <Engine/Results/Results.h>
 #include <map>
+#include <string>
 #include <vector>
 
 // Interface
@@ -29,7 +30,7 @@ namespace eae6320
 {
 	namespace Assets
 	{
-			template <class tAsset>
+			template <class tAsset, class tKey = std::string>
 		class cManager
 		{
 			// Interface
@@ -44,11 +45,24 @@ namespace eae6320
 			// or NULL if the handle doesn't point to a valid asset
 			tAsset* Get( const cHandle<tAsset> i_handle );
 
-			// Every handle returned from a successful call to Load() with a given path
+			// Every handle returned from a successful call to Load() with a given key
 			// must be passed to Release() when the caller is finished with it
 				template <typename... tConstructorArguments>
-			cResult Load( const char* const i_path, cHandle<tAsset>& o_handle, tConstructorArguments&&... i_constructorArguments );
+			cResult Load( const tKey& i_key, cHandle<tAsset>& o_handle, tConstructorArguments&&... i_constructorArguments );
 			cResult Release( cHandle<tAsset>& io_handle );
+
+			// Unsafe Access
+			//--------------
+
+			// The unsafe functions don't provide any error checking (for high performance situations)
+			// and allow the index returned from cHandle::GetIndex()
+			// to be used as an identifier instead of requiring the entire handle.
+			// To ensure correct (i.e. safe) behavior the caller must:
+			//	* Always call UnsafeIncrementReferenceCount() while the handle is known to be valid
+			//	* Have a matching call to UnsafeDecrementReferenceCount() for every time the count was incremented
+			tAsset* UnsafeGet( const uint_fast32_t i_index );
+			void UnsafeIncrementReferenceCount( const uint_fast32_t i_index );
+			void UnsafeDecrementReferenceCount( const uint_fast32_t i_index );
 
 			// Initialization / Clean Up
 			//--------------------------
@@ -56,7 +70,7 @@ namespace eae6320
 			cResult Initialize();
 			cResult CleanUp();
 
-			~cManager<tAsset>();
+			~cManager<tAsset, tKey>();
 
 			// Data
 			//=====
@@ -73,8 +87,16 @@ namespace eae6320
 			};
 			std::vector<sAssetRecord> m_assetRecords;
 			std::vector<uint16_t> m_unusedAssetRecordIndices;
-			std::map< std::string, cHandle<tAsset> > m_map_pathsToHandles;
+			std::map< tKey, cHandle<tAsset> > m_map_keysToHandles;
 			eae6320::Concurrency::cMutex m_mutex;
+
+			// Implementation
+			//===============
+
+			// Initialization / Clean Up
+			//--------------------------
+
+			void OnAssetReferenceCountDecrementedToZero( const uint_fast32_t i_index );
 		};
 	}
 }
