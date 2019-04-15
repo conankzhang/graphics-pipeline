@@ -30,17 +30,8 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const std::string& i_materia
 	auto currentOffset = reinterpret_cast<uintptr_t>( dataFromFile.data );
 	const auto finalOffset = currentOffset + dataFromFile.size;
 
-	const auto x_value = *reinterpret_cast<float*>( currentOffset );
-	currentOffset += sizeof( x_value );
-
-	const auto y_value = *reinterpret_cast<float*>( currentOffset );
-	currentOffset += sizeof( y_value );
-
-	const auto z_value = *reinterpret_cast<float*>( currentOffset );
-	currentOffset += sizeof( z_value );
-
-	const auto w_value = *reinterpret_cast<float*>( currentOffset );
-	currentOffset += sizeof( w_value );
+	const auto color = *reinterpret_cast<sColor*>( currentOffset );
+	currentOffset += sizeof( color );
 
 	const auto effectPathSize = *reinterpret_cast<uint16_t*>( currentOffset );
 	currentOffset += sizeof( effectPathSize );
@@ -49,7 +40,7 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const std::string& i_materia
 
 	// Allocate a new material
 	{
-		newMaterial = new (std::nothrow) cMaterial();
+		newMaterial = new (std::nothrow) cMaterial(color);
 		if ( !newMaterial )
 		{
 			result = Results::OutOfMemory;
@@ -114,7 +105,8 @@ void eae6320::Graphics::cMaterial::RenderFrame()
 	}
 }
 
-eae6320::Graphics::cMaterial::cMaterial()
+eae6320::Graphics::cMaterial::cMaterial(const sColor& i_color) :
+	m_color(i_color)
 {
 
 }

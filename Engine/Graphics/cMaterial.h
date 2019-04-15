@@ -18,6 +18,7 @@
 #include <Engine/Assets/cManager.h>
 #include <Engine/Results/Results.h>
 #include <Engine/Graphics/cEffect.h>
+#include <Engine/Graphics/sColor.h>
 
 #ifdef EAE6320_PLATFORM_GL
 	#include "OpenGL/Includes.h"
@@ -55,7 +56,7 @@ namespace eae6320
 
 			// Initialization / Clean Up
 			//--------------------------
-			static cResult Load(const std::string& i_materialPath, eae6320::Graphics::cMaterial*& o_material);
+			static cResult Load(const std::string& i_materialPath, cMaterial*& o_material);
 
 			void RenderFrame();
 
@@ -71,7 +72,8 @@ namespace eae6320
 
 		public:
 
-			eae6320::Graphics::cEffect::Handle m_effect;
+			cEffect::Handle m_effect;
+			sColor m_color;
 
 			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
 
@@ -84,7 +86,7 @@ namespace eae6320
 			//--------------------------
 			eae6320::cResult CleanUp();
 
-			cMaterial();
+			cMaterial(const sColor& i_color);
 			~cMaterial();
 		};
 	}
