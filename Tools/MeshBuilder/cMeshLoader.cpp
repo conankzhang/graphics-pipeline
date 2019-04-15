@@ -265,7 +265,6 @@ eae6320::cResult eae6320::Assets::cMeshLoader::LoadTableValues_vertexArray_verti
 {
 	auto result = eae6320::Results::Success;
 
-	std::cout << "Iterating through every position value:" << std::endl;
 	Graphics::VertexFormats::sMesh position;
 	const auto valueCount = luaL_len( &io_luaState, -1 );
 	for ( int i = 1; i <= valueCount; ++i )
