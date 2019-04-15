@@ -34,3 +34,11 @@ eae6320::Graphics::sColor::~sColor()
 {
 
 }
+
+void eae6320::Graphics::sColor::SetColor(float i_red, float i_green, float i_blue, float i_alpha)
+{
+	red = i_red;
+	green = i_green;
+	blue = i_blue;
+	alpha = i_alpha;
+}

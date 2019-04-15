@@ -12,6 +12,7 @@
 
 #include <Engine/Application/cbApplication.h>
 #include <Engine/Results/Results.h>
+#include <Engine/Graphics/sColor.h>
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
 	#include "Resource Files/Resource.h"
@@ -22,11 +23,6 @@
 
 namespace eae6320
 {
-	namespace Graphics
-	{
-		struct sColor;
-	}
-
 	class cGameObject;
 }
 
@@ -96,7 +92,7 @@ namespace eae6320
 
 		// Object Data
 		//-------------
-		Graphics::sColor* clearColor;
+		Graphics::sColor clearColor;
 
 		cGameObject* m_player;
 		cGameObject* m_object2;

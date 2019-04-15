@@ -8,7 +8,6 @@
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/UserInput/UserInput.h>
 #include <Engine/Graphics/Graphics.h>
-#include <Engine/Graphics/sColor.h>
 #include <Engine/Math/cMatrix_transformation.h>
 
 // Inherited Implementation
@@ -16,7 +15,7 @@
 
 void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate)
 {
-	Graphics::SubmitBackgroundColor(*clearColor);
+	Graphics::SubmitBackgroundColor(clearColor);
 	Math::cMatrix_transformation transform_worldToCamera = m_camera->GetWorldToCameraTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
 	Math::cMatrix_transformation transform_cameraToProjected = m_camera->GetCameraToProjectedTransform();
 
@@ -172,7 +171,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 {
 	auto result = Results::Success;
 
-	clearColor = new Graphics::sColor(0.13f, 0.24f, 0.33f, 1.0f);
+	clearColor.SetColor(0.13f, 0.24f, 0.33f, 1.0f);
 
 	m_player = new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/standard.material");
 	//m_object2 = new eae6320::cGameObject(eae6320::Math::sVector(-0.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/red.effect");
@@ -189,12 +188,6 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 eae6320::cResult eae6320::cMyGame::CleanUp()
 {
 	auto result = Results::Success;
-
-	if (clearColor)
-	{
-		delete clearColor;
-		clearColor = nullptr;
-	}
 
 	if (m_player)
 	{
