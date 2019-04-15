@@ -29,6 +29,7 @@ cbuffer g_constantBuffer_perFrame : register( b0 )
 cbuffer g_constantBuffer_perDrawCall : register( b2 )
 {
   float4x4 g_transform_localToWorld;
+  float4x4 g_transform_localToProjected;
 };
 
 // Entry Point
@@ -62,12 +63,6 @@ void main(
 		vertexPosition_world = mul( g_transform_localToWorld, vertexPosition_local );
 
 		o_cameraDistance = length(g_camera_position - vertexPosition_world.xyz);
-	}
-	// Calculate the position of this vertex projected onto the display
-	{
-		// Transform the vertex from world space into camera space
-		float4 vertexPosition_camera = mul( g_transform_worldToCamera, vertexPosition_world );
-		// Project the vertex from camera space into projected space
-		o_vertexPosition_projected = mul( g_transform_cameraToProjected, vertexPosition_camera );
+		o_vertexPosition_projected = mul( g_transform_localToProjected, vertexPosition_local );
 	}
 }
