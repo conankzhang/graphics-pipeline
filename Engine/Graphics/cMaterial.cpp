@@ -110,6 +110,11 @@ uint_fast32_t eae6320::Graphics::cMaterial::GetEffectId()
 	return m_effect.GetIndex();
 }
 
+const eae6320::Graphics::sColor& eae6320::Graphics::cMaterial::GetColor()
+{
+	return m_color;
+}
+
 eae6320::Graphics::cMaterial::cMaterial(const sColor& i_color) :
 	m_color(i_color)
 {

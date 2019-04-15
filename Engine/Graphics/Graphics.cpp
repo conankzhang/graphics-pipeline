@@ -152,10 +152,10 @@ void eae6320::Graphics::RenderFrame()
 			s_constantBuffer_perDrawCalls.Update( &constantData_perDrawCall );
 
 			// Make sure to bind effect before rendering mesh
-			if (s_dataBeingRenderedByRenderThread->currentBoundEffectId != drawCommand.nMaterialId)
+			if (s_dataBeingRenderedByRenderThread->currentBoundEffectId != drawCommand.nEffectId)
 			{
-				cEffect::s_manager.UnsafeGet(drawCommand.nMaterialId)->RenderFrame();
-				s_dataBeingRenderedByRenderThread->currentBoundEffectId = drawCommand.nMaterialId;
+				cEffect::s_manager.UnsafeGet(drawCommand.nEffectId)->RenderFrame();
+				s_dataBeingRenderedByRenderThread->currentBoundEffectId = drawCommand.nEffectId;
 			}
 
 			cMesh::s_manager.UnsafeGet(drawCommand.nMeshId)->RenderFrame();
@@ -392,7 +392,6 @@ void eae6320::Graphics::SubmitCamera(eae6320::Math::cMatrix_transformation i_tra
 
 void eae6320::Graphics::SubmitDrawCommand(RenderCommand i_command, unsigned int i_materialId, unsigned int i_distance, unsigned int i_meshId, eae6320::Math::cMatrix_transformation& i_transform_localToWorld, const Math::cMatrix_transformation& i_transform_localToProjected)
 {
-
 	DrawCommand drawCommand;
 	drawCommand.nCommand = i_command;
 	drawCommand.nEffectId = cMaterial::s_manager.UnsafeGet(i_materialId)->GetEffectId();
@@ -401,6 +400,7 @@ void eae6320::Graphics::SubmitDrawCommand(RenderCommand i_command, unsigned int 
 	drawCommand.nMeshId = i_meshId;
 	drawCommand.nSubmitIndex = s_dataBeingSubmittedByApplicationThread->renderCount;
 
+	s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[s_dataBeingSubmittedByApplicationThread->renderCount].g_color = cMaterial::s_manager.UnsafeGet(i_materialId)->GetColor();
 	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToWorld = i_transform_localToWorld;
 	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToProjected = i_transform_localToProjected;
 	s_dataBeingSubmittedByApplicationThread->renderCommands[s_dataBeingSubmittedByApplicationThread->renderCount] = *(uint64_t*)&drawCommand;

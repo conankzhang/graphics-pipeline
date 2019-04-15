@@ -50,7 +50,6 @@ void eae6320::cRenderSystem::SubmitDataToBeRendered(const float i_deltaSystemTim
 	{
 		if ((*renderComponent) && (*renderComponent)->IsActive())
 		{
-			Graphics::SubmitGameObject((*renderComponent)->GetMesh(), (*renderComponent)->GetEffect(), (*renderComponent)->GetTransform(i_deltaTime));
 		}
 	}
 }
