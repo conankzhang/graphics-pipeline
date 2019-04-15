@@ -45,10 +45,8 @@ namespace
 	{
 		eae6320::Graphics::ConstantBufferFormats::sPerDrawCall constantData_perDrawCall[65536];
 		eae6320::Graphics::ConstantBufferFormats::sPerMaterial constantData_perMaterial[65536];
-		eae6320::Graphics::cMesh* meshes[65536];
-		eae6320::Graphics::cEffect* effects[65536];
-		eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
 		uint64_t renderCommands[65536];
+		eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
 		uint_fast32_t currentBoundEffectId = 65537;
 		eae6320::Graphics::sColor clearColor;
 		uint16_t renderCount;
@@ -324,36 +322,6 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 		}
 	}
 
-	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->renderCount; ++i)
-	{
-		if (s_dataBeingRenderedByRenderThread->effects[i])
-		{
-			s_dataBeingRenderedByRenderThread->effects[i]->DecrementReferenceCount();
-			s_dataBeingRenderedByRenderThread->effects[i] = nullptr;
-		}
-
-		if (s_dataBeingRenderedByRenderThread->meshes[i])
-		{
-			s_dataBeingRenderedByRenderThread->meshes[i]->DecrementReferenceCount();
-			s_dataBeingRenderedByRenderThread->meshes[i] = nullptr;
-		}
-	}
-
-	for (uint16_t i = 0; i < s_dataBeingSubmittedByApplicationThread->renderCount; ++i)
-	{
-		if (s_dataBeingSubmittedByApplicationThread->effects[i])
-		{
-			s_dataBeingSubmittedByApplicationThread->effects[i]->DecrementReferenceCount();
-			s_dataBeingSubmittedByApplicationThread->effects[i] = nullptr;
-		}
-
-		if (s_dataBeingSubmittedByApplicationThread->meshes[i])
-		{
-			s_dataBeingSubmittedByApplicationThread->meshes[i]->DecrementReferenceCount();
-			s_dataBeingSubmittedByApplicationThread->meshes[i] = nullptr;
-		}
-	}
-
 	s_dataBeingRenderedByRenderThread->renderCount = 0;
 	s_dataBeingSubmittedByApplicationThread->renderCount = 0;
 
@@ -411,19 +379,6 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 void eae6320::Graphics::SubmitBackgroundColor(const sColor& i_color)
 {
 	s_dataBeingSubmittedByApplicationThread->clearColor = i_color;
-}
-
-void eae6320::Graphics::SubmitGameObject(eae6320::Graphics::cMesh* i_mesh, eae6320::Graphics::cEffect* i_effect, eae6320::Math::cMatrix_transformation& i_transform)
-{
-	i_mesh->IncrementReferenceCount();
-	s_dataBeingSubmittedByApplicationThread->meshes[s_dataBeingSubmittedByApplicationThread->renderCount] = i_mesh;
-
-	i_effect->IncrementReferenceCount();
-	s_dataBeingSubmittedByApplicationThread->effects[s_dataBeingSubmittedByApplicationThread->renderCount] = i_effect;
-
-	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToWorld = i_transform;
-
-	s_dataBeingSubmittedByApplicationThread->renderCount++;
 }
 
 void eae6320::Graphics::SubmitCamera(eae6320::Math::cMatrix_transformation i_transform_worldToCamera, eae6320::Math::cMatrix_transformation i_transform_cameraToProjected, const Math::sVector& i_vector_cameraPosition, float i_elapsedSecondCount_systemTime, float i_elapsedSecondCount_simulationTime)
