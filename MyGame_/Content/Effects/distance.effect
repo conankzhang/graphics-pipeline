@@ -4,5 +4,5 @@ return
 	path_fragmentShader = "Shaders/Fragment/distance.shader",
 	AlphaTransparency = true,
 	DepthBuffering = true,
-	DrawBothTriangleSides = true,
+	DrawBothTriangleSides = false,
 }

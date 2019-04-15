@@ -33,9 +33,7 @@ void main(
 	// Input
 	//=======
 
-	in float4 i_vertexPosition : VERTEX_POSITION,
-
-
+	in float i_cameraDistance : DISTANCE,
 	// Output
 	//=======
 
@@ -45,10 +43,6 @@ void main(
 
 	)
 {
-	o_color = float4(
-		sin(i_vertexPosition.x * 50),
-		sin(i_vertexPosition.y * 50),
-		sin(i_vertexPosition.z * 50),
-		1.0
-	);
+	float alpha = i_cameraDistance / 5;
+	o_color = float4(1.0f, 1.0f, 1.0f, 1 - alpha);
 }

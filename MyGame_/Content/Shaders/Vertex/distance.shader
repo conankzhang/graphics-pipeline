@@ -47,6 +47,7 @@ void main(
 
 	// Output
 	//=======
+	out float o_cameraDistance : DISTANCE,
 
 	// An SV_POSITION value must always be output from every vertex shader
 	// so that the GPU can figure out which fragments need to be shaded
@@ -58,17 +59,9 @@ void main(
 	float4 vertexPosition_world;
 	{
 		float4 vertexPosition_local = float4( i_vertexPosition_local, 1.0 );
-
-		float scalar = sin(g_elapsedSecondCount_simulationTime);
-		float4x4 scalingMatrix = {
-			scalar, 0, 0, 0,
-			0, scalar, 0, 0,
-			0, 0, scalar, 0,
-			0, 0, 0, 1
-		};
-
-		vertexPosition_local = mul(scalingMatrix , vertexPosition_local);
 		vertexPosition_world = mul( g_transform_localToWorld, vertexPosition_local );
+
+		o_cameraDistance = length(g_camera_position - vertexPosition_world.xyz);
 	}
 	// Calculate the position of this vertex projected onto the display
 	{
