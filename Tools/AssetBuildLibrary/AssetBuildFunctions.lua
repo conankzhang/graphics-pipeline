@@ -208,7 +208,7 @@ local function RegisterAssetToBeBuilt( i_sourceAssetRelativePath, i_assetType, i
 				end
 			else
 				error( "The source asset \"" .. tostring( i_sourceAssetRelativePath ) .. "\" can't be registered with a different number of arguments ("
-					.. tostring( #arguments ) .. ") than it was already registered with (" .. #registrationInfo.arguments .. ")" ) 
+					.. tostring( #arguments ) .. ") than it was already registered with (" .. #registrationInfo.arguments .. ")" )
 			end
 		end
 	end
@@ -291,14 +291,14 @@ NewAssetTypeInfo( "meshes",
 
 NewAssetTypeInfo( "effects",
   {
-    RegisterReferencedAssets = function( i_sourceRelativePath )
-      local sourceAbsolutePath = FindSourceContentAbsolutePathFromRelativePath( i_sourceRelativePath )
-      if DoesFileExist( sourceAbsolutePath ) then
-        local effect = dofile( sourceAbsolutePath )
-        RegisterAssetToBeBuilt( effect.path_vertexShader, "shaders", { "vertex" } )
-        RegisterAssetToBeBuilt( effect.path_fragmentShader, "shaders", { "fragment" } )
-      end
-    end,
+	RegisterReferencedAssets = function( i_sourceRelativePath )
+	  local sourceAbsolutePath = FindSourceContentAbsolutePathFromRelativePath( i_sourceRelativePath )
+	  if DoesFileExist( sourceAbsolutePath ) then
+		local effect = dofile( sourceAbsolutePath )
+		RegisterAssetToBeBuilt( effect.path_vertexShader, "shaders", { "vertex" } )
+		RegisterAssetToBeBuilt( effect.path_fragmentShader, "shaders", { "fragment" } )
+	  end
+	end,
 	ConvertSourceRelativePathToBuiltRelativePath = function( i_sourceRelativePath )
 		-- Change the source file extension to the binary version
 		local relativeDirectory, file = i_sourceRelativePath:match( "(.-)([^/\\]+)$" )
@@ -316,14 +316,14 @@ NewAssetTypeInfo( "effects",
 
 NewAssetTypeInfo( "prefabs",
   {
-    RegisterReferencedAssets = function( i_sourceRelativePath )
-      local sourceAbsolutePath = FindSourceContentAbsolutePathFromRelativePath( i_sourceRelativePath )
-      if DoesFileExist( sourceAbsolutePath ) then
-        local prefab = dofile( sourceAbsolutePath )
-        RegisterAssetToBeBuilt( prefab.components[1].path, "meshes" )
-        RegisterAssetToBeBuilt( prefab.components[2].path, "effects" )
-      end
-    end,
+	RegisterReferencedAssets = function( i_sourceRelativePath )
+	  local sourceAbsolutePath = FindSourceContentAbsolutePathFromRelativePath( i_sourceRelativePath )
+	  if DoesFileExist( sourceAbsolutePath ) then
+		local prefab = dofile( sourceAbsolutePath )
+		RegisterAssetToBeBuilt( prefab.components[1].path, "meshes" )
+		RegisterAssetToBeBuilt( prefab.components[2].path, "effects" )
+	  end
+	end,
 	ConvertSourceRelativePathToBuiltRelativePath = function( i_sourceRelativePath )
 		-- Change the source file extension to the binary version
 		local relativeDirectory, file = i_sourceRelativePath:match( "(.-)([^/\\]+)$" )
@@ -332,6 +332,30 @@ NewAssetTypeInfo( "prefabs",
 	end,
 	GetBuilderRelativePath = function()
 		return "PrefabBuilder.exe"
+	end,
+  }
+)
+
+-- Material Asset Type
+--------------------
+
+NewAssetTypeInfo( "materials",
+  {
+	RegisterReferencedAssets = function( i_sourceRelativePath )
+	  local sourceAbsolutePath = FindSourceContentAbsolutePathFromRelativePath( i_sourceRelativePath )
+	  if DoesFileExist( sourceAbsolutePath ) then
+		local material = dofile( sourceAbsolutePath )
+		RegisterAssetToBeBuilt( material.path_effect, "effects" )
+	  end
+	end,
+	ConvertSourceRelativePathToBuiltRelativePath = function( i_sourceRelativePath )
+		-- Change the source file extension to the binary version:want
+		local relativeDirectory, file = i_sourceRelativePath:match( "(.-)([^/\\]+)$" )
+		local fileName, extensionWithPeriod = file:match( "([^%.]+)(.*)" )
+		return relativeDirectory .. fileName .. extensionWithPeriod
+	end,
+	GetBuilderRelativePath = function()
+		return "MaterialBuilder.exe"
 	end,
   }
 )
