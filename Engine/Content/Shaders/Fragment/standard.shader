@@ -34,6 +34,7 @@ cbuffer g_constantBuffer_perDrawCall : register( b2 )
 //============
 
 void main(
+	in const float2 i_textureCoordinates : TEXTURE_COORDINATES,
 
 	// Output
 	//=======
