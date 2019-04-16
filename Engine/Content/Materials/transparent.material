@@ -2,5 +2,6 @@ return
 {
 	path_effect = "Effects/transparent.effect",
     color = { 1.0, 1.0, 1.0, 0.5 },
+    path_texture = "Textures/eaeAlien.png",
 }
 
