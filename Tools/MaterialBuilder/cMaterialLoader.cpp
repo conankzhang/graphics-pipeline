@@ -191,7 +191,7 @@ eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io
 	}
 	else
 	{
-		o_texturePath = "Textures/Default.bmp";
+		o_texturePath = "Textures/default_diffuse.tga";
 		lua_pop( &io_luaState, 1 );
 	}
 
