@@ -398,6 +398,7 @@ void eae6320::Graphics::SubmitDrawCommand(unsigned int i_distance, const cMesh::
 	if (cMaterial::s_manager.Get(i_material)->IsAlphaTransparencyEnabled())
 	{
 		drawCommand.nCommand = RenderCommand::DependentDraw;
+		i_distance = 255 - i_distance;
 	}
 	else
 	{
