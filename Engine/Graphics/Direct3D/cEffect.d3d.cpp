@@ -21,80 +21,6 @@ eae6320::Assets::cManager<eae6320::Graphics::cEffect> eae6320::Graphics::cEffect
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::cResult eae6320::Graphics::cEffect::InitializeShadingData( const char i_vertexShaderPath[], const char i_fragmentShaderPath[], const uint8_t i_renderStateBits)
-{
-	auto result = eae6320::Results::Success;
-
-	if ( !( result = eae6320::Graphics::cShader::s_manager.Load( i_vertexShaderPath,
-		m_vertexShader, eae6320::Graphics::ShaderTypes::Vertex ) ) )
-	{
-		EAE6320_ASSERT( false );
-		goto OnExit;
-	}
-	if ( !( result = eae6320::Graphics::cShader::s_manager.Load( i_fragmentShaderPath,
-		m_fragmentShader, eae6320::Graphics::ShaderTypes::Fragment ) ) )
-	{
-		EAE6320_ASSERT( false );
-		goto OnExit;
-	}
-	{
-		if ( !( result = m_renderState.Initialize( i_renderStateBits ) ) )
-		{
-			EAE6320_ASSERT( false );
-			goto OnExit;
-		}
-	}
-
-OnExit:
-
-	return result;
-}
-
-eae6320::cResult eae6320::Graphics::cEffect::CleanUp()
-{
-	auto result = Results::Success;
-
-	if ( m_vertexShader )
-	{
-		const auto localResult = cShader::s_manager.Release( m_vertexShader );
-		if ( !localResult )
-		{
-			EAE6320_ASSERT( false );
-			if ( result )
-			{
-				result = localResult;
-			}
-		}
-	}
-	if ( m_fragmentShader )
-	{
-		const auto localResult = cShader::s_manager.Release( m_fragmentShader );
-		if ( !localResult )
-		{
-			EAE6320_ASSERT( false );
-			if ( result )
-			{
-				result = localResult;
-			}
-		}
-	}
-
-
-	{
-		const auto localResult = m_renderState.CleanUp();
-		if ( !localResult )
-		{
-			EAE6320_ASSERT( false );
-			if ( result )
-			{
-				result = localResult;
-			}
-		}
-	}
-
-	return result;
-}
-
 eae6320::cResult eae6320::Graphics::cEffect::Load(const std::string& i_effectPath, eae6320::Graphics::cEffect*& o_effect)
 {
 	auto result = Results::Success;
@@ -153,6 +79,53 @@ OnExit:
 	return result;
 }
 
+eae6320::cResult eae6320::Graphics::cEffect::CleanUp()
+{
+	auto result = Results::Success;
+
+	if ( m_vertexShader )
+	{
+		const auto localResult = cShader::s_manager.Release( m_vertexShader );
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+	}
+	if ( m_fragmentShader )
+	{
+		const auto localResult = cShader::s_manager.Release( m_fragmentShader );
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+	}
+
+
+	{
+		const auto localResult = m_renderState.CleanUp();
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+	}
+
+	return result;
+}
+
+
+
 void eae6320::Graphics::cEffect::RenderFrame()
 {
 	{
@@ -178,6 +151,35 @@ void eae6320::Graphics::cEffect::RenderFrame()
 	}
 
 	m_renderState.Bind();
+}
+
+eae6320::cResult eae6320::Graphics::cEffect::InitializeShadingData( const char i_vertexShaderPath[], const char i_fragmentShaderPath[], const uint8_t i_renderStateBits)
+{
+	auto result = eae6320::Results::Success;
+
+	if ( !( result = eae6320::Graphics::cShader::s_manager.Load( i_vertexShaderPath,
+		m_vertexShader, eae6320::Graphics::ShaderTypes::Vertex ) ) )
+	{
+		EAE6320_ASSERT( false );
+		goto OnExit;
+	}
+	if ( !( result = eae6320::Graphics::cShader::s_manager.Load( i_fragmentShaderPath,
+		m_fragmentShader, eae6320::Graphics::ShaderTypes::Fragment ) ) )
+	{
+		EAE6320_ASSERT( false );
+		goto OnExit;
+	}
+	{
+		if ( !( result = m_renderState.Initialize( i_renderStateBits ) ) )
+		{
+			EAE6320_ASSERT( false );
+			goto OnExit;
+		}
+	}
+
+OnExit:
+
+	return result;
 }
 
 eae6320::Graphics::cEffect::cEffect()

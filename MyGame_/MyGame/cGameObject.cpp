@@ -80,14 +80,14 @@ void eae6320::cGameObject::SetAngularSpeed(float i_angularSpeed)
 	m_rigidBody.angularSpeed = i_angularSpeed;
 }
 
-uint_fast32_t eae6320::cGameObject::GetMeshId()
+const eae6320::Graphics::cMaterial::Handle& eae6320::cGameObject::GetMaterial()
 {
-	return m_mesh.GetIndex();
+	return m_material;
 }
 
-uint_fast32_t eae6320::cGameObject::GetMaterialId()
+const eae6320::Graphics::cMesh::Handle& eae6320::cGameObject::GetMesh()
 {
-	return m_material.GetIndex();
+	return m_mesh;
 }
 
 eae6320::Math::cMatrix_transformation eae6320::cGameObject::GetTransform(const float i_elapsedSecondCount_sinceLastSimulationUpdate)

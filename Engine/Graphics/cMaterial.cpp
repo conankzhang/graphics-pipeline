@@ -115,6 +115,11 @@ const eae6320::Graphics::sColor& eae6320::Graphics::cMaterial::GetColor()
 	return m_color;
 }
 
+bool eae6320::Graphics::cMaterial::IsAlphaTransparencyEnabled() const
+{
+	return cEffect::s_manager.Get(m_effect)->m_renderState.IsAlphaTransparencyEnabled();
+}
+
 eae6320::Graphics::cMaterial::cMaterial(const sColor& i_color) :
 	m_color(i_color)
 {

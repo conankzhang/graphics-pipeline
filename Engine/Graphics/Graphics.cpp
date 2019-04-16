@@ -7,9 +7,7 @@
 #include "ConstantBufferFormats.h"
 #include "cRenderState.h"
 #include "cShader.h"
-#include "cMesh.h"
 #include "cEffect.h"
-#include "cMaterial.h"
 #include "sColor.h"
 #include "sContext.h"
 #include "VertexFormats.h"
@@ -145,7 +143,7 @@ void eae6320::Graphics::RenderFrame()
 	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->renderCount; ++i)
 	{
 		DrawCommand drawCommand = *(DrawCommand *)&s_dataBeingRenderedByRenderThread->renderCommands[i];
-		if(drawCommand.nCommand == RenderCommand::Draw)
+		if(drawCommand.nCommand == RenderCommand::IndependentDraw)
 		{
 			// Copy the data from the system memory that the application owns to GPU memory
 			auto& constantData_perDrawCall = s_dataBeingRenderedByRenderThread->constantData_perDrawCall[drawCommand.nSubmitIndex];
@@ -393,17 +391,26 @@ void eae6320::Graphics::SubmitCamera(eae6320::Math::cMatrix_transformation i_tra
 	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_vector_cameraPosition = i_vector_cameraPosition;;
 }
 
-void eae6320::Graphics::SubmitDrawCommand(RenderCommand i_command, unsigned int i_materialId, unsigned int i_distance, unsigned int i_meshId, eae6320::Math::cMatrix_transformation& i_transform_localToWorld, const Math::cMatrix_transformation& i_transform_localToProjected)
+void eae6320::Graphics::SubmitDrawCommand(unsigned int i_distance, const cMesh::Handle& i_mesh, const cMaterial::Handle& i_material, Math::cMatrix_transformation& i_transform_localToWorld, const Math::cMatrix_transformation& i_transform_localToProjected)
 {
 	DrawCommand drawCommand;
-	drawCommand.nCommand = i_command;
-	drawCommand.nEffectId = cMaterial::s_manager.UnsafeGet(i_materialId)->GetEffectId();
-	drawCommand.nMaterialId = i_materialId;
+
+	if (cMaterial::s_manager.Get(i_material)->IsAlphaTransparencyEnabled())
+	{
+		drawCommand.nCommand = RenderCommand::DependentDraw;
+	}
+	else
+	{
+		drawCommand.nCommand = RenderCommand::IndependentDraw;
+	}
+
+	drawCommand.nEffectId = cMaterial::s_manager.Get(i_material)->GetEffectId();
+	drawCommand.nMaterialId = i_material.GetIndex();
 	drawCommand.nDistance = i_distance;
-	drawCommand.nMeshId = i_meshId;
+	drawCommand.nMeshId = i_mesh.GetIndex();
 	drawCommand.nSubmitIndex = s_dataBeingSubmittedByApplicationThread->renderCount;
 
-	s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[i_materialId].g_color = cMaterial::s_manager.UnsafeGet(i_materialId)->GetColor();
+	s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[i_material.GetIndex()].g_color = cMaterial::s_manager.UnsafeGet(i_material.GetIndex())->GetColor();
 	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToWorld = i_transform_localToWorld;
 	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToProjected = i_transform_localToProjected;
 	s_dataBeingSubmittedByApplicationThread->renderCommands[s_dataBeingSubmittedByApplicationThread->renderCount] = *(uint64_t*)&drawCommand;

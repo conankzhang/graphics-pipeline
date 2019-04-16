@@ -26,7 +26,7 @@ void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_s
 	for (auto GameObject : m_gameObjects)
 	{
 		Math::cMatrix_transformation transform_localToWorld = GameObject->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
-		Graphics::SubmitDrawCommand(Graphics::RenderCommand::Draw, GameObject->GetMaterialId(), m_camera->CalculateNormalizedCameraDistance(GameObject->GetPosition()), GameObject->GetMeshId(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
+		Graphics::SubmitDrawCommand(m_camera->CalculateNormalizedCameraDistance(GameObject->GetPosition()), GameObject->GetMesh(), GameObject->GetMaterial(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
 	}
 }
 

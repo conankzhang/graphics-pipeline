@@ -13,6 +13,9 @@
 #include <cstdint>
 #include <Engine/Results/Results.h>
 
+#include "cMesh.h"
+#include "cMaterial.h"
+
 #if defined( EAE6320_PLATFORM_WINDOWS )
 	#include <Engine/Windows/Includes.h>
 #endif
@@ -45,7 +48,8 @@ namespace eae6320
 	{
 		enum class RenderCommand : unsigned int
 		{
-			Draw
+			IndependentDraw,
+			DependentDraw,
 		};
 
 		struct DrawCommand
@@ -105,8 +109,8 @@ namespace eae6320
 		cResult CleanUp();
 
 		void SubmitBackgroundColor(const sColor& i_color);
-		void SubmitCamera(eae6320::Math::cMatrix_transformation i_transform_worldToCamera, eae6320::Math::cMatrix_transformation i_transform_cameraToProjected, const Math::sVector& i_vector_cameraPasition, float i_elapsedSecondCount_systemTime, float i_elapsedSecondCount_simulationTime);
-		void SubmitDrawCommand(RenderCommand i_command, unsigned int i_materialId, unsigned int i_distance, unsigned int i_meshId, eae6320::Math::cMatrix_transformation& i_transform_localToWorld, const Math::cMatrix_transformation& i_transform_localToProjected);
+		void SubmitCamera(Math::cMatrix_transformation i_transform_worldToCamera, Math::cMatrix_transformation i_transform_cameraToProjected, const Math::sVector& i_vector_cameraPasition, float i_elapsedSecondCount_systemTime, float i_elapsedSecondCount_simulationTime);
+		void SubmitDrawCommand(unsigned int i_distance, const cMesh::Handle& i_mesh, const cMaterial::Handle& i_material, Math::cMatrix_transformation& i_transform_localToWorld, const Math::cMatrix_transformation& i_transform_localToProjected);
 	}
 }
 
