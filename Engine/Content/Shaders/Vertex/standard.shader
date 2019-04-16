@@ -31,6 +31,7 @@ cbuffer g_constantBuffer_perDrawCall : register( b2 )
   float4x4 g_transform_localToProjected;
 };
 
+DeclareTexture2d(g_diffuseTexture, 0);
 DeclareSamplerState(g_diffuse_samplerState, 0);
 
 // Entry Point
@@ -46,14 +47,14 @@ void main(
 
 	// These values come from one of the VertexFormats::sMesh that the vertex buffer was filled with in C code
 	in const float3 i_vertexPosition_local : POSITION,
-	in const float2 i_textureCoordinates : TEXTURE_COORDINATES,
+	in const float2 i_textureCoordinates : TEXCOORD,
 
 	// Output
 	//=======
 
 	// An SV_POSITION value must always be output from every vertex shader
 	// so that the GPU can figure out which fragments need to be shaded
-	out float2 o_textureCoordinates : TEXTURE_COORDINATES,
+	out float2 o_textureCoordinates : OTEXCOORD,
 	out float4 o_vertexPosition_projected : SV_POSITION
 	)
 {

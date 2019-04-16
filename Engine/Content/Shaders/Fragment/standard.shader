@@ -37,7 +37,7 @@ DeclareSamplerState(g_diffuse_samplerState, 0);
 //============
 
 void main(
-	in const float2 i_textureCoordinates : TEXTURE_COORDINATES,
+	in const float2 i_textureCoordinates : OTEXCOORD,
 
 	// Output
 	//=======
@@ -48,6 +48,6 @@ void main(
 
 	)
 {
-	float4 textureColor = SampleTexture2d(g_diffuseTexture, g_diffuse_samplerState, i_textureCoordinates.xy);
+	float4 textureColor = SampleTexture2d(g_diffuseTexture, g_diffuse_samplerState, i_textureCoordinates);
 	o_color = g_color * textureColor;
 }

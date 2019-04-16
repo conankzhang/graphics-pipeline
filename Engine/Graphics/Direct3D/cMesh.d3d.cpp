@@ -59,15 +59,15 @@ eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry(VertexFormats::sMe
 					positionElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
 				}
 
-				// Slot 2
+				// Slot 1
 
 				// TEXTURE COORDINATES
-				// 2 floats == 6 bytes
+				// 2 floats == 8 bytes
 				// Offset = 0
 				{
 					auto& textureCoordinateElement = layoutDescription[1];
 
-					textureCoordinateElement.SemanticName = "TEXTURE_COORDINATE";
+					textureCoordinateElement.SemanticName = "TEXCOORD";
 					textureCoordinateElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
 					textureCoordinateElement.Format = DXGI_FORMAT_R32G32_FLOAT;
 					textureCoordinateElement.InputSlot = 0;
