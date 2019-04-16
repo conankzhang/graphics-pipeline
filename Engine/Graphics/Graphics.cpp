@@ -6,6 +6,7 @@
 #include "cConstantBuffer.h"
 #include "ConstantBufferFormats.h"
 #include "cRenderState.h"
+#include "cSamplerState.h"
 #include "cShader.h"
 #include "cEffect.h"
 #include "sColor.h"
@@ -28,6 +29,8 @@
 namespace
 {
 	eae6320::Graphics::View s_View;
+
+	eae6320::Graphics::cSamplerState::Handle samplerState;
 
 	// Constant buffer object
 	eae6320::Graphics::cConstantBuffer s_constantBuffer_perFrame( eae6320::Graphics::ConstantBufferTypes::PerFrame );
@@ -213,6 +216,27 @@ eae6320::cResult eae6320::Graphics::Initialize( const sInitializationParameters&
 		}
 	}
 
+	{
+		if ( !( result = cSamplerState::s_manager.Initialize() ) )
+		{
+			EAE6320_ASSERT( false );
+			goto OnExit;
+		}
+		else
+		{
+			result = cSamplerState::s_manager.Load(1, samplerState);
+			if ( !( result ) )
+			{
+				EAE6320_ASSERT( false );
+				goto OnExit;
+			}
+			else
+			{
+				cSamplerState::s_manager.Get(samplerState)->Bind(1);
+			}
+		}
+	}
+
 	// Initialize the platform-independent graphics objects
 	{
 		if ( result = s_constantBuffer_perFrame.Initialize() )
@@ -381,6 +405,30 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 		}
 	}
 
+	if ( samplerState )
+	{
+		const auto localResult = cSamplerState::s_manager.Release( samplerState );
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+	}
+
+	{
+		const auto localResult = cSamplerState::s_manager.CleanUp();
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+	}
 	return result;
 }
 
