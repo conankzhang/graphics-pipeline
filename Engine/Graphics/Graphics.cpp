@@ -46,6 +46,7 @@ namespace
 		uint64_t renderCommands[65536];
 		eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
 		uint_fast32_t currentBoundMaterialId = 65537;
+		uint_fast32_t currentBoundEffectId = 65537;
 		eae6320::Graphics::sColor clearColor;
 		uint16_t renderCount;
 	};
@@ -150,12 +151,18 @@ void eae6320::Graphics::RenderFrame()
 			s_constantBuffer_perDrawCalls.Update( &constantData_perDrawCall );
 
 			// Make sure to bind effect before rendering mesh
+			if (s_dataBeingRenderedByRenderThread->currentBoundEffectId != drawCommand.nEffectId)
+			{
+				cMaterial::s_manager.UnsafeGet(drawCommand.nMaterialId)->RenderFrame();
+				s_dataBeingRenderedByRenderThread->currentBoundEffectId = drawCommand.nEffectId;
+			}
+
+			// Only update material constants with different materials
 			if (s_dataBeingRenderedByRenderThread->currentBoundMaterialId != drawCommand.nMaterialId)
 			{
 				auto& constantData_perMaterial = s_dataBeingRenderedByRenderThread->constantData_perMaterial[drawCommand.nMaterialId];
 				s_constantBuffer_perMaterial.Update( &constantData_perMaterial );
 
-				cMaterial::s_manager.UnsafeGet(drawCommand.nMaterialId)->RenderFrame();
 				s_dataBeingRenderedByRenderThread->currentBoundMaterialId = drawCommand.nMaterialId;
 			}
 
