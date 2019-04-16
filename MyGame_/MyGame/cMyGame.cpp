@@ -206,19 +206,19 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 
 	// Grid
 	m_gameObjects.push_back( new cGameObject(Math::sVector(-1.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(-0.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(0.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(1.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/brick.material") );
+	//m_gameObjects.push_back( new cGameObject(Math::sVector(0.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
+	//m_gameObjects.push_back( new cGameObject(Math::sVector(1.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
 
-	m_gameObjects.push_back( new cGameObject(Math::sVector(-1.5f, 1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(-0.5f, 1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(0.5f, 1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(1.5f, 1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
+	//m_gameObjects.push_back( new cGameObject(Math::sVector(-2.5f, 1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
+	//m_gameObjects.push_back( new cGameObject(Math::sVector(-0.5f, 1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
+	//m_gameObjects.push_back( new cGameObject(Math::sVector(1.5f, 1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
+	//m_gameObjects.push_back( new cGameObject(Math::sVector(3.5f, 1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
 
-	m_gameObjects.push_back( new cGameObject(Math::sVector(-1.5f, 2.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(-0.5f, 2.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(0.5f, 2.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(1.5f, 2.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
+	//m_gameObjects.push_back( new cGameObject(Math::sVector(-2.5f, 2.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
+	//m_gameObjects.push_back( new cGameObject(Math::sVector(-0.5f, 2.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
+	//m_gameObjects.push_back( new cGameObject(Math::sVector(1.5f, 2.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
+	//m_gameObjects.push_back( new cGameObject(Math::sVector(3.5f, 2.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
 
 	// Line
 	//m_gameObjects.push_back( new cGameObject(Math::sVector(-1.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/blue.material") );
@@ -229,7 +229,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	//m_gameObjects.push_back( new cGameObject(Math::sVector(3.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/transparent.material") );
 	//m_gameObjects.push_back( new cGameObject(Math::sVector(4.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/standard.material") );
 
-	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, -1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
+	//m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, -1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
 
 	return result;
 }

@@ -3,19 +3,19 @@ return
 	vertexArray =
 	{
 		{
-			position = { -0.5, 0.5, -2.22045e-16},
+			position = { -0.5, 0.5, -6.12323e-17},
 			texcoord = { 0, 1},
 		},
 		{
-			position = { 0.5, 0.5, -2.22045e-16},
+			position = { 0.5, 0.5, 6.12323e-17},
 			texcoord = { 0.5, 1},
 		},
 		{
-			position = { -0.5, -0.5, 2.22045e-16},
+			position = { -0.5, -0.5, -6.12323e-17},
 			texcoord = { 0, 0},
 		},
 		{
-			position = { 0.5, -0.5, 2.22045e-16},
+			position = { 0.5, -0.5, 6.12323e-17},
 			texcoord = { 0.5, 0},
 		},
 	},

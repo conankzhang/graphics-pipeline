@@ -347,9 +347,11 @@ NewAssetTypeInfo( "materials",
 		local material = dofile( sourceAbsolutePath )
 		RegisterAssetToBeBuilt( material.path_effect, "effects" )
 		if( material.path_texture == nil) then
-		  material.path_texture = "Textures/Default.bmp"
+		  default_texture = "Textures/default_diffuse.tga"
+		  RegisterAssetToBeBuilt( default_texture, "textures" )
+		else
+		  RegisterAssetToBeBuilt( material.path_texture, "textures" )
 		end
-		RegisterAssetToBeBuilt( material.path_texture, "textures" )
 	  end
 	end,
 	ConvertSourceRelativePathToBuiltRelativePath = function( i_sourceRelativePath )
