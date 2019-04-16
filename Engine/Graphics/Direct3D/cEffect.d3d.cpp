@@ -21,31 +21,60 @@ eae6320::Assets::cManager<eae6320::Graphics::cEffect> eae6320::Graphics::cEffect
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::cResult eae6320::Graphics::cEffect::InitializeShadingData( const char i_vertexShaderPath[], const char i_fragmentShaderPath[], const uint8_t i_renderStateBits)
+eae6320::cResult eae6320::Graphics::cEffect::Load(const std::string& i_effectPath, eae6320::Graphics::cEffect*& o_effect)
 {
-	auto result = eae6320::Results::Success;
+	auto result = Results::Success;
 
-	if ( !( result = eae6320::Graphics::cShader::s_manager.Load( i_vertexShaderPath,
-		m_vertexShader, eae6320::Graphics::ShaderTypes::Vertex ) ) )
+	eae6320::Graphics::cEffect* newEffect = nullptr;
+
+	eae6320::Platform::sDataFromFile dataFromFile;
+	eae6320::Platform::LoadBinaryFile(i_effectPath.c_str(), dataFromFile);
+
+	auto currentOffset = reinterpret_cast<uintptr_t>( dataFromFile.data );
+	const auto finalOffset = currentOffset + dataFromFile.size;
+
+	const auto vertexShaderPathSize = *reinterpret_cast<uint16_t*>( currentOffset );
+
+	currentOffset += sizeof( vertexShaderPathSize );
+	const auto renderStateBits = *reinterpret_cast<uint8_t*>( currentOffset );
+
+	currentOffset += sizeof( renderStateBits );
+	char* vertexShaderPath = reinterpret_cast<char*>( currentOffset );
+
+	currentOffset += vertexShaderPathSize * sizeof( char );
+	char* fragmentShaderPath = reinterpret_cast<char*>( currentOffset );
+
+	// Allocate a new shader
 	{
-		EAE6320_ASSERT( false );
-		goto OnExit;
-	}
-	if ( !( result = eae6320::Graphics::cShader::s_manager.Load( i_fragmentShaderPath,
-		m_fragmentShader, eae6320::Graphics::ShaderTypes::Fragment ) ) )
-	{
-		EAE6320_ASSERT( false );
-		goto OnExit;
-	}
-	{
-		if ( !( result = m_renderState.Initialize( i_renderStateBits ) ) )
+		newEffect = new (std::nothrow) cEffect();
+		if ( !newEffect )
 		{
-			EAE6320_ASSERT( false );
+			result = Results::OutOfMemory;
 			goto OnExit;
 		}
 	}
+	if ( !( result = newEffect->InitializeShadingData( vertexShaderPath, fragmentShaderPath, renderStateBits ) ) )
+	{
+		EAE6320_ASSERTF( false, "Initialization of new mesh failed" );
+		goto OnExit;
+	}
 
 OnExit:
+
+	if ( result )
+	{
+		EAE6320_ASSERT( newEffect );
+		o_effect = newEffect;
+	}
+	else
+	{
+		if ( newEffect )
+		{
+			newEffect->DecrementReferenceCount();
+			newEffect = nullptr;
+		}
+		o_effect = nullptr;
+	}
 
 	return result;
 }
@@ -95,63 +124,7 @@ eae6320::cResult eae6320::Graphics::cEffect::CleanUp()
 	return result;
 }
 
-eae6320::cResult eae6320::Graphics::cEffect::Load(const std::string& i_effectPath, eae6320::Graphics::cEffect*& o_effect)
-{
-	auto result = Results::Success;
 
-	eae6320::Graphics::cEffect* newEffect = nullptr;
-
-	eae6320::Platform::sDataFromFile dataFromFile;
-	eae6320::Platform::LoadBinaryFile(i_effectPath.c_str(), dataFromFile);
-
-	auto currentOffset = reinterpret_cast<uintptr_t>( dataFromFile.data );
-	const auto finalOffset = currentOffset + dataFromFile.size;
-
-    const auto vertexShaderPathSize = *reinterpret_cast<uint16_t*>( currentOffset );
-
-	currentOffset += sizeof( vertexShaderPathSize );
-    const auto renderStateBits = *reinterpret_cast<uint8_t*>( currentOffset );
-
-	currentOffset += sizeof( renderStateBits );
-	char* vertexShaderPath = reinterpret_cast<char*>( currentOffset );
-
-	currentOffset += vertexShaderPathSize * sizeof( char );
-	char* fragmentShaderPath = reinterpret_cast<char*>( currentOffset );
-
-	// Allocate a new shader
-	{
-		newEffect = new (std::nothrow) cEffect();
-		if ( !newEffect )
-		{
-			result = Results::OutOfMemory;
-			goto OnExit;
-		}
-	}
-	if ( !( result = newEffect->InitializeShadingData( vertexShaderPath, fragmentShaderPath, renderStateBits ) ) )
-	{
-		EAE6320_ASSERTF( false, "Initialization of new mesh failed" );
-		goto OnExit;
-	}
-
-OnExit:
-
-	if ( result )
-	{
-		EAE6320_ASSERT( newEffect );
-		o_effect = newEffect;
-	}
-	else
-	{
-		if ( newEffect )
-		{
-			newEffect->DecrementReferenceCount();
-			newEffect = nullptr;
-		}
-		o_effect = nullptr;
-	}
-
-	return result;
-}
 
 void eae6320::Graphics::cEffect::RenderFrame()
 {
@@ -178,6 +151,35 @@ void eae6320::Graphics::cEffect::RenderFrame()
 	}
 
 	m_renderState.Bind();
+}
+
+eae6320::cResult eae6320::Graphics::cEffect::InitializeShadingData( const char i_vertexShaderPath[], const char i_fragmentShaderPath[], const uint8_t i_renderStateBits)
+{
+	auto result = eae6320::Results::Success;
+
+	if ( !( result = eae6320::Graphics::cShader::s_manager.Load( i_vertexShaderPath,
+		m_vertexShader, eae6320::Graphics::ShaderTypes::Vertex ) ) )
+	{
+		EAE6320_ASSERT( false );
+		goto OnExit;
+	}
+	if ( !( result = eae6320::Graphics::cShader::s_manager.Load( i_fragmentShaderPath,
+		m_fragmentShader, eae6320::Graphics::ShaderTypes::Fragment ) ) )
+	{
+		EAE6320_ASSERT( false );
+		goto OnExit;
+	}
+	{
+		if ( !( result = m_renderState.Initialize( i_renderStateBits ) ) )
+		{
+			EAE6320_ASSERT( false );
+			goto OnExit;
+		}
+	}
+
+OnExit:
+
+	return result;
 }
 
 eae6320::Graphics::cEffect::cEffect()

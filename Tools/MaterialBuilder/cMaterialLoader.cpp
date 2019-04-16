@@ -7,8 +7,7 @@
 #include <Tools/AssetBuildLibrary/Functions.h>
 #include <Engine/Platform/Platform.h>
 #include <iostream>
-#include <Engine/Graphics/VertexFormats.h>
-#include <Engine/Graphics/cRenderState.h>
+#include <Engine/Graphics/sColor.h>
 
 // Inherited Implementation
 //=========================
@@ -16,8 +15,7 @@
 // Build
 //------
 
-eae6320::cResult eae6320::Assets::cMaterialLoader::LoadAsset(const char* const i_path, std::string& o_effectPath, std::vector<float>& o_colorData)
-
+eae6320::cResult eae6320::Assets::cMaterialLoader::LoadAsset(const char* const i_path, std::string& o_effectPath, Graphics::sColor& o_color)
 {
 	auto result = eae6320::Results::Success;
 
@@ -93,7 +91,7 @@ eae6320::cResult eae6320::Assets::cMaterialLoader::LoadAsset(const char* const i
 
 	// If this code is reached the asset file was loaded successfully,
 	// and its table is now at index -1
-	result = LoadTableValues(*luaState, o_effectPath, o_colorData);
+	result = LoadTableValues(*luaState, o_effectPath, o_color);
 
 	// Pop the table
 	lua_pop( luaState, 1 );
@@ -114,7 +112,7 @@ OnExit:
 	return result;
 }
 
-eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io_luaState, std::string& o_effectPath, std::vector<float>& o_colorData)
+eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io_luaState, std::string& o_effectPath, Graphics::sColor& o_color)
 {
 	auto result = eae6320::Results::Success;
 
@@ -143,24 +141,42 @@ eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io
 	if ( lua_istable( &io_luaState, -1 ) )
 	{
 		const auto valueCount = luaL_len( &io_luaState, -1 );
-		for ( int i = 1; i <= valueCount; ++i )
+		for (int i = 1; i <= valueCount; ++i)
 		{
-			lua_pushinteger( &io_luaState, i );
-			lua_gettable( &io_luaState, -2 );
-			const auto value = lua_tonumber( &io_luaState, -1 );
+			lua_pushinteger(&io_luaState, i);
+			lua_gettable(&io_luaState, -2);
+			const auto value = lua_tonumber(&io_luaState, -1);
 
-			o_colorData.push_back(static_cast<float>(value));
-			lua_pop( &io_luaState, 1 );
+			if (i == 1)
+			{
+				o_color.red = static_cast<float>(value);
+			}
+			else if (i == 2)
+			{
+				o_color.green = static_cast<float>(value);
+			}
+			else if (i == 3)
+			{
+				o_color.blue = static_cast<float>(value);
+			}
+			else if (i == 4)
+			{
+				o_color.alpha = static_cast<float>(value);
+			}
+
+			lua_pop(&io_luaState, 1);
 		}
 
-		lua_pop( &io_luaState, 1 );
+		lua_pop(&io_luaState, 1);
 	}
 	else
 	{
-		result = eae6320::Results::InvalidFile;
-		std::cerr << "The value at \"" << key << "\" must be a table "
-			"(instead of a " << luaL_typename( &io_luaState, -1 ) << ")" << std::endl;
-		goto OnExit;
+		o_color.red = 1.0f;
+		o_color.green = 1.0f;
+		o_color.blue = 1.0f;
+		o_color.alpha = 1.0f;
+
+		lua_pop( &io_luaState, 1 );
 	}
 
 OnExit:

@@ -10,6 +10,7 @@
 #include <iostream>
 #include <Engine/Time/Time.h>
 #include <Engine/Graphics/cRenderState.h>
+#include <Engine/Graphics/sColor.h>
 
 // Inherited Implementation
 //=========================
@@ -23,12 +24,12 @@ eae6320::cResult eae6320::Assets::cMaterialBuilder::Build(const std::vector<std:
 	std::string errorMessage;
 
 	std::string effectPath;
-	std::vector<float> colorData;
+	Graphics::sColor color;
 	size_t effectPathSize = 0;
 
 	std::ofstream outFile ( m_path_target, std::ofstream::binary);
 	{
-		if ( !( result = cMaterialLoader::LoadAsset( m_path_source, effectPath, colorData)) )
+		if ( !( result = cMaterialLoader::LoadAsset( m_path_source, effectPath, color)) )
 		{
 			EAE6320_ASSERTF( false, "Loading material failed" );
 			goto OnExit;
@@ -46,7 +47,7 @@ eae6320::cResult eae6320::Assets::cMaterialBuilder::Build(const std::vector<std:
 		goto OnExit;
 	}
 
-	outFile.write ( (char *)&colorData[0], colorData.size() * sizeof( float ) );
+	outFile.write ( reinterpret_cast<char *>(&color), sizeof( color ) );
 	outFile.write ( (char *)&effectPathSize, sizeof( uint16_t ) );
 	outFile.write ( effectPath.c_str(), effectPath.size() );
 	outFile.put('\0');

@@ -12,6 +12,7 @@
 
 #include <Engine/Application/cbApplication.h>
 #include <Engine/Results/Results.h>
+#include <Engine/Graphics/sColor.h>
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
 	#include "Resource Files/Resource.h"
@@ -22,12 +23,6 @@
 
 namespace eae6320
 {
-	namespace Graphics
-	{
-		class cMesh;
-		class cEffect;
-	}
-
 	class cGameObject;
 }
 
@@ -95,30 +90,17 @@ namespace eae6320
 		// Initialization / Clean Up
 		//--------------------------
 
-		// Shading Data
+		cResult DeleteGameObject(cGameObject* i_gameObject);
+
+		// Object Data
 		//-------------
+		Graphics::sColor clearColor;
 
-		eae6320::Graphics::cEffect* s_Effect1;
-		eae6320::Graphics::cEffect* s_Effect2;
+		cGameObject* m_player = nullptr;
+		cCamera* m_camera = nullptr;
 
-		// Geometry Data
-		//--------------
+		std::vector<cGameObject*> m_gameObjects;
 
-		eae6320::Graphics::cMesh* s_Mesh1;
-		eae6320::Graphics::cMesh* s_Mesh2;
-		eae6320::Graphics::cMesh* s_Mesh3;
-		eae6320::Graphics::cMesh* s_Mesh4;
-		eae6320::Graphics::cMesh* s_Mesh5;
-
-		eae6320::cGameObject* m_player;
-		eae6320::cGameObject* m_object2;
-		eae6320::cGameObject* m_object3;
-		eae6320::cGameObject* m_object4;
-		eae6320::cGameObject* m_object5;
-
-		eae6320::cCamera* m_camera;
-
-		size_t demoEntityId;
 		float cameraMoveSpeed = 3.0f;
 		float playerMoveSpeed = 3.0f;
 

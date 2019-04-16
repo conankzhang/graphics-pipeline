@@ -92,7 +92,7 @@ namespace eae6320
 
 			// Render
 			//-------
-			
+
 			// When a constant buffer is bound all shaders that use a defined constant buffer with matching ID
 			// (i.e. when a C++ constant buffer's type enumeration matches the constant buffer ID defined in the shader)
 			// will get data from that constant buffer until a different constant buffer is bound.
@@ -128,7 +128,7 @@ namespace eae6320
 #elif defined( EAE6320_PLATFORM_GL )
 			GLuint m_bufferId = 0;
 #endif
-			
+
 			// The constant buffer type defines the size of the constant data
 			// and is used to bind the constant buffer (the type enumeration is used as an ID)
 			const ConstantBufferTypes m_type = ConstantBufferTypes::Invalid;

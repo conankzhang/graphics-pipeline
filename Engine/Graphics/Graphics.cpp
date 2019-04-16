@@ -7,8 +7,8 @@
 #include "ConstantBufferFormats.h"
 #include "cRenderState.h"
 #include "cShader.h"
-#include "cMesh.h"
 #include "cEffect.h"
+#include "sColor.h"
 #include "sContext.h"
 #include "VertexFormats.h"
 #include "View.h"
@@ -32,6 +32,7 @@ namespace
 	// Constant buffer object
 	eae6320::Graphics::cConstantBuffer s_constantBuffer_perFrame( eae6320::Graphics::ConstantBufferTypes::PerFrame );
 	eae6320::Graphics::cConstantBuffer s_constantBuffer_perDrawCalls( eae6320::Graphics::ConstantBufferTypes::PerDrawCall );
+	eae6320::Graphics::cConstantBuffer s_constantBuffer_perMaterial( eae6320::Graphics::ConstantBufferTypes::PerMaterial );
 
 	// Submission Data
 	//----------------
@@ -40,18 +41,15 @@ namespace
 	// it must cache whatever is necessary in order to render a frame
 	struct sDataRequiredToRenderAFrame
 	{
+		eae6320::Graphics::ConstantBufferFormats::sPerDrawCall constantData_perDrawCall[65536];
+		eae6320::Graphics::ConstantBufferFormats::sPerMaterial constantData_perMaterial[65536];
+		uint64_t renderCommands[65536];
 		eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
-		float m_red;
-		float m_green;
-		float m_blue;
-		float m_alpha;
-		eae6320::Graphics::cMesh* m_meshes[65536];
-		eae6320::Graphics::cEffect* m_effects[65536];
-		eae6320::Graphics::ConstantBufferFormats::sPerDrawCall m_constantData[65536];
-		uint64_t m_renderCommands[65536];
-		uint16_t m_renderCount;
-		uint_fast32_t m_currentBoundEffectId = 10000;
+		uint_fast32_t currentBoundMaterialId = 65537;
+		eae6320::Graphics::sColor clearColor;
+		uint16_t renderCount;
 	};
+
 	// In our class there will be two copies of the data required to render a frame:
 	//	* One of them will be getting populated by the data currently being submitted by the application loop thread
 	//	* One of them will be fully populated,
@@ -129,7 +127,7 @@ void eae6320::Graphics::RenderFrame()
 	}
 
 	EAE6320_ASSERT( s_dataBeingRenderedByRenderThread );
-	std::sort(&s_dataBeingRenderedByRenderThread->m_renderCommands[0], &s_dataBeingRenderedByRenderThread->m_renderCommands[0] + s_dataBeingRenderedByRenderThread->m_renderCount);
+	std::sort(&s_dataBeingRenderedByRenderThread->renderCommands[0], &s_dataBeingRenderedByRenderThread->renderCommands[0] + s_dataBeingRenderedByRenderThread->renderCount);
 
 	// Update the per-frame constant buffer
 	{
@@ -137,54 +135,37 @@ void eae6320::Graphics::RenderFrame()
 		auto& constantData_perFrame = s_dataBeingRenderedByRenderThread->constantData_perFrame;
 		s_constantBuffer_perFrame.Update( &constantData_perFrame );
 	}
-	size_t t = sizeof(*s_dataBeingRenderedByRenderThread);
-	s_View.ClearColor( s_dataBeingRenderedByRenderThread->m_red, s_dataBeingRenderedByRenderThread->m_green, s_dataBeingRenderedByRenderThread->m_blue, s_dataBeingRenderedByRenderThread->m_alpha );
 
-	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->m_renderCount; ++i)
+	size_t t = sizeof(*s_dataBeingRenderedByRenderThread);
+	sColor clearColor = s_dataBeingRenderedByRenderThread->clearColor;
+	s_View.ClearColor(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha);
+
+	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->renderCount; ++i)
 	{
-		DrawCommand drawCommand = *(DrawCommand *)&s_dataBeingRenderedByRenderThread->m_renderCommands[i];
-		if(drawCommand.nCommand == RenderCommand::Draw)
+		DrawCommand drawCommand = *(DrawCommand *)&s_dataBeingRenderedByRenderThread->renderCommands[i];
+		if(drawCommand.nCommand == RenderCommand::IndependentDraw)
 		{
 			// Copy the data from the system memory that the application owns to GPU memory
-			auto& constantData_perDrawCall = s_dataBeingRenderedByRenderThread->m_constantData[drawCommand.nSubmitIndex];
+			auto& constantData_perDrawCall = s_dataBeingRenderedByRenderThread->constantData_perDrawCall[drawCommand.nSubmitIndex];
 			s_constantBuffer_perDrawCalls.Update( &constantData_perDrawCall );
 
 			// Make sure to bind effect before rendering mesh
-			if (s_dataBeingRenderedByRenderThread->m_currentBoundEffectId != drawCommand.nEffectId)
+			if (s_dataBeingRenderedByRenderThread->currentBoundMaterialId != drawCommand.nMaterialId)
 			{
-				cEffect::s_manager.UnsafeGet(drawCommand.nEffectId)->RenderFrame();
-				s_dataBeingRenderedByRenderThread->m_currentBoundEffectId = drawCommand.nEffectId;
+				auto& constantData_perMaterial = s_dataBeingRenderedByRenderThread->constantData_perMaterial[drawCommand.nMaterialId];
+				s_constantBuffer_perMaterial.Update( &constantData_perMaterial );
+
+				cMaterial::s_manager.UnsafeGet(drawCommand.nMaterialId)->RenderFrame();
+				s_dataBeingRenderedByRenderThread->currentBoundMaterialId = drawCommand.nMaterialId;
 			}
 
 			cMesh::s_manager.UnsafeGet(drawCommand.nMeshId)->RenderFrame();
 		}
 	}
 
-	//for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->m_renderCount; ++i)
-	//{
-	//	if (s_dataBeingRenderedByRenderThread->m_effects[i])
-	//	{
-	//		s_dataBeingRenderedByRenderThread->m_effects[i]->DecrementReferenceCount();
-	//		s_dataBeingRenderedByRenderThread->m_effects[i] = nullptr;
-	//	}
-
-	//	if (s_dataBeingRenderedByRenderThread->m_meshes[i])
-	//	{
-	//		s_dataBeingRenderedByRenderThread->m_meshes[i]->DecrementReferenceCount();
-	//		s_dataBeingRenderedByRenderThread->m_meshes[i] = nullptr;
-	//	}
-	//}
-
-	s_dataBeingRenderedByRenderThread->m_renderCount = 0;
+	s_dataBeingRenderedByRenderThread->renderCount = 0;
 
 	s_View.Swap();
-
-	// Once everything has been drawn the data that was submitted for this frame
-	// should be cleaned up and cleared.
-	// so that the struct can be re-used (i.e. so that data for a new frame can be submitted to it)
-	{
-		// (At this point in the class there isn't anything that needs to be cleaned up)
-	}
 }
 
 // Initialization / Clean Up
@@ -240,15 +221,26 @@ eae6320::cResult eae6320::Graphics::Initialize( const sInitializationParameters&
 			EAE6320_ASSERT( false );
 			goto OnExit;
 		}
-	}
 
-	// Initialize the platform-independent graphics objects
-	{
 		if ( result = s_constantBuffer_perDrawCalls.Initialize() )
 		{
 			// There is only a single per-frame constant buffer that is re-used
 			// and so it can be bound at initialization time and never unbound
 			s_constantBuffer_perDrawCalls.Bind(
+				// In our class both vertex and fragment shaders use per-frame constant data
+				ShaderTypes::Vertex | ShaderTypes::Fragment );
+		}
+		else
+		{
+			EAE6320_ASSERT( false );
+			goto OnExit;
+		}
+
+		if ( result = s_constantBuffer_perMaterial.Initialize() )
+		{
+			// There is only a single per-frame constant buffer that is re-used
+			// and so it can be bound at initialization time and never unbound
+			s_constantBuffer_perMaterial.Bind(
 				// In our class both vertex and fragment shaders use per-frame constant data
 				ShaderTypes::Vertex | ShaderTypes::Fragment );
 		}
@@ -319,38 +311,20 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 		}
 	}
 
-	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->m_renderCount; ++i)
 	{
-		if (s_dataBeingRenderedByRenderThread->m_effects[i])
+		const auto localResult = s_constantBuffer_perMaterial.CleanUp();
+		if ( !localResult )
 		{
-			s_dataBeingRenderedByRenderThread->m_effects[i]->DecrementReferenceCount();
-			s_dataBeingRenderedByRenderThread->m_effects[i] = nullptr;
-		}
-
-		if (s_dataBeingRenderedByRenderThread->m_meshes[i])
-		{
-			s_dataBeingRenderedByRenderThread->m_meshes[i]->DecrementReferenceCount();
-			s_dataBeingRenderedByRenderThread->m_meshes[i] = nullptr;
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
 		}
 	}
 
-	for (uint16_t i = 0; i < s_dataBeingSubmittedByApplicationThread->m_renderCount; ++i)
-	{
-		if (s_dataBeingSubmittedByApplicationThread->m_effects[i])
-		{
-			s_dataBeingSubmittedByApplicationThread->m_effects[i]->DecrementReferenceCount();
-			s_dataBeingSubmittedByApplicationThread->m_effects[i] = nullptr;
-		}
-
-		if (s_dataBeingSubmittedByApplicationThread->m_meshes[i])
-		{
-			s_dataBeingSubmittedByApplicationThread->m_meshes[i]->DecrementReferenceCount();
-			s_dataBeingSubmittedByApplicationThread->m_meshes[i] = nullptr;
-		}
-	}
-
-	s_dataBeingRenderedByRenderThread->m_renderCount = 0;
-	s_dataBeingSubmittedByApplicationThread->m_renderCount = 0;
+	s_dataBeingRenderedByRenderThread->renderCount = 0;
+	s_dataBeingSubmittedByApplicationThread->renderCount = 0;
 
 	{
 		const auto localResult = cShader::s_manager.CleanUp();
@@ -403,25 +377,9 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 	return result;
 }
 
-void eae6320::Graphics::SubmitBackgroundColor(float i_red, float i_green, float i_blue, float i_alpha)
+void eae6320::Graphics::SubmitBackgroundColor(const sColor& i_color)
 {
-	s_dataBeingSubmittedByApplicationThread->m_red = i_red;
-	s_dataBeingSubmittedByApplicationThread->m_green = i_green;
-	s_dataBeingSubmittedByApplicationThread->m_blue = i_blue;
-	s_dataBeingSubmittedByApplicationThread->m_alpha = i_alpha;
-}
-
-void eae6320::Graphics::SubmitGameObject(eae6320::Graphics::cMesh* i_mesh, eae6320::Graphics::cEffect* i_effect, eae6320::Math::cMatrix_transformation& i_transform)
-{
-	i_mesh->IncrementReferenceCount();
-	s_dataBeingSubmittedByApplicationThread->m_meshes[s_dataBeingSubmittedByApplicationThread->m_renderCount] = i_mesh;
-
-	i_effect->IncrementReferenceCount();
-	s_dataBeingSubmittedByApplicationThread->m_effects[s_dataBeingSubmittedByApplicationThread->m_renderCount] = i_effect;
-
-	s_dataBeingSubmittedByApplicationThread->m_constantData[s_dataBeingSubmittedByApplicationThread->m_renderCount].g_transform_localToWorld = i_transform;
-
-	s_dataBeingSubmittedByApplicationThread->m_renderCount++;
+	s_dataBeingSubmittedByApplicationThread->clearColor = i_color;
 }
 
 void eae6320::Graphics::SubmitCamera(eae6320::Math::cMatrix_transformation i_transform_worldToCamera, eae6320::Math::cMatrix_transformation i_transform_cameraToProjected, const Math::sVector& i_vector_cameraPosition, float i_elapsedSecondCount_systemTime, float i_elapsedSecondCount_simulationTime)
@@ -433,18 +391,29 @@ void eae6320::Graphics::SubmitCamera(eae6320::Math::cMatrix_transformation i_tra
 	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_vector_cameraPosition = i_vector_cameraPosition;;
 }
 
-void eae6320::Graphics::SubmitDrawCommand(RenderCommand i_command, unsigned int i_effectId, unsigned int i_distance, unsigned int i_meshId, eae6320::Math::cMatrix_transformation& i_transform_localToWorld, const Math::cMatrix_transformation& i_transform_localToProjected)
+void eae6320::Graphics::SubmitDrawCommand(unsigned int i_distance, const cMesh::Handle& i_mesh, const cMaterial::Handle& i_material, Math::cMatrix_transformation& i_transform_localToWorld, const Math::cMatrix_transformation& i_transform_localToProjected)
 {
 	DrawCommand drawCommand;
-	drawCommand.nCommand = i_command;
-	drawCommand.nEffectId = i_effectId;
+
+	if (cMaterial::s_manager.Get(i_material)->IsAlphaTransparencyEnabled())
+	{
+		drawCommand.nCommand = RenderCommand::DependentDraw;
+	}
+	else
+	{
+		drawCommand.nCommand = RenderCommand::IndependentDraw;
+	}
+
+	drawCommand.nEffectId = cMaterial::s_manager.Get(i_material)->GetEffectId();
+	drawCommand.nMaterialId = i_material.GetIndex();
 	drawCommand.nDistance = i_distance;
-	drawCommand.nMeshId = i_meshId;
-	drawCommand.nSubmitIndex = s_dataBeingSubmittedByApplicationThread->m_renderCount;
+	drawCommand.nMeshId = i_mesh.GetIndex();
+	drawCommand.nSubmitIndex = s_dataBeingSubmittedByApplicationThread->renderCount;
 
-	s_dataBeingSubmittedByApplicationThread->m_constantData[s_dataBeingSubmittedByApplicationThread->m_renderCount].g_transform_localToWorld = i_transform_localToWorld;
-	s_dataBeingSubmittedByApplicationThread->m_constantData[s_dataBeingSubmittedByApplicationThread->m_renderCount].g_transform_localToProjected = i_transform_localToProjected;
-	s_dataBeingSubmittedByApplicationThread->m_renderCommands[s_dataBeingSubmittedByApplicationThread->m_renderCount] = *(uint64_t*)&drawCommand;
+	s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[i_material.GetIndex()].g_color = cMaterial::s_manager.UnsafeGet(i_material.GetIndex())->GetColor();
+	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToWorld = i_transform_localToWorld;
+	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToProjected = i_transform_localToProjected;
+	s_dataBeingSubmittedByApplicationThread->renderCommands[s_dataBeingSubmittedByApplicationThread->renderCount] = *(uint64_t*)&drawCommand;
 
-	s_dataBeingSubmittedByApplicationThread->m_renderCount++;
+	s_dataBeingSubmittedByApplicationThread->renderCount++;
 }

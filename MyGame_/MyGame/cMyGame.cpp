@@ -8,34 +8,26 @@
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/UserInput/UserInput.h>
 #include <Engine/Graphics/Graphics.h>
-#include <Engine/Graphics/cEffect.h>
-#include <Engine/Graphics/cMesh.h>
-#include <Engine/Graphics/VertexFormats.h>
 #include <Engine/Math/cMatrix_transformation.h>
-#include <Engine/EntityComponentSystem/IEntity.h>
 
 // Inherited Implementation
 //=========================
 
 void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate)
 {
-	eae6320::Graphics::SubmitBackgroundColor(0.13f, 0.24f, 0.33f, 1.0f);
+	Graphics::SubmitBackgroundColor(clearColor);
+
 	Math::cMatrix_transformation transform_worldToCamera = m_camera->GetWorldToCameraTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
 	Math::cMatrix_transformation transform_cameraToProjected = m_camera->GetCameraToProjectedTransform();
-
-	eae6320::Graphics::SubmitCamera(transform_worldToCamera, transform_cameraToProjected, m_camera->GetPosition(), i_elapsedSecondCount_systemTime, i_elapsedSecondCount_sinceLastSimulationUpdate);
+	Graphics::SubmitCamera(transform_worldToCamera, transform_cameraToProjected, m_camera->GetPosition(), i_elapsedSecondCount_systemTime, i_elapsedSecondCount_sinceLastSimulationUpdate);
 
 	Math::cMatrix_transformation transform_worldToProjected = transform_cameraToProjected * transform_worldToCamera;
 
-	Math::cMatrix_transformation transform_localToWorld = m_player->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
-	eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_player->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_player->GetPosition()), m_player->GetMesh(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
-
-	//eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object2->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object2->GetPosition()), m_object2->GetMesh(), m_object2->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
-	//eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object3->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object3->GetPosition()), m_object3->GetMesh(), m_object3->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
-	//eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object4->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object4->GetPosition()), m_object4->GetMesh(), m_object4->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate));
-
-	transform_localToWorld = m_object5->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
-	eae6320::Graphics::SubmitDrawCommand(eae6320::Graphics::RenderCommand::Draw, m_object5->GetEffect(), m_camera->CalculateNormalizedCameraDistance(m_object5->GetPosition()), m_object5->GetMesh(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
+	for (auto GameObject : m_gameObjects)
+	{
+		Math::cMatrix_transformation transform_localToWorld = GameObject->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
+		Graphics::SubmitDrawCommand(m_camera->CalculateNormalizedCameraDistance(GameObject->GetPosition()), GameObject->GetMesh(), GameObject->GetMaterial(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
+	}
 }
 
 // Run
@@ -155,17 +147,47 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 
 	(forward_player + lateral_player + vertical_player);
 
-	m_player->SetVelocity(forward_player + lateral_player + vertical_player);
+	if (m_player)
+	{
+		m_player->SetVelocity(forward_player + lateral_player + vertical_player);
+	}
 }
 
 void eae6320::cMyGame::UpdateSimulationBasedOnTime(const float i_elapsedSecondCount_sinceLastUpdate)
 {
-	m_player->Update(i_elapsedSecondCount_sinceLastUpdate);
-	//m_object2->Update(i_elapsedSecondCount_sinceLastUpdate);
-	//m_object3->Update(i_elapsedSecondCount_sinceLastUpdate);
-	//m_object4->Update(i_elapsedSecondCount_sinceLastUpdate);
-	m_object5->Update(i_elapsedSecondCount_sinceLastUpdate);
-	m_camera->Update(i_elapsedSecondCount_sinceLastUpdate);
+	if (m_player)
+	{
+		m_player->Update(i_elapsedSecondCount_sinceLastUpdate);
+	}
+
+	if (m_camera)
+	{
+		m_camera->Update(i_elapsedSecondCount_sinceLastUpdate);
+	}
+}
+
+eae6320::cResult eae6320::cMyGame::DeleteGameObject(cGameObject* i_gameObject)
+{
+	auto result = Results::Success;
+
+	if (i_gameObject)
+	{
+		const auto localResult = i_gameObject->CleanUp();
+
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+
+		delete i_gameObject;
+		i_gameObject = nullptr;
+	}
+
+	return result;
 }
 
 // Initialization / Clean Up
@@ -175,14 +197,29 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 {
 	auto result = Results::Success;
 
-	m_player = new eae6320::cGameObject(eae6320::Math::sVector(0.0f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/white.effect");
-	//m_object2 = new eae6320::cGameObject(eae6320::Math::sVector(-0.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/red.effect");
-	//m_object3 = new eae6320::cGameObject(eae6320::Math::sVector(0.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/white.effect");
-	//m_object4 = new eae6320::cGameObject(eae6320::Math::sVector(1.5f, 0.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Effects/red.effect");
-	m_object5 = new eae6320::cGameObject(eae6320::Math::sVector(0.0f, -1.0f, 0.0f), eae6320::Math::cQuaternion(), "data/Meshes/plane.mesh", "data/Effects/white.effect");
+	clearColor.SetColor(0.13f, 0.24f, 0.33f, 1.0f);
 
+	//m_player = new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/standard.material");
+	//m_gameObjects.push_back(m_player);
 
-	m_camera = new eae6320::cCamera(eae6320::Math::sVector(0.0f, 0.0f, 5.0f), eae6320::Math::cQuaternion());
+	m_camera = new cCamera(Math::sVector(0.0f, 0.0f, 5.0f), Math::cQuaternion());
+
+	m_gameObjects.push_back( new cGameObject(Math::sVector(-1.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/blue.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(-0.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/red.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(0.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/green.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(1.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/standard.material") );
+
+	m_gameObjects.push_back( new cGameObject(Math::sVector(-1.5f, 1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/green.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(-0.5f, 1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/standard.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(0.5f, 1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/blue.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(1.5f, 1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/red.material") );
+
+	m_gameObjects.push_back( new cGameObject(Math::sVector(-1.5f, 2.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/red.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(-0.5f, 2.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/blue.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(0.5f, 2.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/standard.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(1.5f, 2.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/green.material") );
+
+	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, -1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/plane.mesh", "data/Materials/standard.material") );
 
 	return result;
 }
@@ -191,46 +228,14 @@ eae6320::cResult eae6320::cMyGame::CleanUp()
 {
 	auto result = Results::Success;
 
-	if (m_player)
+	for (auto GameObject : m_gameObjects)
 	{
-		m_player->CleanUp();
-		delete m_player;
-		m_player = nullptr;
+		result = DeleteGameObject(GameObject);
 	}
 
-	//if (m_object2)
-	//{
-	//	m_object2->CleanUp();
-	//	delete m_object2;
-	//	m_object2 = nullptr;
-	//}
+	m_gameObjects.clear();
 
-	//if (m_object3)
-	//{
-	//	m_object3->CleanUp();
-	//	delete m_object3;
-	//	m_object3 = nullptr;
-	//}
+	DeleteGameObject(m_camera);
 
-	//if (m_object4)
-	//{
-	//	m_object4->CleanUp();
-	//	delete m_object4;
-	//	m_object4 = nullptr;
-	//}
-
-	if (m_object5)
-	{
-		m_object5->CleanUp();
-		delete m_object5;
-		m_object5 = nullptr;
-	}
-
-	if (m_camera)
-	{
-		delete m_camera;
-		m_camera = nullptr;
-	}
-
-	return Results::Success;
+	return result;
 }

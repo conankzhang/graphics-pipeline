@@ -11,19 +11,15 @@ return
 
 	meshes =
 	{
-		{ path = "Meshes/cube.mesh" },
 		{ path = "Meshes/plane.mesh" },
-		{ path = "Meshes/pyramid.mesh" },
 		{ path = "Meshes/sphere.mesh" },
 	},
 
-	effects =
+	materials =
 	{
-		{ path = "Effects/red.effect" },
-		{ path = "Effects/white.effect" },
-		{ path = "Effects/local.effect" },
-		{ path = "Effects/world.effect" },
-		{ path = "Effects/scale.effect" },
-		{ path = "Effects/distance.effect" },
+		{ path = "Materials/standard.material" },
+		{ path = "Materials/red.material" },
+		{ path = "Materials/green.material" },
+		{ path = "Materials/blue.material" },
 	},
 }

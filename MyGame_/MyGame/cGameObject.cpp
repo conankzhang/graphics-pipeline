@@ -5,13 +5,13 @@
 
 #include <Engine/Math/cMatrix_transformation.h>
 
-eae6320::cGameObject::cGameObject(eae6320::Math::sVector i_position, eae6320::Math::cQuaternion i_orientation, const char * const i_meshPath, const char * const i_effectPath)
+eae6320::cGameObject::cGameObject(eae6320::Math::sVector i_position, eae6320::Math::cQuaternion i_orientation, const char * const i_meshPath, const char * const i_materialPath)
 {
 	m_rigidBody.position = i_position;
 	m_rigidBody.orientation = i_orientation;
 
-	// Initialize the shading data
-	if (i_meshPath && i_effectPath)
+	// Initialize the game object data
+	if (i_meshPath && i_materialPath)
 	{
 
 		auto result = Results::Success;
@@ -24,7 +24,7 @@ eae6320::cGameObject::cGameObject(eae6320::Math::sVector i_position, eae6320::Ma
 		}
 
 		{
-			if ( !( result = eae6320::Graphics::cEffect::s_manager.Load(i_effectPath, m_effect) ) )
+			if ( !( result = eae6320::Graphics::cMaterial::s_manager.Load(i_materialPath, m_material) ) )
 			{
 				EAE6320_ASSERT( false );
 			}
@@ -32,17 +32,37 @@ eae6320::cGameObject::cGameObject(eae6320::Math::sVector i_position, eae6320::Ma
 	}
 }
 
-void eae6320::cGameObject::CleanUp()
+eae6320::cResult eae6320::cGameObject::CleanUp()
 {
-	if (m_mesh.IsValid())
+	auto result = Results::Success;
+
+	if ( m_mesh )
 	{
-		Graphics::cMesh::s_manager.UnsafeDecrementReferenceCount(m_mesh.GetIndex());
+		const auto localResult = Graphics::cMesh::s_manager.Release( m_mesh );
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
 	}
 
-	if (m_effect.IsValid())
+	if ( m_material )
 	{
-		Graphics::cEffect::s_manager.UnsafeDecrementReferenceCount(m_effect.GetIndex());
+		const auto localResult = Graphics::cMaterial::s_manager.Release( m_material );
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
 	}
+
+	return result;
 }
 
 void eae6320::cGameObject::Update(const float i_elapsedSecondCount_sinceLastUpdate)
@@ -60,14 +80,14 @@ void eae6320::cGameObject::SetAngularSpeed(float i_angularSpeed)
 	m_rigidBody.angularSpeed = i_angularSpeed;
 }
 
-uint_fast32_t eae6320::cGameObject::GetMesh()
+const eae6320::Graphics::cMaterial::Handle& eae6320::cGameObject::GetMaterial()
 {
-	return m_mesh.GetIndex();
+	return m_material;
 }
 
-uint_fast32_t eae6320::cGameObject::GetEffect()
+const eae6320::Graphics::cMesh::Handle& eae6320::cGameObject::GetMesh()
 {
-	return m_effect.GetIndex();
+	return m_mesh;
 }
 
 eae6320::Math::cMatrix_transformation eae6320::cGameObject::GetTransform(const float i_elapsedSecondCount_sinceLastSimulationUpdate)

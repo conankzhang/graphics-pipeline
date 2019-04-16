@@ -15,6 +15,7 @@
 
 #include <Engine/Math/cMatrix_transformation.h>
 #include <Engine/Math/sVector.h>
+#include <Engine/Graphics/sColor.h>
 
 // Format Definitions
 //===================
@@ -40,6 +41,11 @@ namespace eae6320
 			{
 				Math::cMatrix_transformation g_transform_localToWorld;
 				Math::cMatrix_transformation g_transform_localToProjected;
+			};
+
+			struct sPerMaterial
+			{
+				sColor g_color;
 			};
 		}
 	}
