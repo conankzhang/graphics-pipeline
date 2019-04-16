@@ -146,7 +146,7 @@ void eae6320::Graphics::cMaterial::RenderFrame()
 		EAE6320_ASSERT( m_texture );
 		auto* const texture = cTexture::s_manager.Get( m_texture );
 		EAE6320_ASSERT(texture);
-		texture->Bind();
+		texture->Bind(1);
 	}
 }
 
