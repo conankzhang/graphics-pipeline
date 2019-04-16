@@ -75,6 +75,7 @@ namespace eae6320
 
 			cEffect::Handle m_effect;
 			cTexture::Handle m_texture;
+
 			sColor m_color;
 
 			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
@@ -91,7 +92,8 @@ namespace eae6320
 
 			// Initialization / Clean Up
 			//--------------------------
-			eae6320::cResult CleanUp();
+			cResult InitializeMaterialData(const char i_effectPath[], const char i_texturePath[]);
+			cResult CleanUp();
 
 			cMaterial(const sColor& i_color);
 			~cMaterial();

@@ -51,15 +51,9 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const std::string& i_materia
 		}
 	}
 
-	if ( !( result = eae6320::Graphics::cEffect::s_manager.Load( effectPath, newMaterial->m_effect) ) )
+	if ( !( result = newMaterial->InitializeMaterialData( effectPath, texturePath) ) )
 	{
-		EAE6320_ASSERT( false );
-		goto OnExit;
-	}
-
-	if ( !( result = eae6320::Graphics::cTexture::s_manager.Load( texturePath, newMaterial->m_texture) ) )
-	{
-		EAE6320_ASSERT( false );
+		EAE6320_ASSERTF( false, "Initialization of new mesh failed" );
 		goto OnExit;
 	}
 
@@ -79,6 +73,27 @@ OnExit:
 		}
 		o_material = nullptr;
 	}
+
+	return result;
+}
+
+eae6320::cResult eae6320::Graphics::cMaterial::InitializeMaterialData(const char i_effectPath[], const char i_texturePath[])
+{
+	auto result = Results::Success;
+
+	if ( !( result = eae6320::Graphics::cEffect::s_manager.Load( i_effectPath, m_effect) ) )
+	{
+		EAE6320_ASSERT( false );
+		goto OnExit;
+	}
+
+	if ( !( result = eae6320::Graphics::cTexture::s_manager.Load( i_texturePath, m_texture) ) )
+	{
+		EAE6320_ASSERT( false );
+		goto OnExit;
+	}
+
+OnExit:
 
 	return result;
 }
