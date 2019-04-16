@@ -18,6 +18,7 @@
 #include <Engine/Assets/cManager.h>
 #include <Engine/Results/Results.h>
 #include <Engine/Graphics/cEffect.h>
+#include <Engine/Graphics/cTexture.h>
 #include <Engine/Graphics/sColor.h>
 
 #ifdef EAE6320_PLATFORM_GL
@@ -73,6 +74,7 @@ namespace eae6320
 		public:
 
 			cEffect::Handle m_effect;
+			cTexture::Handle m_texture;
 			sColor m_color;
 
 			EAE6320_ASSETS_DECLAREREFERENCECOUNT();

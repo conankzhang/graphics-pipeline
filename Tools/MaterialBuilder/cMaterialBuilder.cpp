@@ -38,6 +38,7 @@ eae6320::cResult eae6320::Assets::cMaterialBuilder::Build(const std::vector<std:
 	}
 
 	effectPath.insert(0, "data/");
+	texturePath.insert(0, "data/");
 
 	// + 1 for null terminator count
 	effectPathSize = effectPath.size() + 1;

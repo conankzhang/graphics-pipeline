@@ -57,6 +57,12 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const std::string& i_materia
 		goto OnExit;
 	}
 
+	if ( !( result = eae6320::Graphics::cTexture::s_manager.Load( texturePath, newMaterial->m_texture) ) )
+	{
+		EAE6320_ASSERT( false );
+		goto OnExit;
+	}
+
 OnExit:
 
 	if ( result )
@@ -84,6 +90,19 @@ eae6320::cResult eae6320::Graphics::cMaterial::CleanUp()
 	if ( m_effect )
 	{
 		const auto localResult = cEffect::s_manager.Release( m_effect );
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+	}
+
+	if ( m_texture )
+	{
+		const auto localResult = cTexture::s_manager.Release( m_texture );
 		if ( !localResult )
 		{
 			EAE6320_ASSERT( false );
