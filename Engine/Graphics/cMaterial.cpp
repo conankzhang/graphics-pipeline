@@ -37,6 +37,9 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const std::string& i_materia
 	currentOffset += sizeof( effectPathSize );
 
 	char* effectPath = reinterpret_cast<char*>( currentOffset );
+	currentOffset += effectPathSize * sizeof( char );
+
+	char* texturePath = reinterpret_cast<char*>( currentOffset );
 
 	// Allocate a new material
 	{

@@ -17,9 +17,5 @@ return
 	materials =
 	{
 		{ path = "Materials/standard.material" },
-		{ path = "Materials/transparent.material" },
-		{ path = "Materials/red.material" },
-		{ path = "Materials/green.material" },
-		{ path = "Materials/blue.material" },
 	},
 }
