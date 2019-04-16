@@ -2,6 +2,6 @@ return
 {
 	path_effect = "Effects/standard.effect",
     color = { 1.0, 1.0, 1.0, 1.0 },
-    path_texture = "Textures/default_diffuse.tga",
+    path_texture = "Textures/Stone_02_COLOR.tga",
 }
 

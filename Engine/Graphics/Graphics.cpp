@@ -232,7 +232,7 @@ eae6320::cResult eae6320::Graphics::Initialize( const sInitializationParameters&
 			}
 			else
 			{
-				cSamplerState::s_manager.Get(samplerState)->Bind(1);
+				cSamplerState::s_manager.Get(samplerState)->Bind(0);
 			}
 		}
 	}

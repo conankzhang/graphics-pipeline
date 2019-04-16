@@ -31,6 +31,8 @@ cbuffer g_constantBuffer_perDrawCall : register( b2 )
   float4x4 g_transform_localToProjected;
 };
 
+DeclareSamplerState(g_diffuse_samplerState, 0);
+
 // Entry Point
 //============
 
