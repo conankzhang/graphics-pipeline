@@ -29,7 +29,7 @@ namespace eae6320
 				// POSITION
 				// 3 floats == 12 bytes
 				// Offset = 0
-				float x, y, z;
+				float x, y, z, u, v;
 			};
 		}
 	}

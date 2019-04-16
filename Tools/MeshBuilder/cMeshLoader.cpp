@@ -194,6 +194,12 @@ eae6320::cResult eae6320::Assets::cMeshLoader::LoadTableValues_vertexArray_verti
 				{
 					goto OnExit;
 				}
+
+				if ( !( result = LoadTableValues_vertexArray_vertices_texcoord( io_luaState, io_vertexData, i ) ) )
+				{
+					goto OnExit;
+				}
+
 				lua_pop( &io_luaState, 1 );
 			}
 			else
@@ -289,6 +295,79 @@ eae6320::cResult eae6320::Assets::cMeshLoader::LoadTableValues_vertexArray_verti
 	}
 
 	io_vertexData.push_back(position);
+
+	return result;
+}
+
+eae6320::cResult eae6320::Assets::cMeshLoader::LoadTableValues_vertexArray_vertices_texcoord(lua_State& io_luaState, std::vector<Graphics::VertexFormats::sMesh>& io_vertexData, int i_index)
+{
+	auto result = eae6320::Results::Success;
+
+	// Right now the asset table is at -1.
+	// After the following table operation it will be at -2
+	// and the "textures" table will be at -1:
+	constexpr auto* const key = "texcoord";
+	lua_pushstring( &io_luaState, key );
+	lua_gettable( &io_luaState, -2 );
+	// It can be hard to remember where the stack is at
+	// and how many values to pop.
+	// One strategy I would suggest is to always call a new function
+	// When you are at a new level:
+	// Right now we know that we have an original table at -2,
+	// and a new one at -1,
+	// and so we _know_ that we always have to pop at least _one_
+	// value before leaving this function
+	// (to make the original table be back to index -1).
+	// If we don't do any further stack manipulation in this function
+	// then it becomes easy to remember how many values to pop
+	// because it will always be one.
+	// This is the strategy I'll take in this example
+	// (look at the "OnExit" label):
+	if ( lua_istable( &io_luaState, -1 ) )
+	{
+		if ( !( result = LoadTableValues_vertexArray_vertices_texcoord_values( io_luaState, io_vertexData, i_index) ) )
+		{
+			goto OnExit;
+		}
+	}
+	else
+	{
+		result = eae6320::Results::InvalidFile;
+		std::cerr << "The value at \"" << key << "\" must be a table "
+			"(instead of a " << luaL_typename( &io_luaState, -1 ) << ")" << std::endl;
+		goto OnExit;
+	}
+
+OnExit:
+
+	// Pop the textures table
+	lua_pop( &io_luaState, 1 );
+
+	return result;
+}
+
+eae6320::cResult eae6320::Assets::cMeshLoader::LoadTableValues_vertexArray_vertices_texcoord_values(lua_State& io_luaState, std::vector<Graphics::VertexFormats::sMesh>& io_vertexData, int i_index)
+{
+	auto result = eae6320::Results::Success;
+
+	const auto valueCount = luaL_len( &io_luaState, -1 );
+	for ( int i = 1; i <= valueCount; ++i )
+	{
+		lua_pushinteger( &io_luaState, i );
+		lua_gettable( &io_luaState, -2 );
+		const auto value = lua_tonumber( &io_luaState, -1 );
+
+		if (i == 1)
+		{
+			io_vertexData[i_index - 1].u = static_cast<float>(value);
+		}
+		else if (i == 2)
+		{
+			io_vertexData[i_index - 1].v = static_cast<float>(value);
+		}
+
+		lua_pop( &io_luaState, 1 );
+	}
 
 	return result;
 }

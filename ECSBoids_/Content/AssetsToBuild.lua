@@ -11,8 +11,5 @@ return
 
 	prefabs =
 	{
-		{ path = "Prefabs/boid.prefab" },
-		{ path = "Prefabs/goal.prefab" },
-		{ path = "Prefabs/floor.prefab" },
 	},
 }
