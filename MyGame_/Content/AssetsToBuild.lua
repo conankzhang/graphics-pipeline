@@ -20,5 +20,6 @@ return
 		{ path = "Materials/brick.material" },
 		{ path = "Materials/transparent.material" },
 		{ path = "Materials/transparentCutoff.material" },
+		{ path = "Materials/water.material" },
 	},
 }
