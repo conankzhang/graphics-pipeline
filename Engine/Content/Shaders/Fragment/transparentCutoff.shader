@@ -49,5 +49,9 @@ void main(
 	)
 {
 	float4 textureColor = SampleTexture2d(g_diffuseTexture, g_diffuse_samplerState, i_textureCoordinates);
+	if(textureColor.a < 0.75)
+	{
+		discard;
+	}
 	o_color = g_color * textureColor;
 }
