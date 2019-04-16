@@ -39,7 +39,7 @@ eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry(VertexFormats::sMe
 			// (by using so-called "semantic" names so that, for example,
 			// "POSITION" here matches with "POSITION" in shader code).
 			// Note that OpenGL uses arbitrarily assignable number IDs to do the same thing.
-			constexpr unsigned int vertexElementCount = 1;
+			constexpr unsigned int vertexElementCount = 2;
 			D3D11_INPUT_ELEMENT_DESC layoutDescription[vertexElementCount] = {};
 			{
 				// Slot 0
@@ -57,6 +57,23 @@ eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry(VertexFormats::sMe
 					positionElement.AlignedByteOffset = offsetof( eae6320::Graphics::VertexFormats::sMesh, x );
 					positionElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 					positionElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
+				}
+
+				// Slot 2
+
+				// TEXTURE COORDINATES
+				// 2 floats == 6 bytes
+				// Offset = 0
+				{
+					auto& textureCoordinateElement = layoutDescription[1];
+
+					textureCoordinateElement.SemanticName = "TEXTURE_COORDINATE";
+					textureCoordinateElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
+					textureCoordinateElement.Format = DXGI_FORMAT_R32G32_FLOAT;
+					textureCoordinateElement.InputSlot = 0;
+					textureCoordinateElement.AlignedByteOffset = offsetof( eae6320::Graphics::VertexFormats::sMesh, u );
+					textureCoordinateElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+					textureCoordinateElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
 				}
 			}
 
@@ -107,7 +124,7 @@ eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry(VertexFormats::sMe
 		}
 
 		m_indexCountToRender = i_indexCount;
-		
+
 		D3D11_BUFFER_DESC indexBufferDescription{};
 		{
 			const auto bufferSize = i_indexCount * sizeof( uint16_t );
