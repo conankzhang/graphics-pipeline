@@ -18,6 +18,7 @@
 #include <Engine/Assets/cManager.h>
 #include <Engine/Results/Results.h>
 #include <Engine/Graphics/cEffect.h>
+#include <Engine/Graphics/cTexture.h>
 #include <Engine/Graphics/sColor.h>
 
 #ifdef EAE6320_PLATFORM_GL
@@ -58,7 +59,8 @@ namespace eae6320
 			//--------------------------
 			static cResult Load(const std::string& i_materialPath, cMaterial*& o_material);
 
-			void RenderFrame();
+			void BindEffect();
+			void BindTexture();
 
 			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cMaterial);
 			EAE6320_ASSETS_DECLAREREFERENCECOUNTINGFUNCTIONS();
@@ -73,6 +75,8 @@ namespace eae6320
 		public:
 
 			cEffect::Handle m_effect;
+			cTexture::Handle m_texture;
+
 			sColor m_color;
 
 			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
@@ -89,7 +93,8 @@ namespace eae6320
 
 			// Initialization / Clean Up
 			//--------------------------
-			eae6320::cResult CleanUp();
+			cResult InitializeMaterialData(const char i_effectPath[], const char i_texturePath[]);
+			cResult CleanUp();
 
 			cMaterial(const sColor& i_color);
 			~cMaterial();

@@ -30,6 +30,11 @@ namespace eae6320
 				// 3 floats == 12 bytes
 				// Offset = 0
 				float x, y, z;
+
+				// TEXTURE_COORDINATES
+				// 2 floats == 8 bytes
+				// Offset = 0
+				float u, v;
 			};
 		}
 	}

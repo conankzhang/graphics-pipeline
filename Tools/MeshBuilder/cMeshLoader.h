@@ -59,6 +59,8 @@ namespace eae6320
 			static eae6320::cResult LoadTableValues_vertexArray_vertices( lua_State& io_luaState, std::vector<Graphics::VertexFormats::sMesh>& io_vertexData);
 			static eae6320::cResult LoadTableValues_vertexArray_vertices_position( lua_State& io_luaState, std::vector<Graphics::VertexFormats::sMesh>& io_vertexData);
 			static eae6320::cResult LoadTableValues_vertexArray_vertices_position_values( lua_State& io_luaState, std::vector<Graphics::VertexFormats::sMesh>& io_vertexData);
+			static eae6320::cResult LoadTableValues_vertexArray_vertices_texcoord( lua_State& io_luaState, std::vector<Graphics::VertexFormats::sMesh>& io_vertexData, int i_index);
+			static eae6320::cResult LoadTableValues_vertexArray_vertices_texcoord_values( lua_State& io_luaState, std::vector<Graphics::VertexFormats::sMesh>& io_vertexData, int i_index);
 
 			static eae6320::cResult LoadTableValues_indexArray(lua_State& io_luaState, std::vector<uint16_t>& io_indexData);
 			static eae6320::cResult LoadTableValues_indexArray_indices( lua_State& io_luaState, std::vector<uint16_t>& io_indexData);

@@ -15,7 +15,7 @@
 // Build
 //------
 
-eae6320::cResult eae6320::Assets::cMaterialLoader::LoadAsset(const char* const i_path, std::string& o_effectPath, Graphics::sColor& o_color)
+eae6320::cResult eae6320::Assets::cMaterialLoader::LoadAsset(const char* const i_path, std::string& o_effectPath, std::string& o_texturePath, Graphics::sColor& o_color)
 {
 	auto result = eae6320::Results::Success;
 
@@ -91,7 +91,7 @@ eae6320::cResult eae6320::Assets::cMaterialLoader::LoadAsset(const char* const i
 
 	// If this code is reached the asset file was loaded successfully,
 	// and its table is now at index -1
-	result = LoadTableValues(*luaState, o_effectPath, o_color);
+	result = LoadTableValues(*luaState, o_effectPath, o_texturePath, o_color);
 
 	// Pop the table
 	lua_pop( luaState, 1 );
@@ -112,7 +112,7 @@ OnExit:
 	return result;
 }
 
-eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io_luaState, std::string& o_effectPath, Graphics::sColor& o_color)
+eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io_luaState, std::string& o_effectPath, std::string& o_texturePath, Graphics::sColor& o_color)
 {
 	auto result = eae6320::Results::Success;
 
@@ -176,6 +176,22 @@ eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io
 		o_color.blue = 1.0f;
 		o_color.alpha = 1.0f;
 
+		lua_pop( &io_luaState, 1 );
+	}
+
+	key = "path_texture";
+	lua_pushstring( &io_luaState, key );
+	lua_gettable( &io_luaState, -2 );
+
+	if ( lua_isstring( &io_luaState, -1 ) )
+	{
+		const auto value = lua_tostring( &io_luaState, -1 );
+		o_texturePath = static_cast<std::string>(value);
+		lua_pop( &io_luaState, 1 );
+	}
+	else
+	{
+		o_texturePath = "Textures/default_diffuse.tga";
 		lua_pop( &io_luaState, 1 );
 	}
 

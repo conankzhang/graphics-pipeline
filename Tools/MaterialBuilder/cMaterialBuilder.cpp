@@ -24,12 +24,13 @@ eae6320::cResult eae6320::Assets::cMaterialBuilder::Build(const std::vector<std:
 	std::string errorMessage;
 
 	std::string effectPath;
+	std::string texturePath;
 	Graphics::sColor color;
 	size_t effectPathSize = 0;
 
 	std::ofstream outFile ( m_path_target, std::ofstream::binary);
 	{
-		if ( !( result = cMaterialLoader::LoadAsset( m_path_source, effectPath, color)) )
+		if ( !( result = cMaterialLoader::LoadAsset( m_path_source, effectPath, texturePath, color)) )
 		{
 			EAE6320_ASSERTF( false, "Loading material failed" );
 			goto OnExit;
@@ -37,6 +38,7 @@ eae6320::cResult eae6320::Assets::cMaterialBuilder::Build(const std::vector<std:
 	}
 
 	effectPath.insert(0, "data/");
+	texturePath.insert(0, "data/");
 
 	// + 1 for null terminator count
 	effectPathSize = effectPath.size() + 1;
@@ -51,7 +53,8 @@ eae6320::cResult eae6320::Assets::cMaterialBuilder::Build(const std::vector<std:
 	outFile.write ( (char *)&effectPathSize, sizeof( uint16_t ) );
 	outFile.write ( effectPath.c_str(), effectPath.size() );
 	outFile.put('\0');
-
+	outFile.write ( texturePath.c_str(), texturePath.size());
+	outFile.put('\0');
 OnExit:
 	outFile.close();
 

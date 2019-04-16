@@ -346,6 +346,12 @@ NewAssetTypeInfo( "materials",
 	  if DoesFileExist( sourceAbsolutePath ) then
 		local material = dofile( sourceAbsolutePath )
 		RegisterAssetToBeBuilt( material.path_effect, "effects" )
+		if( material.path_texture == nil) then
+		  default_texture = "Textures/default_diffuse.tga"
+		  RegisterAssetToBeBuilt( default_texture, "textures" )
+		else
+		  RegisterAssetToBeBuilt( material.path_texture, "textures" )
+		end
 	  end
 	end,
 	ConvertSourceRelativePathToBuiltRelativePath = function( i_sourceRelativePath )
@@ -360,6 +366,22 @@ NewAssetTypeInfo( "materials",
   }
 )
 
+-- Texture Asset Type
+--------------------
+
+NewAssetTypeInfo( "textures",
+  {
+	ConvertSourceRelativePathToBuiltRelativePath = function( i_sourceRelativePath )
+		-- Change the source file extension to the binary version:want
+		local relativeDirectory, file = i_sourceRelativePath:match( "(.-)([^/\\]+)$" )
+		local fileName, extensionWithPeriod = file:match( "([^%.]+)(.*)" )
+		return relativeDirectory .. fileName .. extensionWithPeriod
+	end,
+	GetBuilderRelativePath = function()
+		return "TextureBuilder.exe"
+	end,
+  }
+)
 -- Local Function Definitions
 --===========================
 

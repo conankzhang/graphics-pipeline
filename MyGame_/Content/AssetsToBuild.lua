@@ -11,15 +11,12 @@ return
 
 	meshes =
 	{
-		{ path = "Meshes/plane.mesh" },
-		{ path = "Meshes/sphere.mesh" },
+		{ path = "Meshes/quad.mesh" },
 	},
 
 	materials =
 	{
 		{ path = "Materials/standard.material" },
-		{ path = "Materials/red.material" },
-		{ path = "Materials/green.material" },
-		{ path = "Materials/blue.material" },
+		{ path = "Materials/brick.material" },
 	},
 }

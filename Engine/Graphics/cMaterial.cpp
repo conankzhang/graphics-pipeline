@@ -37,6 +37,9 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const std::string& i_materia
 	currentOffset += sizeof( effectPathSize );
 
 	char* effectPath = reinterpret_cast<char*>( currentOffset );
+	currentOffset += effectPathSize * sizeof( char );
+
+	char* texturePath = reinterpret_cast<char*>( currentOffset );
 
 	// Allocate a new material
 	{
@@ -48,9 +51,9 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const std::string& i_materia
 		}
 	}
 
-	if ( !( result = eae6320::Graphics::cEffect::s_manager.Load( effectPath, newMaterial->m_effect) ) )
+	if ( !( result = newMaterial->InitializeMaterialData( effectPath, texturePath) ) )
 	{
-		EAE6320_ASSERT( false );
+		EAE6320_ASSERTF( false, "Initialization of new mesh failed" );
 		goto OnExit;
 	}
 
@@ -74,6 +77,27 @@ OnExit:
 	return result;
 }
 
+eae6320::cResult eae6320::Graphics::cMaterial::InitializeMaterialData(const char i_effectPath[], const char i_texturePath[])
+{
+	auto result = Results::Success;
+
+	if ( !( result = eae6320::Graphics::cEffect::s_manager.Load( i_effectPath, m_effect) ) )
+	{
+		EAE6320_ASSERT( false );
+		goto OnExit;
+	}
+
+	if ( !( result = eae6320::Graphics::cTexture::s_manager.Load( i_texturePath, m_texture) ) )
+	{
+		EAE6320_ASSERT( false );
+		goto OnExit;
+	}
+
+OnExit:
+
+	return result;
+}
+
 eae6320::cResult eae6320::Graphics::cMaterial::CleanUp()
 {
 	auto result = Results::Success;
@@ -91,10 +115,23 @@ eae6320::cResult eae6320::Graphics::cMaterial::CleanUp()
 		}
 	}
 
+	if ( m_texture )
+	{
+		const auto localResult = cTexture::s_manager.Release( m_texture );
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+	}
+
 	return result;
 }
 
-void eae6320::Graphics::cMaterial::RenderFrame()
+void eae6320::Graphics::cMaterial::BindEffect()
 {
 	// Effect
 	{
@@ -102,6 +139,17 @@ void eae6320::Graphics::cMaterial::RenderFrame()
 		auto* const effect = cEffect::s_manager.Get( m_effect );
 		EAE6320_ASSERT(effect);
 		effect->RenderFrame();
+	}
+}
+
+void eae6320::Graphics::cMaterial::BindTexture()
+{
+	// Texture
+	{
+		EAE6320_ASSERT( m_texture );
+		auto* const texture = cTexture::s_manager.Get( m_texture );
+		EAE6320_ASSERT(texture);
+		texture->Bind(0);
 	}
 }
 

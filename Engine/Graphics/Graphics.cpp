@@ -6,6 +6,7 @@
 #include "cConstantBuffer.h"
 #include "ConstantBufferFormats.h"
 #include "cRenderState.h"
+#include "cSamplerState.h"
 #include "cShader.h"
 #include "cEffect.h"
 #include "sColor.h"
@@ -29,6 +30,8 @@ namespace
 {
 	eae6320::Graphics::View s_View;
 
+	eae6320::Graphics::cSamplerState::Handle samplerState;
+
 	// Constant buffer object
 	eae6320::Graphics::cConstantBuffer s_constantBuffer_perFrame( eae6320::Graphics::ConstantBufferTypes::PerFrame );
 	eae6320::Graphics::cConstantBuffer s_constantBuffer_perDrawCalls( eae6320::Graphics::ConstantBufferTypes::PerDrawCall );
@@ -46,6 +49,7 @@ namespace
 		uint64_t renderCommands[65536];
 		eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
 		uint_fast32_t currentBoundMaterialId = 65537;
+		uint_fast32_t currentBoundEffectId = 65537;
 		eae6320::Graphics::sColor clearColor;
 		uint16_t renderCount;
 	};
@@ -143,19 +147,28 @@ void eae6320::Graphics::RenderFrame()
 	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->renderCount; ++i)
 	{
 		DrawCommand drawCommand = *(DrawCommand *)&s_dataBeingRenderedByRenderThread->renderCommands[i];
-		if(drawCommand.nCommand == RenderCommand::IndependentDraw)
+		if(drawCommand.nCommand == RenderCommand::IndependentDraw || drawCommand.nCommand == RenderCommand::DependentDraw)
 		{
 			// Copy the data from the system memory that the application owns to GPU memory
 			auto& constantData_perDrawCall = s_dataBeingRenderedByRenderThread->constantData_perDrawCall[drawCommand.nSubmitIndex];
 			s_constantBuffer_perDrawCalls.Update( &constantData_perDrawCall );
 
 			// Make sure to bind effect before rendering mesh
+			if (s_dataBeingRenderedByRenderThread->currentBoundEffectId != drawCommand.nEffectId)
+			{
+				cMaterial::s_manager.UnsafeGet(drawCommand.nMaterialId)->BindEffect();
+				cMaterial::s_manager.UnsafeGet(drawCommand.nMaterialId)->BindTexture();
+				s_dataBeingRenderedByRenderThread->currentBoundEffectId = drawCommand.nEffectId;
+			}
+
+			// Only update material constants with different materials
 			if (s_dataBeingRenderedByRenderThread->currentBoundMaterialId != drawCommand.nMaterialId)
 			{
+				cMaterial::s_manager.UnsafeGet(drawCommand.nMaterialId)->BindTexture();
+
 				auto& constantData_perMaterial = s_dataBeingRenderedByRenderThread->constantData_perMaterial[drawCommand.nMaterialId];
 				s_constantBuffer_perMaterial.Update( &constantData_perMaterial );
 
-				cMaterial::s_manager.UnsafeGet(drawCommand.nMaterialId)->RenderFrame();
 				s_dataBeingRenderedByRenderThread->currentBoundMaterialId = drawCommand.nMaterialId;
 			}
 
@@ -203,6 +216,27 @@ eae6320::cResult eae6320::Graphics::Initialize( const sInitializationParameters&
 		{
 			EAE6320_ASSERT( false );
 			goto OnExit;
+		}
+	}
+
+	{
+		if ( !( result = cSamplerState::s_manager.Initialize() ) )
+		{
+			EAE6320_ASSERT( false );
+			goto OnExit;
+		}
+		else
+		{
+			result = cSamplerState::s_manager.Load(1, samplerState);
+			if ( !( result ) )
+			{
+				EAE6320_ASSERT( false );
+				goto OnExit;
+			}
+			else
+			{
+				cSamplerState::s_manager.Get(samplerState)->Bind(0);
+			}
 		}
 	}
 
@@ -374,6 +408,30 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 		}
 	}
 
+	if ( samplerState )
+	{
+		const auto localResult = cSamplerState::s_manager.Release( samplerState );
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+	}
+
+	{
+		const auto localResult = cSamplerState::s_manager.CleanUp();
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+	}
 	return result;
 }
 
@@ -398,6 +456,7 @@ void eae6320::Graphics::SubmitDrawCommand(unsigned int i_distance, const cMesh::
 	if (cMaterial::s_manager.Get(i_material)->IsAlphaTransparencyEnabled())
 	{
 		drawCommand.nCommand = RenderCommand::DependentDraw;
+		i_distance = 255 - i_distance;
 	}
 	else
 	{
