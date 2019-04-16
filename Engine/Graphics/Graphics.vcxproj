@@ -172,12 +172,16 @@
     <ClCompile Include="cMaterial.cpp" />
     <ClCompile Include="cMesh.cpp" />
     <ClCompile Include="cRenderState.cpp" />
+    <ClCompile Include="cSamplerState.cpp" />
     <ClCompile Include="cShader.cpp" />
+    <ClCompile Include="cTexture.cpp" />
     <ClCompile Include="Direct3D\cConstantBuffer.d3d.cpp" />
     <ClCompile Include="Direct3D\cEffect.d3d.cpp" />
     <ClCompile Include="Direct3D\cMesh.d3d.cpp" />
     <ClCompile Include="Direct3D\cRenderState.d3d.cpp" />
+    <ClCompile Include="Direct3D\cSamplerState.d3d.cpp" />
     <ClCompile Include="Direct3D\cShader.d3d.cpp" />
+    <ClCompile Include="Direct3D\cTexture.d3d.cpp" />
     <ClCompile Include="Direct3D\sContext.d3d.cpp" />
     <ClCompile Include="Direct3D\View.d3d.cpp" />
     <ClCompile Include="Graphics.cpp" />
@@ -192,17 +196,22 @@
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="ConstantBufferFormats.h" />
     <ClInclude Include="cRenderState.h" />
+    <ClInclude Include="cSamplerState.h" />
     <ClInclude Include="cShader.h" />
+    <ClInclude Include="cTexture.h" />
     <ClInclude Include="Direct3D\Includes.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="OpenGL\Includes.h" />
     <ClInclude Include="sColor.h" />
     <ClInclude Include="sContext.h" />
+    <ClInclude Include="TextureFormats.h" />
     <ClInclude Include="VertexFormats.h" />
     <ClInclude Include="View.h" />
     <ClInclude Include="Windows\ExternalLibraries.win.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cRenderState.inl" />
+    <None Include="cSamplerState.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
