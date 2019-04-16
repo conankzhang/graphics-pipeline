@@ -143,7 +143,7 @@ void eae6320::Graphics::RenderFrame()
 	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->renderCount; ++i)
 	{
 		DrawCommand drawCommand = *(DrawCommand *)&s_dataBeingRenderedByRenderThread->renderCommands[i];
-		if(drawCommand.nCommand == RenderCommand::IndependentDraw)
+		if(drawCommand.nCommand == RenderCommand::IndependentDraw || drawCommand.nCommand == RenderCommand::DependentDraw)
 		{
 			// Copy the data from the system memory that the application owns to GPU memory
 			auto& constantData_perDrawCall = s_dataBeingRenderedByRenderThread->constantData_perDrawCall[drawCommand.nSubmitIndex];
