@@ -156,13 +156,16 @@ void eae6320::Graphics::RenderFrame()
 			// Make sure to bind effect before rendering mesh
 			if (s_dataBeingRenderedByRenderThread->currentBoundEffectId != drawCommand.nEffectId)
 			{
-				cMaterial::s_manager.UnsafeGet(drawCommand.nMaterialId)->RenderFrame();
+				cMaterial::s_manager.UnsafeGet(drawCommand.nMaterialId)->BindEffect();
+				cMaterial::s_manager.UnsafeGet(drawCommand.nMaterialId)->BindTexture();
 				s_dataBeingRenderedByRenderThread->currentBoundEffectId = drawCommand.nEffectId;
 			}
 
 			// Only update material constants with different materials
 			if (s_dataBeingRenderedByRenderThread->currentBoundMaterialId != drawCommand.nMaterialId)
 			{
+				cMaterial::s_manager.UnsafeGet(drawCommand.nMaterialId)->BindTexture();
+
 				auto& constantData_perMaterial = s_dataBeingRenderedByRenderThread->constantData_perMaterial[drawCommand.nMaterialId];
 				s_constantBuffer_perMaterial.Update( &constantData_perMaterial );
 

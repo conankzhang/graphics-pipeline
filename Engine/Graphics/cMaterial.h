@@ -59,7 +59,8 @@ namespace eae6320
 			//--------------------------
 			static cResult Load(const std::string& i_materialPath, cMaterial*& o_material);
 
-			void RenderFrame();
+			void BindEffect();
+			void BindTexture();
 
 			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cMaterial);
 			EAE6320_ASSETS_DECLAREREFERENCECOUNTINGFUNCTIONS();

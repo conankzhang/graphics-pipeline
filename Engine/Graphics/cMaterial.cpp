@@ -131,7 +131,7 @@ eae6320::cResult eae6320::Graphics::cMaterial::CleanUp()
 	return result;
 }
 
-void eae6320::Graphics::cMaterial::RenderFrame()
+void eae6320::Graphics::cMaterial::BindEffect()
 {
 	// Effect
 	{
@@ -140,7 +140,10 @@ void eae6320::Graphics::cMaterial::RenderFrame()
 		EAE6320_ASSERT(effect);
 		effect->RenderFrame();
 	}
+}
 
+void eae6320::Graphics::cMaterial::BindTexture()
+{
 	// Texture
 	{
 		EAE6320_ASSERT( m_texture );
