@@ -20,6 +20,8 @@ cbuffer g_constantBuffer_perFrame : register( b0 )
 	float3 g_camera_position;
 
 	float3 g_lightDirection;
+	float4 g_directionalLight_color;
+
 	float4 g_ambient_color;
 
 	float g_elapsedSecondCount_systemTime;

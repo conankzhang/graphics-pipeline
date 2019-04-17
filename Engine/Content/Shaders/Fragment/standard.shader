@@ -15,6 +15,8 @@ cbuffer g_constantBuffer_perFrame : register( b0 )
 	float4x4 g_transform_cameraToProjected;
 
 	float3 g_lightDirection;
+	float4 g_directionalLight_color;
+
 	float4 g_ambient_color;
 
 	float g_elapsedSecondCount_systemTime;
@@ -51,6 +53,11 @@ void main(
 
 	)
 {
+	const float dotProduct = dot(g_ambient_color, i_normal_world);
+	const float clampedValue = saturate(dotProduct);
+
+	float4 directionalColor = g_directionalLight_color * clampedValue;
+
 	float4 textureColor = SampleTexture2d(g_diffuseTexture, g_diffuse_samplerState, i_textureCoordinates);
-	o_color = g_color * textureColor;
+	o_color = (g_color * textureColor) * (directionalColor + g_ambient_color);
 }

@@ -33,6 +33,8 @@ namespace eae6320
 				Math::sVector g_vector_cameraPosition;
 
 				Math::sVector g_lightDirection;
+				sColor g_directionalLight_color;
+
 				sColor g_ambient_color;
 
 				float g_elapsedSecondCount_systemTime = 0.0f;

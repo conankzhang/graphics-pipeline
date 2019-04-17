@@ -16,7 +16,7 @@
 void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate)
 {
 	Graphics::SubmitBackgroundColor(clearColor);
-	Graphics::SubmitDirectionalLight(ambientColor, lightDirection);
+	Graphics::SubmitLighting(ambientColor, directionalLightColor, lightDirection);
 
 	Math::cMatrix_transformation transform_worldToCamera = m_camera->GetWorldToCameraTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
 	Math::cMatrix_transformation transform_cameraToProjected = m_camera->GetCameraToProjectedTransform();
@@ -199,7 +199,8 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	auto result = Results::Success;
 
 	clearColor.SetColor(0.13f, 0.24f, 0.33f, 1.0f);
-	ambientColor.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+	ambientColor.SetColor(0.0f, 0.0f, 0.0f, 1.0f);
+	directionalLightColor.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	lightDirection.x = 1.0f;
 	lightDirection.y = 1.0f;

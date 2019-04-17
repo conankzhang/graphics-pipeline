@@ -97,6 +97,7 @@ namespace eae6320
 		Graphics::sColor clearColor;
 
 		Graphics::sColor ambientColor;
+		Graphics::sColor directionalLightColor;
 		Math::sVector lightDirection;
 
 		cGameObject* m_player = nullptr;
