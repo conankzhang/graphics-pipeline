@@ -238,7 +238,8 @@ eae6320::cResult eae6320::Graphics::Initialize( const sInitializationParameters&
 		}
 		else
 		{
-			result = cSamplerState::s_manager.Load(SamplerStates::eSamplerState::Tile, samplerState);
+			//result = cSamplerState::s_manager.Load(SamplerStates::eSamplerState::Tile, samplerState);
+			result = cSamplerState::s_manager.Load(11, samplerState);
 			if ( !( result ) )
 			{
 				EAE6320_ASSERT( false );

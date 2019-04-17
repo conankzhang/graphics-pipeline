@@ -62,6 +62,9 @@ void main(
 		// Project the vertex from local space into projected space
 		float4 vertexPosition_local = float4( i_vertexPosition_local, 1.0 );
 		o_vertexPosition_projected = mul( g_transform_localToProjected, vertexPosition_local );
-		o_textureCoordinates = i_textureCoordinates;
+
+		float2 scrollTextureCoordinates = i_textureCoordinates;
+		scrollTextureCoordinates.x += g_elapsedSecondCount_simulationTime;
+		o_textureCoordinates = scrollTextureCoordinates;;
 	}
 }
