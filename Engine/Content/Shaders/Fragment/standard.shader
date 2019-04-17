@@ -56,7 +56,7 @@ void main(
 
 	)
 {
-	const float dotProduct = dot(g_lightDirection, i_normal_world);
+	const float dotProduct = dot(g_lightDirection, normalize(i_normal_world));
 	const float clampedValue = saturate(dotProduct);
 
 	float4 directionalColor = g_directionalLight_color * clampedValue;
