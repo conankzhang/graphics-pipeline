@@ -56,9 +56,9 @@ namespace eae6320
 		{
 			unsigned int nSubmitIndex: 8;
 			unsigned int nMeshId: 8;
-			unsigned int nDistance: 8;
-			unsigned int nMaterialId: 8;
-			unsigned int nEffectId: 8;
+			unsigned int nPriority3: 8;
+			unsigned int nPriority2: 8;
+			unsigned int nPriority1: 8;
 			RenderCommand nCommand : 8;
 		};
 

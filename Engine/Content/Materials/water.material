@@ -1,0 +1,7 @@
+return
+{
+	path_effect = "Effects/water.effect",
+    color = { 1.0, 1.0, 1.0, 1.0 },
+    path_texture = "Textures/Water.png",
+}
+

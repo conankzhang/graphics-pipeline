@@ -147,33 +147,44 @@ void eae6320::Graphics::RenderFrame()
 	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->renderCount; ++i)
 	{
 		DrawCommand drawCommand = *(DrawCommand *)&s_dataBeingRenderedByRenderThread->renderCommands[i];
-		if(drawCommand.nCommand == RenderCommand::IndependentDraw || drawCommand.nCommand == RenderCommand::DependentDraw)
+
+		unsigned int effectId;
+		unsigned int materialId;
+		if (drawCommand.nCommand == RenderCommand::IndependentDraw)
 		{
-			// Copy the data from the system memory that the application owns to GPU memory
-			auto& constantData_perDrawCall = s_dataBeingRenderedByRenderThread->constantData_perDrawCall[drawCommand.nSubmitIndex];
-			s_constantBuffer_perDrawCalls.Update( &constantData_perDrawCall );
-
-			// Make sure to bind effect before rendering mesh
-			if (s_dataBeingRenderedByRenderThread->currentBoundEffectId != drawCommand.nEffectId)
-			{
-				cMaterial::s_manager.UnsafeGet(drawCommand.nMaterialId)->BindEffect();
-				cMaterial::s_manager.UnsafeGet(drawCommand.nMaterialId)->BindTexture();
-				s_dataBeingRenderedByRenderThread->currentBoundEffectId = drawCommand.nEffectId;
-			}
-
-			// Only update material constants with different materials
-			if (s_dataBeingRenderedByRenderThread->currentBoundMaterialId != drawCommand.nMaterialId)
-			{
-				cMaterial::s_manager.UnsafeGet(drawCommand.nMaterialId)->BindTexture();
-
-				auto& constantData_perMaterial = s_dataBeingRenderedByRenderThread->constantData_perMaterial[drawCommand.nMaterialId];
-				s_constantBuffer_perMaterial.Update( &constantData_perMaterial );
-
-				s_dataBeingRenderedByRenderThread->currentBoundMaterialId = drawCommand.nMaterialId;
-			}
-
-			cMesh::s_manager.UnsafeGet(drawCommand.nMeshId)->RenderFrame();
+			effectId = drawCommand.nPriority1;
+			materialId = drawCommand.nPriority1;
 		}
+		else if (drawCommand.nCommand == RenderCommand::DependentDraw)
+		{
+			effectId = drawCommand.nPriority2;
+			materialId = drawCommand.nPriority3;
+		}
+
+		// Copy the data from the system memory that the application owns to GPU memory
+		auto& constantData_perDrawCall = s_dataBeingRenderedByRenderThread->constantData_perDrawCall[drawCommand.nSubmitIndex];
+		s_constantBuffer_perDrawCalls.Update( &constantData_perDrawCall );
+
+		// Make sure to bind effect before rendering mesh
+		if (s_dataBeingRenderedByRenderThread->currentBoundEffectId != effectId)
+		{
+			cMaterial::s_manager.UnsafeGet(materialId)->BindEffect();
+			cMaterial::s_manager.UnsafeGet(materialId)->BindTexture();
+			s_dataBeingRenderedByRenderThread->currentBoundEffectId = effectId;
+		}
+
+		// Only update material constants with different materials
+		if (s_dataBeingRenderedByRenderThread->currentBoundMaterialId != materialId)
+		{
+			cMaterial::s_manager.UnsafeGet(materialId)->BindTexture();
+
+			auto& constantData_perMaterial = s_dataBeingRenderedByRenderThread->constantData_perMaterial[materialId];
+			s_constantBuffer_perMaterial.Update( &constantData_perMaterial );
+
+			s_dataBeingRenderedByRenderThread->currentBoundMaterialId = materialId;
+		}
+
+		cMesh::s_manager.UnsafeGet(drawCommand.nMeshId)->RenderFrame();
 	}
 
 	s_dataBeingRenderedByRenderThread->renderCount = 0;
@@ -227,7 +238,8 @@ eae6320::cResult eae6320::Graphics::Initialize( const sInitializationParameters&
 		}
 		else
 		{
-			result = cSamplerState::s_manager.Load(1, samplerState);
+			//result = cSamplerState::s_manager.Load(SamplerStates::eSamplerState::Tile, samplerState);
+			result = cSamplerState::s_manager.Load(23, samplerState);
 			if ( !( result ) )
 			{
 				EAE6320_ASSERT( false );
@@ -457,15 +469,20 @@ void eae6320::Graphics::SubmitDrawCommand(unsigned int i_distance, const cMesh::
 	{
 		drawCommand.nCommand = RenderCommand::DependentDraw;
 		i_distance = 255 - i_distance;
+
+		drawCommand.nPriority1 = i_distance;
+		drawCommand.nPriority2 = cMaterial::s_manager.Get(i_material)->GetEffectId();
+		drawCommand.nPriority3 = i_material.GetIndex();
 	}
 	else
 	{
 		drawCommand.nCommand = RenderCommand::IndependentDraw;
+
+		drawCommand.nPriority1 = cMaterial::s_manager.Get(i_material)->GetEffectId();
+		drawCommand.nPriority2 = i_material.GetIndex();
+		drawCommand.nPriority3 = i_distance;
 	}
 
-	drawCommand.nEffectId = cMaterial::s_manager.Get(i_material)->GetEffectId();
-	drawCommand.nMaterialId = i_material.GetIndex();
-	drawCommand.nDistance = i_distance;
 	drawCommand.nMeshId = i_mesh.GetIndex();
 	drawCommand.nSubmitIndex = s_dataBeingSubmittedByApplicationThread->renderCount;
 

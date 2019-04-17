@@ -1,0 +1,8 @@
+return
+{
+	path_vertexShader = "Shaders/Vertex/standard.shader",
+	path_fragmentShader = "Shaders/Fragment/transparentCutoff.shader",
+	AlphaTransparency = true,
+	DepthBuffering = true,
+	DrawBothTriangleSides = false,
+}
