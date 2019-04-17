@@ -56,6 +56,7 @@ void main(
 	// An SV_POSITION value must always be output from every vertex shader
 	// so that the GPU can figure out which fragments need to be shaded
 	out float2 o_textureCoordinates : OTEXCOORD,
+	out float4 o_normal_world : ONORMAL,
 	out float4 o_vertexPosition_projected : SV_POSITION
 	)
 {
@@ -63,6 +64,11 @@ void main(
 		// Project the vertex from local space into projected space
 		float4 vertexPosition_local = float4( i_vertexPosition_local, 1.0 );
 		o_vertexPosition_projected = mul( g_transform_localToProjected, vertexPosition_local );
+
+		// Project the normal from local space into world space
+		float4 normal_local = float4( i_normal, 0.0 );
+		o_normal_world = mul( g_transform_localToWorld, normal_local);
+
 		o_textureCoordinates = i_textureCoordinates;
 	}
 }

@@ -38,7 +38,7 @@ DeclareSamplerState(g_diffuse_samplerState, 0);
 
 void main(
 	in const float2 i_textureCoordinates : OTEXCOORD,
-
+	in const float4 i_normal_world : ONORMAL,
 	// Output
 	//=======
 
