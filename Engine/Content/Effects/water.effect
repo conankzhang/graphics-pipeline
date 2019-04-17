@@ -1,6 +1,6 @@
 return
 {
-	path_vertexShader = "Shaders/Vertex/water.shader",
+	path_vertexShader = "Shaders/Vertex/wobble.shader",
 	path_fragmentShader = "Shaders/Fragment/standard.shader",
 	AlphaTransparency = false,
 	DepthBuffering = true,
