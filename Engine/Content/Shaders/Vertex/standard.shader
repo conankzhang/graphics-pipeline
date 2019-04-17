@@ -19,10 +19,13 @@ cbuffer g_constantBuffer_perFrame : register( b0 )
 	float4x4 g_transform_cameraToProjected;
 	float3 g_camera_position;
 
+	float3 g_lightDirection;
+	float4 g_ambient_color;
+
 	float g_elapsedSecondCount_systemTime;
 	float g_elapsedSecondCount_simulationTime;
 	// For float4 alignment
-	float g_padding;
+	float2 g_padding;
 };
 
 cbuffer g_constantBuffer_perDrawCall : register( b2 )

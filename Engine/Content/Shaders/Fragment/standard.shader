@@ -14,6 +14,9 @@ cbuffer g_constantBuffer_perFrame : register( b0 )
 	float4x4 g_transform_worldToCamera;
 	float4x4 g_transform_cameraToProjected;
 
+	float3 g_lightDirection;
+	float4 g_ambient_color;
+
 	float g_elapsedSecondCount_systemTime;
 	float g_elapsedSecondCount_simulationTime;
 	// For float4 alignment
