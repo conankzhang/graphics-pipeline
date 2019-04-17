@@ -13,16 +13,19 @@ cbuffer g_constantBuffer_perFrame : register( b0 )
 {
 	float4x4 g_transform_worldToCamera;
 	float4x4 g_transform_cameraToProjected;
+	float3 g_camera_position;
+	float g_padding0;
 
 	float3 g_lightDirection;
-	float4 g_directionalLight_color;
+	float g_padding1;
 
+	float4 g_directionalLight_color;
 	float4 g_ambient_color;
 
 	float g_elapsedSecondCount_systemTime;
 	float g_elapsedSecondCount_simulationTime;
 	// For float4 alignment
-	float2 g_padding;
+	float2 g_padding2;
 };
 
 cbuffer g_constantBuffer_perMaterial : register( b1 )
@@ -43,7 +46,7 @@ DeclareSamplerState(g_diffuse_samplerState, 0);
 
 void main(
 	in const float2 i_textureCoordinates : OTEXCOORD,
-	in const float4 i_normal_world : ONORMAL,
+	in const float3 i_normal_world : ONORMAL,
 	// Output
 	//=======
 
@@ -53,7 +56,7 @@ void main(
 
 	)
 {
-	const float dotProduct = dot(g_ambient_color, i_normal_world);
+	const float dotProduct = dot(g_lightDirection, i_normal_world);
 	const float clampedValue = saturate(dotProduct);
 
 	float4 directionalColor = g_directionalLight_color * clampedValue;

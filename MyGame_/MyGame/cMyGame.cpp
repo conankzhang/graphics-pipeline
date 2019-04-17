@@ -16,7 +16,7 @@
 void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate)
 {
 	Graphics::SubmitBackgroundColor(clearColor);
-	Graphics::SubmitLighting(ambientColor, directionalLightColor, lightDirection);
+	Graphics::SubmitLighting(ambientColor, directionalLightColor, lightDirection.GetNormalized());
 
 	Math::cMatrix_transformation transform_worldToCamera = m_camera->GetWorldToCameraTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
 	Math::cMatrix_transformation transform_cameraToProjected = m_camera->GetCameraToProjectedTransform();
@@ -152,6 +152,16 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 	{
 		m_player->SetVelocity(forward_player + lateral_player + vertical_player);
 	}
+
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F1))
+	{
+		lightDirection.x += 3.0f;
+	}
+
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F1))
+	{
+		lightDirection.x += -3.0f;
+	}
 }
 
 void eae6320::cMyGame::UpdateSimulationBasedOnTime(const float i_elapsedSecondCount_sinceLastUpdate)
@@ -199,7 +209,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	auto result = Results::Success;
 
 	clearColor.SetColor(0.13f, 0.24f, 0.33f, 1.0f);
-	ambientColor.SetColor(0.0f, 0.0f, 0.0f, 1.0f);
+	ambientColor.SetColor(0.0f, 0.0f, 0.0f, 0.0f);
 	directionalLightColor.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	lightDirection.x = 1.0f;
