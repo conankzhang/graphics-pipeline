@@ -98,7 +98,7 @@ namespace
 					refreshRate.Numerator = 0;	// Refresh as fast as possible
 					refreshRate.Denominator = 1;
 				}
-				bufferDescription.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+				bufferDescription.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 				bufferDescription.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 				bufferDescription.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 			}
