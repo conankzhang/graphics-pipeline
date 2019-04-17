@@ -155,12 +155,32 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F1))
 	{
-		lightDirection.x += 3.0f;
+		lightDirection.x += -0.5f;
 	}
 
-	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F1))
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F2))
 	{
-		lightDirection.x += -3.0f;
+		lightDirection.x += 0.5f;
+	}
+
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F3))
+	{
+		lightDirection.y += -0.5f;
+	}
+
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F4))
+	{
+		lightDirection.y += 0.5f;
+	}
+
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F5))
+	{
+		lightDirection.z += -0.5f;
+	}
+
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F6))
+	{
+		lightDirection.z += 0.5f;
 	}
 }
 
@@ -209,7 +229,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	auto result = Results::Success;
 
 	clearColor.SetColor(0.13f, 0.24f, 0.33f, 1.0f);
-	ambientColor.SetColor(0.0f, 0.0f, 0.0f, 0.0f);
+	ambientColor.SetColor(0.1f, 0.1f, 0.1f, 1.0f);
 	directionalLightColor.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	lightDirection.x = 1.0f;
