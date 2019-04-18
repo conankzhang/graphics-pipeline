@@ -9,6 +9,7 @@
 #include "cSamplerState.h"
 #include "cShader.h"
 #include "cEffect.h"
+#include "cSprite.h"
 #include "sColor.h"
 #include "sContext.h"
 #include "VertexFormats.h"
@@ -29,6 +30,7 @@
 namespace
 {
 	eae6320::Graphics::View s_View;
+	eae6320::Graphics::cSprite s_Sprite;
 
 	eae6320::Graphics::cSamplerState::Handle samplerState;
 
@@ -322,6 +324,15 @@ eae6320::cResult eae6320::Graphics::Initialize( const sInitializationParameters&
 		}
 	}
 
+	{
+		result = s_Sprite.InitializeGeometry();
+		if (!(result))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+	}
+
 OnExit:
 
 	return result;
@@ -332,6 +343,7 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 	auto result = Results::Success;
 
 	s_View.CleanUp();
+	s_Sprite.CleanUp();
 
 	{
 		const auto localResult = s_constantBuffer_perFrame.CleanUp();

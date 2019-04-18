@@ -57,7 +57,13 @@ namespace eae6320
 
 			// Initialization / Clean Up
 			//--------------------------
+			cSprite();
+			~cSprite();
+
 			void RenderFrame();
+
+			cResult InitializeGeometry();
+			cResult CleanUp();
 
 			// Data
 			//=====
@@ -84,13 +90,6 @@ namespace eae6320
 			//===============
 		private:
 			VertexFormats::sSprite m_spriteVertices[4];
-
-			cResult CleanUp();
-			void InitializeSpriteVertices();
-			cResult InitializeGeometry();
-
-			cSprite();
-			~cSprite();
 		};
 	}
 }

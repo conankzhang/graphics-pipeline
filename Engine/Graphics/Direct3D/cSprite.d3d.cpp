@@ -20,6 +20,34 @@
 // Static Data Initialization
 //===========================
 
+eae6320::Graphics::cSprite::cSprite()
+{
+	m_spriteVertices[0].x = -1;
+	m_spriteVertices[1].x = -1;
+	m_spriteVertices[2].x = 1;
+	m_spriteVertices[3].x = 1;
+
+	m_spriteVertices[0].y = -1;
+	m_spriteVertices[1].y = 1;
+	m_spriteVertices[2].y = -1;
+	m_spriteVertices[3].y = 1;
+
+	m_spriteVertices[0].u = 0;
+	m_spriteVertices[1].u = 0;
+	m_spriteVertices[2].u = 1;
+	m_spriteVertices[3].u = 1;
+
+	m_spriteVertices[0].v = 1;
+	m_spriteVertices[1].v = 0;
+	m_spriteVertices[2].v = 1;
+	m_spriteVertices[3].v = 0;
+}
+
+eae6320::Graphics::cSprite::~cSprite()
+{
+
+}
+
 // Interface
 //==========
 
@@ -68,37 +96,26 @@ void eae6320::Graphics::cSprite::RenderFrame()
 
 eae6320::cResult eae6320::Graphics::cSprite::CleanUp()
 {
-	return Results::Success;
-}
+	auto result = Results::Success;
 
-void eae6320::Graphics::cSprite::InitializeSpriteVertices()
-{
-	m_spriteVertices[0].x = -1;
-	m_spriteVertices[1].x = -1;
-	m_spriteVertices[2].x = 1;
-	m_spriteVertices[3].x = 1;
+	if ( m_vertexBuffer )
+	{
+		m_vertexBuffer->Release();
+		m_vertexBuffer = nullptr;
+	}
 
-	m_spriteVertices[0].y = -1;
-	m_spriteVertices[1].y = 1;
-	m_spriteVertices[2].y = -1;
-	m_spriteVertices[3].y = 1;
+	if ( m_vertexInputLayout )
+	{
+		m_vertexInputLayout->Release();
+		m_vertexInputLayout = nullptr;
+	}
 
-	m_spriteVertices[0].u = 0;
-	m_spriteVertices[1].u = 0;
-	m_spriteVertices[2].u = 1;
-	m_spriteVertices[3].u = 1;
-
-	m_spriteVertices[0].v = 1;
-	m_spriteVertices[1].v = 0;
-	m_spriteVertices[2].v = 1;
-	m_spriteVertices[3].v = 0;
+	return result;
 }
 
 eae6320::cResult eae6320::Graphics::cSprite::InitializeGeometry()
 {
 	auto result = eae6320::Results::Success;
-
-	InitializeSpriteVertices();
 
 	auto* const direct3dDevice = eae6320::Graphics::sContext::g_context.direct3dDevice;
 	EAE6320_ASSERT( direct3dDevice );
