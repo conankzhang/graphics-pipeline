@@ -25,7 +25,42 @@
 
 void eae6320::Graphics::cSprite::RenderFrame()
 {
+	auto* const direct3dImmediateContext = sContext::g_context.direct3dImmediateContext;
+	EAE6320_ASSERT( direct3dImmediateContext );
 
+	// Bind a specific vertex buffer to the device as a data source
+	{
+		EAE6320_ASSERT( m_spriteVertices );
+		constexpr unsigned int startingSlot = 0;
+		constexpr unsigned int vertexBufferCount = 1;
+		// The "stride" defines how large a single vertex is in the stream of data
+		constexpr unsigned int bufferStride = sizeof( VertexFormats::sSprite );
+		// It's possible to start streaming data in the middle of a vertex buffer
+		constexpr unsigned int bufferOffset = 0;
+		direct3dImmediateContext->IASetVertexBuffers( startingSlot, vertexBufferCount, &m_vertexBuffer, &bufferStride, &bufferOffset );
+	}
+
+	// Specify what kind of data the vertex buffer holds
+	{
+		// Set the layout (which defines how to interpret a single vertex)
+		{
+			EAE6320_ASSERT( m_vertexInputLayout );
+			direct3dImmediateContext->IASetInputLayout( m_vertexInputLayout );
+		}
+
+		// Set the topology (which defines how to interpret multiple vertices as a single "primitive";
+		// the vertex buffer was defined as a triangle list
+		// (meaning that every primitive is a triangle and will be defined by three vertices)
+		direct3dImmediateContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP );
+	}
+
+	// Render triangles from the currently-bound vertex buffer
+	{
+		// It's possible to start rendering primitives in the middle of the stream
+		constexpr unsigned int indexOfFirstIndexToUse = 0;
+		constexpr unsigned int offsetToAddToEachIndex = 0;
+		direct3dImmediateContext->Draw(4, 0);
+	}
 }
 
 // Initialization / Clean Up
