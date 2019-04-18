@@ -4,6 +4,7 @@
 #include "cMyGame.h"
 
 #include "cGameObject.h"
+#include "cSpriteObject.h"
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/UserInput/UserInput.h>
@@ -24,9 +25,12 @@ void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_s
 
 	Math::cMatrix_transformation transform_worldToProjected = transform_cameraToProjected * transform_worldToCamera;
 
+	Math::cMatrix_transformation transform_localToWorld = m_sprite->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
+	Graphics::SubmitSpriteCommand(0, m_sprite->GetMaterial(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
+
 	for (auto GameObject : m_gameObjects)
 	{
-		Math::cMatrix_transformation transform_localToWorld = GameObject->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
+		transform_localToWorld = GameObject->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
 		Graphics::SubmitDrawCommand(m_camera->CalculateNormalizedCameraDistance(GameObject->GetPosition()), GameObject->GetMesh(), GameObject->GetMaterial(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
 	}
 }
@@ -195,6 +199,11 @@ void eae6320::cMyGame::UpdateSimulationBasedOnTime(const float i_elapsedSecondCo
 	{
 		m_camera->Update(i_elapsedSecondCount_sinceLastUpdate);
 	}
+
+	if (m_sprite)
+	{
+		m_sprite->Update(i_elapsedSecondCount_sinceLastUpdate);
+	}
 }
 
 eae6320::cResult eae6320::cMyGame::DeleteGameObject(cGameObject* i_gameObject)
@@ -240,6 +249,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	//m_gameObjects.push_back(m_player);
 
 	m_camera = new cCamera(Math::sVector(0.0f, 0.0f, 5.0f), Math::cQuaternion());
+	m_sprite = new cSpriteObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Materials/sprite.material");
 
 	// Grid
 	m_gameObjects.push_back( new cGameObject(Math::sVector(-1.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/sprite.material") );
@@ -283,6 +293,25 @@ eae6320::cResult eae6320::cMyGame::CleanUp()
 	m_gameObjects.clear();
 
 	DeleteGameObject(m_camera);
+
+	if (m_sprite)
+	{
+		const auto localResult = m_sprite->CleanUp();
+
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+
+		delete m_sprite;
+		m_sprite = nullptr;
+	}
+
+
 
 	return result;
 }

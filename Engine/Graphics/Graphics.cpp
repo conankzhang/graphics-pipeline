@@ -517,10 +517,10 @@ void eae6320::Graphics::SubmitSpriteCommand(unsigned int i_distance, const cMate
 
 	drawCommand.nSubmitIndex = s_dataBeingSubmittedByApplicationThread->renderCount;
 
-	s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[i_material.GetIndex()].g_color = cMaterial::s_manager.UnsafeGet(i_material.GetIndex())->GetColor();
-	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToWorld = i_transform_localToWorld;
-	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToProjected = i_transform_localToProjected;
-	s_dataBeingSubmittedByApplicationThread->renderCommands[s_dataBeingSubmittedByApplicationThread->renderCount] = *(uint64_t*)&drawCommand;
+	//s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[i_material.GetIndex()].g_color = cMaterial::s_manager.UnsafeGet(i_material.GetIndex())->GetColor();
+	//s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToWorld = i_transform_localToWorld;
+	//s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToProjected = i_transform_localToProjected;
+	//s_dataBeingSubmittedByApplicationThread->renderCommands[s_dataBeingSubmittedByApplicationThread->renderCount] = *(uint64_t*)&drawCommand;
 
-	s_dataBeingSubmittedByApplicationThread->renderCount++;
+	//s_dataBeingSubmittedByApplicationThread->renderCount++;
 }
