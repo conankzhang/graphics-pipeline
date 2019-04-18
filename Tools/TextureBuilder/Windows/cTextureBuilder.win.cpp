@@ -69,7 +69,7 @@ eae6320::cResult eae6320::Assets::cTextureBuilder::Build( const std::vector<std:
 	i_arguments;	// One way to customize how the texture is built would be to pass in and use command arguments
 	if (!i_arguments.empty())
 	{
-		if (i_arguments[0] == "COLOR")
+		if (i_arguments[0] == "color")
 		{
 			sourceImage.OverrideFormat(DirectX::MakeSRGB(sourceImage.GetMetadata().format));
 		}
