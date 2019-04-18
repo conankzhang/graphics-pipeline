@@ -20,6 +20,7 @@ void main(
 	// These values come from one of the VertexFormats::sMesh that the vertex buffer was filled with in C code
 	in const float3 i_position : POSITION,
 	in const float2 i_textureCoordinates : TEXCOORD,
+	in const float3 i_normal : NORMAL,
 
 	// Output
 	//=======

@@ -67,6 +67,14 @@ eae6320::cResult eae6320::Assets::cTextureBuilder::Build( const std::vector<std:
 	}
 	// Build the texture
 	i_arguments;	// One way to customize how the texture is built would be to pass in and use command arguments
+	if (!i_arguments.empty())
+	{
+		if (i_arguments[0] == "COLOR")
+		{
+			sourceImage.OverrideFormat(DirectX::MakeSRGB(sourceImage.GetMetadata().format));
+		}
+	}
+
 	// The code I am providing always compresses the texture in a pre-defined way;
 	// you will have to change the code to do anything more sophisticated
 	compressTexture = true;
@@ -123,7 +131,7 @@ namespace
 			// The uncompressed format is chosen naively and assumes "standard" textures
 			// (it will lose precision on any source images that use more than 8 bits per channel
 			// and lose information on any that aren't normalized [0,1])
-			constexpr auto formatToDecompressTo = DXGI_FORMAT_R8G8B8A8_UNORM;
+			constexpr auto formatToDecompressTo = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 			const auto result = DirectX::Decompress( io_sourceImageThatMayNotBeValidAfterThisCall.GetImages(), io_sourceImageThatMayNotBeValidAfterThisCall.GetImageCount(),
 				io_sourceImageThatMayNotBeValidAfterThisCall.GetMetadata(), formatToDecompressTo, uncompressedImage );
 			if ( FAILED( result ) )
@@ -332,12 +340,7 @@ namespace
 			else
 			{
 				// Try to Windows Imaging Component and hope it supports the image type
-				constexpr DWORD useDefaultBehavior = DirectX::WIC_FLAGS_NONE
-					// If an image has an embedded sRGB profile ignore it
-					// since our renderer isn't gamma-correct
-					// (we want all textures in the shaders to have the same values they do as source images)
-					| DirectX::WIC_FLAGS_IGNORE_SRGB
-					;
+				constexpr DWORD useDefaultBehavior = DirectX::WIC_FLAGS_NONE;
 				if ( FAILED( result = DirectX::LoadFromWICFile( path.c_str(), useDefaultBehavior, dontReturnMetadata, o_image ) ) )
 				{
 					eae6320::Assets::OutputErrorMessageWithFileInfo( i_path, "WIC couldn't load the source image" );

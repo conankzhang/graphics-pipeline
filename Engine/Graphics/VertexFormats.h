@@ -35,6 +35,11 @@ namespace eae6320
 				// 2 floats == 8 bytes
 				// Offset = 0
 				float u, v;
+
+				// NORMAL
+				// 3 floats == 12 bytes
+				// Offset = 0
+				float nx, ny, nz;
 			};
 		}
 	}

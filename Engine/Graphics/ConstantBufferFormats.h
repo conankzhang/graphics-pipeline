@@ -31,10 +31,17 @@ namespace eae6320
 				Math::cMatrix_transformation g_transform_worldToCamera;
 				Math::cMatrix_transformation g_transform_cameraToProjected;
 				Math::sVector g_vector_cameraPosition;
+				float padding0[1];	// For float4 alignment
+
+				Math::sVector g_lightDirection;
+				float padding1[1];	// For float4 alignment
+
+				sColor g_directionalLight_color;
+				sColor g_ambient_color;
 
 				float g_elapsedSecondCount_systemTime = 0.0f;
 				float g_elapsedSecondCount_simulationTime = 0.0f;
-				float padding[1];	// For float4 alignment
+				float padding2[2];	// For float4 alignment
 			};
 
 			struct sPerDrawCall

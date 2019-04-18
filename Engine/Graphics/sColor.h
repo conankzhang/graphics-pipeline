@@ -45,6 +45,8 @@ namespace eae6320
 			// Implementation
 			//===============
 			void SetColor(float i_red, float i_green, float i_blue, float i_alpha);
+			sColor GetLinearColor();
+			float CalculateLinearValue(float i_sRGB);
 		};
 	}
 }

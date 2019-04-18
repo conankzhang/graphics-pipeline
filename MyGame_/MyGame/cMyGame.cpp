@@ -15,7 +15,8 @@
 
 void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate)
 {
-	Graphics::SubmitBackgroundColor(clearColor);
+	Graphics::SubmitBackgroundColor(clearColor.GetLinearColor());
+	Graphics::SubmitLighting(ambientColor.GetLinearColor(), directionalLightColor.GetLinearColor(), lightDirection.GetNormalized());
 
 	Math::cMatrix_transformation transform_worldToCamera = m_camera->GetWorldToCameraTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
 	Math::cMatrix_transformation transform_cameraToProjected = m_camera->GetCameraToProjectedTransform();
@@ -151,6 +152,36 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 	{
 		m_player->SetVelocity(forward_player + lateral_player + vertical_player);
 	}
+
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F1))
+	{
+		lightDirection.x += -0.5f;
+	}
+
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F2))
+	{
+		lightDirection.x += 0.5f;
+	}
+
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F3))
+	{
+		lightDirection.y += -0.5f;
+	}
+
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F4))
+	{
+		lightDirection.y += 0.5f;
+	}
+
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F5))
+	{
+		lightDirection.z += -0.5f;
+	}
+
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F6))
+	{
+		lightDirection.z += 0.5f;
+	}
 }
 
 void eae6320::cMyGame::UpdateSimulationBasedOnTime(const float i_elapsedSecondCount_sinceLastUpdate)
@@ -198,6 +229,12 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	auto result = Results::Success;
 
 	clearColor.SetColor(0.13f, 0.24f, 0.33f, 1.0f);
+	ambientColor.SetColor(0.1f, 0.1f, 0.1f, 1.0f);
+	directionalLightColor.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+	lightDirection.x = 1.0f;
+	lightDirection.y = 1.0f;
+	lightDirection.z = 1.0f;
 
 	//m_player = new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/standard.material");
 	//m_gameObjects.push_back(m_player);
@@ -206,7 +243,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 
 	// Grid
 	//m_gameObjects.push_back( new cGameObject(Math::sVector(-1.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/transparentCutoff.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/water.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/brick.material") );
 	//m_gameObjects.push_back( new cGameObject(Math::sVector(0.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
 	//m_gameObjects.push_back( new cGameObject(Math::sVector(1.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
 

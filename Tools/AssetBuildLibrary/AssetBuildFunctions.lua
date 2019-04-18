@@ -348,9 +348,9 @@ NewAssetTypeInfo( "materials",
 		RegisterAssetToBeBuilt( material.path_effect, "effects" )
 		if( material.path_texture == nil) then
 		  default_texture = "Textures/default_diffuse.tga"
-		  RegisterAssetToBeBuilt( default_texture, "textures" )
+		  RegisterAssetToBeBuilt( default_texture, "textures", { "color" } )
 		else
-		  RegisterAssetToBeBuilt( material.path_texture, "textures" )
+		  RegisterAssetToBeBuilt( material.path_texture, "textures", { "color" } )
 		end
 	  end
 	end,
