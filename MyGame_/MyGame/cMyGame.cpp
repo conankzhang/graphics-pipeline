@@ -15,8 +15,8 @@
 
 void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate)
 {
-	Graphics::SubmitBackgroundColor(clearColor);
-	Graphics::SubmitLighting(ambientColor, directionalLightColor, lightDirection.GetNormalized());
+	Graphics::SubmitBackgroundColor(clearColor.GetLinearColor());
+	Graphics::SubmitLighting(ambientColor.GetLinearColor(), directionalLightColor.GetLinearColor(), lightDirection.GetNormalized());
 
 	Math::cMatrix_transformation transform_worldToCamera = m_camera->GetWorldToCameraTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
 	Math::cMatrix_transformation transform_cameraToProjected = m_camera->GetCameraToProjectedTransform();
