@@ -148,7 +148,7 @@ eae6320::cResult eae6320::Graphics::cSprite::InitializeGeometry()
 
 					positionElement.SemanticName = "POSITION";
 					positionElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
-					positionElement.Format = DXGI_FORMAT_R8G8_SINT;
+					positionElement.Format = DXGI_FORMAT_R8G8_SNORM;
 					positionElement.InputSlot = 0;
 					positionElement.AlignedByteOffset = offsetof( eae6320::Graphics::VertexFormats::sSprite, x );
 					positionElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
@@ -165,7 +165,7 @@ eae6320::cResult eae6320::Graphics::cSprite::InitializeGeometry()
 
 					textureCoordinateElement.SemanticName = "TEXCOORD";
 					textureCoordinateElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
-					textureCoordinateElement.Format = DXGI_FORMAT_R8G8_UINT;
+					textureCoordinateElement.Format = DXGI_FORMAT_R8G8_UNORM;
 					textureCoordinateElement.InputSlot = 0;
 					textureCoordinateElement.AlignedByteOffset = offsetof( eae6320::Graphics::VertexFormats::sSprite, u );
 					textureCoordinateElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;

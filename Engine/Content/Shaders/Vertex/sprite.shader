@@ -51,7 +51,7 @@ void main(
 	// but must match the C call to CreateInputLayout()
 
 	// These values come from one of the VertexFormats::sMesh that the vertex buffer was filled with in C code
-	in const float3 i_vertexPosition_local : POSITION,
+	in const float2 i_vertexPosition_local : POSITION,
 	in const float2 i_textureCoordinates : TEXCOORD,
 
 	// Output
@@ -65,7 +65,7 @@ void main(
 {
 	{
 		// Project the vertex from local space into projected space
-		float4 vertexPosition_local = float4( i_vertexPosition_local, 1.0 );
+		float4 vertexPosition_local = float4( i_vertexPosition_local, 0.0, 1.0 );
 		o_vertexPosition_projected = mul( g_transform_localToProjected, vertexPosition_local );
 
 		o_textureCoordinates = i_textureCoordinates;
