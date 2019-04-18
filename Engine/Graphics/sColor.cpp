@@ -45,7 +45,7 @@ void eae6320::Graphics::sColor::SetColor(float i_red, float i_green, float i_blu
 
 eae6320::Graphics::sColor eae6320::Graphics::sColor::GetLinearColor()
 {
-	return sColor(CalculateLinearValue(red), CalculateLinearValue(green), CalculateLinearValue(blue), CalculateLinearValue(alpha));
+	return sColor(CalculateLinearValue(red), CalculateLinearValue(green), CalculateLinearValue(blue), alpha);
 }
 
 float eae6320::Graphics::sColor::CalculateLinearValue(float i_sRGB)
