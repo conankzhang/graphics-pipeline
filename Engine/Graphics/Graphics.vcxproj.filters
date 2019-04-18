@@ -20,6 +20,7 @@
     <ClCompile Include="cTexture.cpp" />
     <ClCompile Include="Direct3D\cSamplerState.d3d.cpp" />
     <ClCompile Include="Direct3D\cTexture.d3d.cpp" />
+    <ClCompile Include="cSprite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cConstantBuffer.h" />
@@ -41,6 +42,7 @@
     <ClInclude Include="cTexture.h" />
     <ClInclude Include="TextureFormats.h" />
     <ClInclude Include="OpenGL\Includes.h" />
+    <ClInclude Include="cSprite.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cRenderState.inl" />
