@@ -158,9 +158,9 @@ uint_fast32_t eae6320::Graphics::cMaterial::GetEffectId()
 	return m_effect.GetIndex();
 }
 
-const eae6320::Graphics::sColor eae6320::Graphics::cMaterial::GetColor()
+const eae6320::Graphics::sColor& eae6320::Graphics::cMaterial::GetColor()
 {
-	return m_color.GetLinearColor();
+	return m_color;
 }
 
 bool eae6320::Graphics::cMaterial::IsAlphaTransparencyEnabled() const

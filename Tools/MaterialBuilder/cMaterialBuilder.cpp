@@ -49,7 +49,7 @@ eae6320::cResult eae6320::Assets::cMaterialBuilder::Build(const std::vector<std:
 		goto OnExit;
 	}
 
-	outFile.write ( reinterpret_cast<char *>(&color), sizeof( color ) );
+	outFile.write ( reinterpret_cast<char *>(&color.GetLinearColor()), sizeof( color ) );
 	outFile.write ( (char *)&effectPathSize, sizeof( uint16_t ) );
 	outFile.write ( effectPath.c_str(), effectPath.size() );
 	outFile.put('\0');
