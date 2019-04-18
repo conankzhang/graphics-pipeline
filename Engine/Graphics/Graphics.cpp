@@ -501,3 +501,26 @@ void eae6320::Graphics::SubmitDrawCommand(unsigned int i_distance, const cMesh::
 
 	s_dataBeingSubmittedByApplicationThread->renderCount++;
 }
+
+void eae6320::Graphics::SubmitSpriteCommand(unsigned int i_distance, const cMaterial::Handle& i_material, Math::cMatrix_transformation& i_transform_localToWorld, const Math::cMatrix_transformation& i_transform_localToProjected)
+{
+	DrawCommand drawCommand;
+
+	drawCommand.nCommand = RenderCommand::SpriteDraw;
+	i_distance = 255 - i_distance;
+
+	drawCommand.nPriority1 = i_distance;
+	drawCommand.nPriority2 = cMaterial::s_manager.Get(i_material)->GetEffectId();
+	drawCommand.nPriority3 = i_material.GetIndex();
+
+	drawCommand.nMeshId = 0;
+
+	drawCommand.nSubmitIndex = s_dataBeingSubmittedByApplicationThread->renderCount;
+
+	s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[i_material.GetIndex()].g_color = cMaterial::s_manager.UnsafeGet(i_material.GetIndex())->GetColor();
+	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToWorld = i_transform_localToWorld;
+	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToProjected = i_transform_localToProjected;
+	s_dataBeingSubmittedByApplicationThread->renderCommands[s_dataBeingSubmittedByApplicationThread->renderCount] = *(uint64_t*)&drawCommand;
+
+	s_dataBeingSubmittedByApplicationThread->renderCount++;
+}

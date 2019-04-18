@@ -67,9 +67,10 @@ eae6320::cResult eae6320::Assets::cTextureBuilder::Build( const std::vector<std:
 	}
 	// Build the texture
 	i_arguments;	// One way to customize how the texture is built would be to pass in and use command arguments
+
 	if (!i_arguments.empty())
 	{
-		if (i_arguments[0] == "COLOR")
+		if (i_arguments[0] == "color")
 		{
 			sourceImage.OverrideFormat(DirectX::MakeSRGB(sourceImage.GetMetadata().format));
 		}
@@ -248,7 +249,7 @@ namespace
 			// The texture builder code that I'm providing supports two kinds of compressed formats:
 			//	* BC1 (compressed with no alpha, used to be known as "DXT1")
 			//	* BC3 (compressed with alpha, used to be known as "DXT5")
-			const auto formatToCompressTo = resizedImage.IsAlphaAllOpaque() ? DXGI_FORMAT_BC1_UNORM : DXGI_FORMAT_BC3_UNORM;
+			const auto formatToCompressTo = resizedImage.IsAlphaAllOpaque() ? DXGI_FORMAT_BC1_UNORM_SRGB : DXGI_FORMAT_BC3_UNORM_SRGB;
 			constexpr DWORD useDefaultCompressionOptions = DirectX::TEX_COMPRESS_DEFAULT;
 			constexpr float useDefaultThreshold = DirectX::TEX_THRESHOLD_DEFAULT;
 			if ( FAILED( DirectX::Compress( imageWithMipMaps.GetImages(), imageWithMipMaps.GetImageCount(),
@@ -260,7 +261,7 @@ namespace
 		}
 		else
 		{
-			constexpr auto uncompressedFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+			constexpr auto uncompressedFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 			if ( imageWithMipMaps.GetMetadata().format == uncompressedFormat )
 			{
 				// The texture is already in the final format

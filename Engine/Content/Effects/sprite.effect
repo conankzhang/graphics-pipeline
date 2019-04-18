@@ -1,0 +1,8 @@
+return
+{
+	path_vertexShader = "Shaders/Vertex/sprite.shader",
+	path_fragmentShader = "Shaders/Fragment/sprite.shader",
+	AlphaTransparency = true,
+	DepthBuffering = false,
+	DrawBothTriangleSides = true,
+}
