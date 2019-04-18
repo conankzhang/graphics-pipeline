@@ -41,6 +41,15 @@ namespace eae6320
 				// Offset = 0
 				float nx, ny, nz;
 			};
+
+			struct sSprite
+			{
+				// POSITION
+				int8_t x, y;
+
+				// TEXTURE_COORDINATES
+				uint8_t u, v;
+			};
 		}
 	}
 }

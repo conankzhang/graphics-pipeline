@@ -20,7 +20,7 @@
     <ClCompile Include="cTexture.cpp" />
     <ClCompile Include="Direct3D\cSamplerState.d3d.cpp" />
     <ClCompile Include="Direct3D\cTexture.d3d.cpp" />
-    <ClCompile Include="cSprite.cpp" />
+    <ClCompile Include="Direct3D\cSprite.d3d.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cConstantBuffer.h" />

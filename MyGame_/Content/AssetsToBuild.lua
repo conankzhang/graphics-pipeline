@@ -7,6 +7,7 @@ return
 	shaders =
 	{
 		{ path = "Shaders/Vertex/vertexInputLayout.shader", arguments = { "vertex" } },
+		{ path = "Shaders/Vertex/sprite.shader", arguments = { "vertex" } },
 	},
 
 	meshes =
