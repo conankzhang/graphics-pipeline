@@ -146,6 +146,7 @@ void eae6320::Graphics::RenderFrame()
 	sColor clearColor = s_dataBeingRenderedByRenderThread->clearColor;
 	s_View.ClearColor(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha);
 
+	bool renderSpritesOnce = false;
 	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->renderCount; ++i)
 	{
 		DrawCommand drawCommand = *(DrawCommand *)&s_dataBeingRenderedByRenderThread->renderCommands[i];
@@ -188,7 +189,13 @@ void eae6320::Graphics::RenderFrame()
 
 		if (drawCommand.nCommand == RenderCommand::SpriteDraw)
 		{
-			s_Sprite.RenderFrame();
+			if (!renderSpritesOnce)
+			{
+				s_Sprite.SetSprite();
+				renderSpritesOnce = true;
+			}
+
+			s_Sprite.Draw();
 		}
 		else
 		{

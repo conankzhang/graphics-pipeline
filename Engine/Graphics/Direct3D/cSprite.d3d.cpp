@@ -51,7 +51,7 @@ eae6320::Graphics::cSprite::~cSprite()
 // Interface
 //==========
 
-void eae6320::Graphics::cSprite::RenderFrame()
+void eae6320::Graphics::cSprite::SetSprite()
 {
 	auto* const direct3dImmediateContext = sContext::g_context.direct3dImmediateContext;
 	EAE6320_ASSERT( direct3dImmediateContext );
@@ -81,14 +81,14 @@ void eae6320::Graphics::cSprite::RenderFrame()
 		// (meaning that every primitive is a triangle and will be defined by three vertices)
 		direct3dImmediateContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP );
 	}
+}
 
-	// Render triangles from the currently-bound vertex buffer
-	{
-		// It's possible to start rendering primitives in the middle of the stream
-		constexpr unsigned int indexOfFirstIndexToUse = 0;
-		constexpr unsigned int offsetToAddToEachIndex = 0;
-		direct3dImmediateContext->Draw(4, 0);
-	}
+void eae6320::Graphics::cSprite::Draw()
+{
+	auto* const direct3dImmediateContext = sContext::g_context.direct3dImmediateContext;
+	EAE6320_ASSERT( direct3dImmediateContext );
+
+	direct3dImmediateContext->Draw(4, 0);
 }
 
 // Initialization / Clean Up

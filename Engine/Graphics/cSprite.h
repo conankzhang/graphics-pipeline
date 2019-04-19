@@ -60,7 +60,8 @@ namespace eae6320
 			cSprite();
 			~cSprite();
 
-			void RenderFrame();
+			void SetSprite();
+			void Draw();
 
 			cResult InitializeGeometry();
 			cResult CleanUp();
