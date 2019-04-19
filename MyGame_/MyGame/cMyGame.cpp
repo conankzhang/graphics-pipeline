@@ -25,12 +25,12 @@ void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_s
 
 	Math::cMatrix_transformation transform_worldToProjected = transform_cameraToProjected * transform_worldToCamera;
 
-	Math::cMatrix_transformation transform_localToWorld = m_sprite->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
-	Graphics::SubmitSpriteCommand(0, m_sprite->GetMaterial(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
+	//Math::cMatrix_transformation transform_localToWorld = m_sprite->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
+	//Graphics::SubmitSpriteCommand(0, m_sprite->GetMaterial(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
 
 	for (auto GameObject : m_gameObjects)
 	{
-		transform_localToWorld = GameObject->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
+		Math::cMatrix_transformation transform_localToWorld = GameObject->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
 		Graphics::SubmitDrawCommand(m_camera->CalculateNormalizedCameraDistance(GameObject->GetPosition()), GameObject->GetMesh(), GameObject->GetMaterial(), transform_localToWorld, transform_worldToProjected * transform_localToWorld);
 	}
 }
@@ -249,10 +249,10 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	//m_gameObjects.push_back(m_player);
 
 	m_camera = new cCamera(Math::sVector(0.0f, 0.0f, 5.0f), Math::cQuaternion());
-	m_sprite = new cSpriteObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Materials/sprite.material");
+	//m_sprite = new cSpriteObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Materials/sprite.material");
 
 	// Grid
-	m_gameObjects.push_back( new cGameObject(Math::sVector(-1.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/sprite.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(-2.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/standard.material") );
 	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/brick.material") );
 	//m_gameObjects.push_back( new cGameObject(Math::sVector(0.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
 	//m_gameObjects.push_back( new cGameObject(Math::sVector(1.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );

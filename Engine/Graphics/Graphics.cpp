@@ -155,7 +155,7 @@ void eae6320::Graphics::RenderFrame()
 		if (drawCommand.nCommand == RenderCommand::IndependentDraw)
 		{
 			effectId = drawCommand.nPriority1;
-			materialId = drawCommand.nPriority1;
+			materialId = drawCommand.nPriority2;
 		}
 		else if (drawCommand.nCommand == RenderCommand::DependentDraw || drawCommand.nCommand == RenderCommand::SpriteDraw)
 		{
