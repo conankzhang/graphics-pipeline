@@ -26,7 +26,9 @@ void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_s
 	Math::cMatrix_transformation transform_worldToProjected = transform_cameraToProjected * transform_worldToCamera;
 
 	Math::cMatrix_transformation sprite_transform_localToWorld = m_sprite->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
-	Graphics::SubmitSpriteCommand(0, m_sprite->GetMaterial(), sprite_transform_localToWorld, transform_worldToProjected * sprite_transform_localToWorld);
+	Graphics::SubmitSpriteCommand(m_sprite->GetScale(), m_sprite->GetMaterial(), sprite_transform_localToWorld, transform_worldToProjected * sprite_transform_localToWorld);
+	sprite_transform_localToWorld = m_spritePad->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
+	Graphics::SubmitSpriteCommand(m_spritePad->GetScale(), m_spritePad->GetMaterial(), sprite_transform_localToWorld, transform_worldToProjected * sprite_transform_localToWorld);
 
 	for (auto GameObject : m_gameObjects)
 	{
@@ -199,11 +201,6 @@ void eae6320::cMyGame::UpdateSimulationBasedOnTime(const float i_elapsedSecondCo
 	{
 		m_camera->Update(i_elapsedSecondCount_sinceLastUpdate);
 	}
-
-	if (m_sprite)
-	{
-		m_sprite->Update(i_elapsedSecondCount_sinceLastUpdate);
-	}
 }
 
 eae6320::cResult eae6320::cMyGame::DeleteGameObject(cGameObject* i_gameObject)
@@ -249,7 +246,8 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	//m_gameObjects.push_back(m_player);
 
 	m_camera = new cCamera(Math::sVector(0.0f, 0.0f, 5.0f), Math::cQuaternion());
-	m_sprite = new cSpriteObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Materials/sprite.material");
+	m_sprite = new cSpriteObject(Math::sVector(0.7f, 0.7f, 0.0f), Math::sVector(0.3f, 0.3f, 1.0f), Math::cQuaternion(), "data/Materials/sprite.material");
+	m_spritePad = new cSpriteObject(Math::sVector(-0.7f, 0.7f, 0.0f), Math::sVector(0.3f, 0.3f, 1.0f), Math::cQuaternion(), "data/Materials/spritePad.material");
 
 	// Grid
 	m_gameObjects.push_back( new cGameObject(Math::sVector(-2.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/standard.material") );
@@ -310,6 +308,24 @@ eae6320::cResult eae6320::cMyGame::CleanUp()
 		delete m_sprite;
 		m_sprite = nullptr;
 	}
+
+	if (m_spritePad)
+	{
+		const auto localResult = m_spritePad->CleanUp();
+
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+
+		delete m_spritePad;
+		m_spritePad = nullptr;
+	}
+
 
 
 

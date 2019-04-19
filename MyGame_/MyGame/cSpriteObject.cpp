@@ -2,15 +2,15 @@
 
 #include <Engine/Math/cMatrix_transformation.h>
 
-eae6320::cSpriteObject::cSpriteObject(Math::sVector i_position, Math::cQuaternion i_orientation, const char * const i_materialPath)
+eae6320::cSpriteObject::cSpriteObject(Math::sVector i_position, Math::sVector i_scale, Math::cQuaternion i_orientation, const char * const i_materialPath)
 {
 	m_rigidBody.position = i_position;
 	m_rigidBody.orientation = i_orientation;
+	m_scale = i_scale;
 
 	// Initialize the game object data
 	if (i_materialPath)
 	{
-
 		auto result = Results::Success;
 
 		{
@@ -74,4 +74,9 @@ eae6320::Math::sVector eae6320::cSpriteObject::GetForward()
 eae6320::Math::sVector eae6320::cSpriteObject::GetPosition()
 {
 	return m_rigidBody.position;
+}
+
+eae6320::Math::sVector eae6320::cSpriteObject::GetScale()
+{
+	return m_scale;
 }

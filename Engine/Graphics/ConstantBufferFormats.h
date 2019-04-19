@@ -48,6 +48,11 @@ namespace eae6320
 			{
 				Math::cMatrix_transformation g_transform_localToWorld;
 				Math::cMatrix_transformation g_transform_localToProjected;
+
+				float g_scale_x;
+				float g_scale_y;
+
+				float padding[2];	// For float4 alignment
 			};
 
 			struct sPerMaterial

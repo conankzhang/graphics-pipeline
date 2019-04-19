@@ -32,7 +32,7 @@ namespace eae6320
 	class cSpriteObject
 	{
 	public:
-		cSpriteObject(Math::sVector i_position, Math::cQuaternion i_orientation, const char * const i_materialPath);
+		cSpriteObject(Math::sVector i_position, Math::sVector i_scale, Math::cQuaternion i_orientation, const char * const i_materialPath);
 		cResult CleanUp();
 
 		void Update(const float i_elapsedSecondCount_sinceLastUpdate);
@@ -45,9 +45,10 @@ namespace eae6320
 		Math::cMatrix_transformation GetTransform(const float i_elapsedSecondCount_sinceLastSimulationUpdate);
 		Math::sVector GetForward();
 		Math::sVector GetPosition();
+		Math::sVector GetScale();
 
 	protected:
-
+		Math::sVector m_scale;
 		Physics::sRigidBodyState m_rigidBody;
 
 		Graphics::cMaterial::Handle m_material;

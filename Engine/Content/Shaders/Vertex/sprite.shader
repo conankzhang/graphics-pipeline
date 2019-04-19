@@ -32,8 +32,14 @@ cbuffer g_constantBuffer_perFrame : register( b0 )
 
 cbuffer g_constantBuffer_perDrawCall : register( b2 )
 {
-  float4x4 g_transform_localToWorld;
-  float4x4 g_transform_localToProjected;
+	float4x4 g_transform_localToWorld;
+	float4x4 g_transform_localToProjected;
+
+	float g_scale_x;
+	float g_scale_y;
+
+	// For float4 alignment
+	float2 g_padding_drawCall;
 };
 
 DeclareTexture2d(g_diffuseTexture, 0);
@@ -66,6 +72,16 @@ void main(
 	{
 		// Project the vertex from local space into projected space
 		float4 vertexPosition_local = float4( i_vertexPosition_local, 0.0, 1.0 );
+
+		float4x4 scalingMatrix = {
+			g_scale_x, 0, 0, 0,
+			0, g_scale_y, 0, 0,
+			0, 0, 0, 0,
+			0, 0, 0, 1
+		};
+
+		vertexPosition_local = mul(scalingMatrix , vertexPosition_local);
+
 		o_vertexPosition_projected = mul( g_transform_localToWorld, vertexPosition_local );
 
 		o_textureCoordinates = i_textureCoordinates;

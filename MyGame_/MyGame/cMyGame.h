@@ -105,6 +105,7 @@ namespace eae6320
 		cCamera* m_camera = nullptr;
 
 		cSpriteObject* m_sprite = nullptr;
+		cSpriteObject* m_spritePad = nullptr;
 
 		std::vector<cGameObject*> m_gameObjects;
 
