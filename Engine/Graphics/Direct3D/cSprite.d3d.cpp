@@ -22,24 +22,24 @@
 
 eae6320::Graphics::cSprite::cSprite()
 {
-	m_spriteVertices[0].x = -1;
-	m_spriteVertices[1].x = -1;
-	m_spriteVertices[2].x = 1;
-	m_spriteVertices[3].x = 1;
+	m_spriteVertices[0].x = -128;
+	m_spriteVertices[1].x = -128;
+	m_spriteVertices[2].x = 127;
+	m_spriteVertices[3].x = 127;
 
-	m_spriteVertices[0].y = -1;
-	m_spriteVertices[1].y = 1;
-	m_spriteVertices[2].y = -1;
-	m_spriteVertices[3].y = 1;
+	m_spriteVertices[0].y = -128;
+	m_spriteVertices[1].y = 127;
+	m_spriteVertices[2].y = -128;
+	m_spriteVertices[3].y = 127;
 
 	m_spriteVertices[0].u = 0;
 	m_spriteVertices[1].u = 0;
-	m_spriteVertices[2].u = 1;
-	m_spriteVertices[3].u = 1;
+	m_spriteVertices[2].u = 255;
+	m_spriteVertices[3].u = 255;
 
-	m_spriteVertices[0].v = 1;
+	m_spriteVertices[0].v = 255;
 	m_spriteVertices[1].v = 0;
-	m_spriteVertices[2].v = 1;
+	m_spriteVertices[2].v = 255;
 	m_spriteVertices[3].v = 0;
 }
 
