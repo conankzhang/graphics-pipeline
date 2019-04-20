@@ -7,7 +7,6 @@ return
 	shaders =
 	{
 		{ path = "Shaders/Vertex/vertexInputLayout.shader", arguments = { "vertex" } },
-		{ path = "Shaders/Vertex/sprite.shader", arguments = { "vertex" } },
 	},
 
 	meshes =
@@ -19,7 +18,5 @@ return
 	{
 		{ path = "Materials/standard.material" },
 		{ path = "Materials/brick.material" },
-		{ path = "Materials/sprite.material" },
-		{ path = "Materials/spritePad.material" },
 	},
 }
