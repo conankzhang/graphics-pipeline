@@ -5,4 +5,3 @@ return
     reflectivity = { 0.5, 0.5, 0.5, 0.5 },
     gloss = 0.5,
 }
-
