@@ -17,7 +17,7 @@
 void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate)
 {
 	Graphics::SubmitBackgroundColor(clearColor.GetLinearColor());
-	Graphics::SubmitLighting(ambientColor.GetLinearColor(), directionalLightColor.GetLinearColor(), lightDirection.GetNormalized(), m_player->GetPosition());
+	Graphics::SubmitLighting(ambientColor.GetLinearColor(), directionalLightColor.GetLinearColor(), lightDirection.GetNormalized(), m_player->GetPosition(), pointLightColor.GetLinearColor());
 
 	Math::cMatrix_transformation transform_worldToCamera = m_camera->GetWorldToCameraTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
 	Math::cMatrix_transformation transform_cameraToProjected = m_camera->GetCameraToProjectedTransform();
@@ -255,6 +255,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	clearColor.SetColor(0.13f, 0.24f, 0.33f, 1.0f);
 	ambientColor.SetColor(0.1f, 0.1f, 0.1f, 1.0f);
 	directionalLightColor.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+	pointLightColor.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	lightDirection.x = 1.0f;
 	lightDirection.y = 1.0f;

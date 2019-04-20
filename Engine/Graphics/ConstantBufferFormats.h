@@ -45,6 +45,7 @@ namespace eae6320
 
 				Math::sVector g_pointLight_position;
 				float padding3[1];	// For float4 alignment
+				sColor g_pointLight_color;
 			};
 
 			struct sPerDrawCall

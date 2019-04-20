@@ -110,7 +110,7 @@ namespace eae6320
 		cResult CleanUp();
 
 		void SubmitBackgroundColor(const sColor& i_color);
-		void SubmitLighting(const sColor& i_color, const sColor& i_directionalLightColor, const Math::sVector& i_lightDirection, const Math::sVector& i_pointLightPosition);
+		void SubmitLighting(const sColor& i_color, const sColor& i_directionalLightColor, const Math::sVector& i_lightDirection, const Math::sVector& i_pointLightPosition, const sColor& i_pointLightColor);
 		void SubmitCamera(Math::cMatrix_transformation i_transform_worldToCamera, Math::cMatrix_transformation i_transform_cameraToProjected, const Math::sVector& i_vector_cameraPasition, float i_elapsedSecondCount_systemTime, float i_elapsedSecondCount_simulationTime);
 		void SubmitDrawCommand(unsigned int i_distance, const cMesh::Handle& i_mesh, const cMaterial::Handle& i_material, Math::cMatrix_transformation& i_transform_localToWorld, const Math::cMatrix_transformation& i_transform_localToProjected);
 		void SubmitSpriteCommand(const Math::sVector& i_scale, const cMaterial::Handle& i_material, Math::cMatrix_transformation& i_transform_localToWorld);
