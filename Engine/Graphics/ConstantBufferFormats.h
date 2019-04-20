@@ -42,17 +42,29 @@ namespace eae6320
 				float g_elapsedSecondCount_systemTime = 0.0f;
 				float g_elapsedSecondCount_simulationTime = 0.0f;
 				float padding2[2];	// For float4 alignment
+
+				Math::sVector g_pointLight_position;
+				float padding3[1];	// For float4 alignment
+				sColor g_pointLight_color;
 			};
 
 			struct sPerDrawCall
 			{
 				Math::cMatrix_transformation g_transform_localToWorld;
 				Math::cMatrix_transformation g_transform_localToProjected;
+
+				float g_scale_x;
+				float g_scale_y;
+
+				float padding[2];	// For float4 alignment
 			};
 
 			struct sPerMaterial
 			{
 				sColor g_color;
+				sColor g_reflectivity;
+				float g_gloss;
+				float padding[3];	// For float4 alignment
 			};
 		}
 	}

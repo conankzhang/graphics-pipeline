@@ -24,6 +24,7 @@
 namespace eae6320
 {
 	class cGameObject;
+	class cSpriteObject;
 }
 
 // Class Declaration
@@ -98,15 +99,23 @@ namespace eae6320
 
 		Graphics::sColor ambientColor;
 		Graphics::sColor directionalLightColor;
+		Graphics::sColor pointLightColor;
+
 		Math::sVector lightDirection;
 
 		cGameObject* m_player = nullptr;
 		cCamera* m_camera = nullptr;
 
+		cSpriteObject* m_sprite = nullptr;
+		cSpriteObject* m_spritePad = nullptr;
+
 		std::vector<cGameObject*> m_gameObjects;
 
 		float cameraMoveSpeed = 3.0f;
 		float playerMoveSpeed = 3.0f;
+
+		float lightMoveSpeed = 0.5f;
+		float lightClamp = 10.0f;
 
 		virtual cResult Initialize() override;
 		virtual cResult CleanUp() override;

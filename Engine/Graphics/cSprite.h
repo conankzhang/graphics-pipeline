@@ -17,6 +17,7 @@
 #include <Engine/Assets/cHandle.h>
 #include <Engine/Assets/cManager.h>
 #include <Engine/Results/Results.h>
+#include "VertexFormats.h"
 
 #ifdef EAE6320_PLATFORM_GL
 	#include "OpenGL/Includes.h"
@@ -30,14 +31,6 @@ namespace eae6320
 	namespace Platform
 	{
 		struct sDataFromFile;
-	}
-
-	namespace Graphics
-	{
-		namespace VertexFormats
-		{
-			struct sMesh;
-		}
 	}
 }
 
@@ -64,7 +57,14 @@ namespace eae6320
 
 			// Initialization / Clean Up
 			//--------------------------
-			void RenderFrame();
+			cSprite();
+			~cSprite();
+
+			void SetSprite();
+			void Draw();
+
+			cResult InitializeGeometry();
+			cResult CleanUp();
 
 			// Data
 			//=====
@@ -90,10 +90,7 @@ namespace eae6320
 			// Implementation
 			//===============
 		private:
-			cResult CleanUp();
-
-			cSprite();
-			~cSprite();
+			VertexFormats::sSprite m_spriteVertices[4];
 		};
 	}
 }

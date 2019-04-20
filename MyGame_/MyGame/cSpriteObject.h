@@ -1,15 +1,15 @@
 /*
-	This class represents game objects.
+	This class represents sprite objects.
 */
 
-#ifndef EAE6320_CGAMEOBJECT_H
-#define EAE6320_CGAMEOBJECT_H
+#ifndef EAE6320_CSPRITEOBJECT_H
+#define EAE6320_CSPRITEOBJECT_H
 
 // Includes
 //=========
 #include <Engine/Physics/sRigidBodyState.h>
 
-#include <Engine/Graphics/cMesh.h>
+#include <Engine/Graphics/cSprite.h>
 #include <Engine/Graphics/cMaterial.h>
 
 // Forward Declarations
@@ -19,7 +19,7 @@ namespace eae6320
 {
 	namespace Graphics
 	{
-		class cMesh;
+		class cSprite;
 		class cMaterial;
 	}
 }
@@ -29,10 +29,10 @@ namespace eae6320
 
 namespace eae6320
 {
-	class cGameObject
+	class cSpriteObject
 	{
 	public:
-		cGameObject(Math::sVector i_position, Math::cQuaternion i_orientation, const char * const i_meshPath, const char * const i_materialPath);
+		cSpriteObject(Math::sVector i_position, Math::sVector i_scale, Math::cQuaternion i_orientation, const char * const i_materialPath);
 		cResult CleanUp();
 
 		void Update(const float i_elapsedSecondCount_sinceLastUpdate);
@@ -41,19 +41,18 @@ namespace eae6320
 		void SetAngularSpeed(float i_angularSpeed);
 
 		const Graphics::cMaterial::Handle& GetMaterial();
-		const Graphics::cMesh::Handle& GetMesh();
 
 		Math::cMatrix_transformation GetTransform(const float i_elapsedSecondCount_sinceLastSimulationUpdate);
 		Math::sVector GetForward();
 		Math::sVector GetPosition();
+		Math::sVector GetScale();
 
 	protected:
-
+		Math::sVector m_scale;
 		Physics::sRigidBodyState m_rigidBody;
 
-		Graphics::cMesh::Handle m_mesh;
 		Graphics::cMaterial::Handle m_material;
 	};
 }
 
-#endif	// EAE6320_CGAMEOBJECT_H
+#endif	// EAE6320_CSPRITEOBJECT_H

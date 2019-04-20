@@ -32,8 +32,14 @@ cbuffer g_constantBuffer_perFrame : register( b0 )
 
 cbuffer g_constantBuffer_perDrawCall : register( b2 )
 {
-  float4x4 g_transform_localToWorld;
-  float4x4 g_transform_localToProjected;
+	float4x4 g_transform_localToWorld;
+	float4x4 g_transform_localToProjected;
+
+	float g_scale_x;
+	float g_scale_y;
+
+	// For float4 alignment
+	float2 g_padding_drawCall;
 };
 
 DeclareTexture2d(g_diffuseTexture, 0);
@@ -51,9 +57,8 @@ void main(
 	// but must match the C call to CreateInputLayout()
 
 	// These values come from one of the VertexFormats::sMesh that the vertex buffer was filled with in C code
-	in const float3 i_vertexPosition_local : POSITION,
+	in const float2 i_vertexPosition_local : POSITION,
 	in const float2 i_textureCoordinates : TEXCOORD,
-	in const float3 i_normal: NORMAL,
 
 	// Output
 	//=======
@@ -61,18 +66,23 @@ void main(
 	// An SV_POSITION value must always be output from every vertex shader
 	// so that the GPU can figure out which fragments need to be shaded
 	out float2 o_textureCoordinates : OTEXCOORD,
-	out float3 o_normal_world : ONORMAL,
 	out float4 o_vertexPosition_projected : SV_POSITION
 	)
 {
 	{
 		// Project the vertex from local space into projected space
-		float4 vertexPosition_local = float4( i_vertexPosition_local, 1.0 );
-		o_vertexPosition_projected = mul( g_transform_localToProjected, vertexPosition_local );
+		float4 vertexPosition_local = float4( i_vertexPosition_local, 0.0, 1.0 );
 
-		// Project the normal from local space into world space
-		float4 normal_local = float4( i_normal, 0.0 );
-		o_normal_world = mul( g_transform_localToWorld, normal_local).xyz;
+		float4x4 scalingMatrix = {
+			g_scale_x, 0, 0, 0,
+			0, g_scale_y, 0, 0,
+			0, 0, 0, 0,
+			0, 0, 0, 1
+		};
+
+		vertexPosition_local = mul(scalingMatrix , vertexPosition_local);
+
+		o_vertexPosition_projected = mul( g_transform_localToWorld, vertexPosition_local );
 
 		o_textureCoordinates = i_textureCoordinates;
 	}

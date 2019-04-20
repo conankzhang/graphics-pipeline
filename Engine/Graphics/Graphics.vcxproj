@@ -174,7 +174,7 @@
     <ClCompile Include="cRenderState.cpp" />
     <ClCompile Include="cSamplerState.cpp" />
     <ClCompile Include="cShader.cpp" />
-    <ClCompile Include="cSprite.cpp" />
+    <ClCompile Include="Direct3D\cSprite.d3d.cpp" />
     <ClCompile Include="cTexture.cpp" />
     <ClCompile Include="Direct3D\cConstantBuffer.d3d.cpp" />
     <ClCompile Include="Direct3D\cEffect.d3d.cpp" />

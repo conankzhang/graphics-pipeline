@@ -9,6 +9,7 @@
 #include "cSamplerState.h"
 #include "cShader.h"
 #include "cEffect.h"
+#include "cSprite.h"
 #include "sColor.h"
 #include "sContext.h"
 #include "VertexFormats.h"
@@ -29,6 +30,7 @@
 namespace
 {
 	eae6320::Graphics::View s_View;
+	eae6320::Graphics::cSprite s_Sprite;
 
 	eae6320::Graphics::cSamplerState::Handle samplerState;
 
@@ -144,6 +146,7 @@ void eae6320::Graphics::RenderFrame()
 	sColor clearColor = s_dataBeingRenderedByRenderThread->clearColor;
 	s_View.ClearColor(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha);
 
+	bool renderSpritesOnce = false;
 	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->renderCount; ++i)
 	{
 		DrawCommand drawCommand = *(DrawCommand *)&s_dataBeingRenderedByRenderThread->renderCommands[i];
@@ -153,9 +156,9 @@ void eae6320::Graphics::RenderFrame()
 		if (drawCommand.nCommand == RenderCommand::IndependentDraw)
 		{
 			effectId = drawCommand.nPriority1;
-			materialId = drawCommand.nPriority1;
+			materialId = drawCommand.nPriority2;
 		}
-		else if (drawCommand.nCommand == RenderCommand::DependentDraw)
+		else if (drawCommand.nCommand == RenderCommand::DependentDraw || drawCommand.nCommand == RenderCommand::SpriteDraw)
 		{
 			effectId = drawCommand.nPriority2;
 			materialId = drawCommand.nPriority3;
@@ -184,7 +187,20 @@ void eae6320::Graphics::RenderFrame()
 			s_dataBeingRenderedByRenderThread->currentBoundMaterialId = materialId;
 		}
 
-		cMesh::s_manager.UnsafeGet(drawCommand.nMeshId)->RenderFrame();
+		if (drawCommand.nCommand == RenderCommand::SpriteDraw)
+		{
+			if (!renderSpritesOnce)
+			{
+				s_Sprite.SetSprite();
+				renderSpritesOnce = true;
+			}
+
+			s_Sprite.Draw();
+		}
+		else
+		{
+			cMesh::s_manager.UnsafeGet(drawCommand.nMeshId)->RenderFrame();
+		}
 	}
 
 	s_dataBeingRenderedByRenderThread->renderCount = 0;
@@ -322,6 +338,15 @@ eae6320::cResult eae6320::Graphics::Initialize( const sInitializationParameters&
 		}
 	}
 
+	{
+		result = s_Sprite.InitializeGeometry();
+		if (!(result))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+	}
+
 OnExit:
 
 	return result;
@@ -332,6 +357,7 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 	auto result = Results::Success;
 
 	s_View.CleanUp();
+	s_Sprite.CleanUp();
 
 	{
 		const auto localResult = s_constantBuffer_perFrame.CleanUp();
@@ -452,12 +478,15 @@ void eae6320::Graphics::SubmitBackgroundColor(const sColor& i_color)
 	s_dataBeingSubmittedByApplicationThread->clearColor = i_color;
 }
 
-void eae6320::Graphics::SubmitLighting(const sColor& i_color, const sColor& i_directionalLightColor, const Math::sVector& i_lightDirection)
+void eae6320::Graphics::SubmitLighting(const sColor& i_color, const sColor& i_directionalLightColor, const Math::sVector& i_lightDirection, const Math::sVector& i_pointLightPosition, const sColor& i_pointLightColor)
 {
 	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_lightDirection = i_lightDirection;
 	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_directionalLight_color = i_directionalLightColor;
 
 	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_ambient_color = i_color;
+
+	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_pointLight_position = i_pointLightPosition;
+	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_pointLight_color = i_pointLightColor;
 }
 
 void eae6320::Graphics::SubmitCamera(eae6320::Math::cMatrix_transformation i_transform_worldToCamera, eae6320::Math::cMatrix_transformation i_transform_cameraToProjected, const Math::sVector& i_vector_cameraPosition, float i_elapsedSecondCount_systemTime, float i_elapsedSecondCount_simulationTime)
@@ -495,21 +524,22 @@ void eae6320::Graphics::SubmitDrawCommand(unsigned int i_distance, const cMesh::
 	drawCommand.nSubmitIndex = s_dataBeingSubmittedByApplicationThread->renderCount;
 
 	s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[i_material.GetIndex()].g_color = cMaterial::s_manager.UnsafeGet(i_material.GetIndex())->GetColor();
+	s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[i_material.GetIndex()].g_reflectivity = cMaterial::s_manager.UnsafeGet(i_material.GetIndex())->GetReflectivity();
+	s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[i_material.GetIndex()].g_gloss = cMaterial::s_manager.UnsafeGet(i_material.GetIndex())->GetGloss();
+
 	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToWorld = i_transform_localToWorld;
 	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToProjected = i_transform_localToProjected;
-	s_dataBeingSubmittedByApplicationThread->renderCommands[s_dataBeingSubmittedByApplicationThread->renderCount] = *(uint64_t*)&drawCommand;
 
+	s_dataBeingSubmittedByApplicationThread->renderCommands[s_dataBeingSubmittedByApplicationThread->renderCount] = *(uint64_t*)&drawCommand;
 	s_dataBeingSubmittedByApplicationThread->renderCount++;
 }
 
-void eae6320::Graphics::SubmitSpriteCommand(unsigned int i_distance, const cMaterial::Handle& i_material, Math::cMatrix_transformation& i_transform_localToWorld, const Math::cMatrix_transformation& i_transform_localToProjected)
+void eae6320::Graphics::SubmitSpriteCommand(const Math::sVector& i_scale, const cMaterial::Handle& i_material, Math::cMatrix_transformation& i_transform_localToWorld)
 {
 	DrawCommand drawCommand;
 
 	drawCommand.nCommand = RenderCommand::SpriteDraw;
-	i_distance = 255 - i_distance;
-
-	drawCommand.nPriority1 = i_distance;
+	drawCommand.nPriority1 = 0;
 	drawCommand.nPriority2 = cMaterial::s_manager.Get(i_material)->GetEffectId();
 	drawCommand.nPriority3 = i_material.GetIndex();
 
@@ -519,7 +549,10 @@ void eae6320::Graphics::SubmitSpriteCommand(unsigned int i_distance, const cMate
 
 	s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[i_material.GetIndex()].g_color = cMaterial::s_manager.UnsafeGet(i_material.GetIndex())->GetColor();
 	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToWorld = i_transform_localToWorld;
-	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToProjected = i_transform_localToProjected;
+
+	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_scale_x = i_scale.x;
+	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_scale_y = i_scale.y;
+
 	s_dataBeingSubmittedByApplicationThread->renderCommands[s_dataBeingSubmittedByApplicationThread->renderCount] = *(uint64_t*)&drawCommand;
 
 	s_dataBeingSubmittedByApplicationThread->renderCount++;

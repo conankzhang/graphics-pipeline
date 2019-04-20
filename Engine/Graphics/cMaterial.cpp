@@ -33,6 +33,12 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const std::string& i_materia
 	const auto color = *reinterpret_cast<sColor*>( currentOffset );
 	currentOffset += sizeof( color );
 
+	const auto reflectivity = *reinterpret_cast<sColor*>( currentOffset );
+	currentOffset += sizeof( reflectivity );
+
+	const auto gloss = *reinterpret_cast<float*>( currentOffset );
+	currentOffset += sizeof( gloss );
+
 	const auto effectPathSize = *reinterpret_cast<uint16_t*>( currentOffset );
 	currentOffset += sizeof( effectPathSize );
 
@@ -43,7 +49,7 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const std::string& i_materia
 
 	// Allocate a new material
 	{
-		newMaterial = new (std::nothrow) cMaterial(color);
+		newMaterial = new (std::nothrow) cMaterial(color, reflectivity, gloss);
 		if ( !newMaterial )
 		{
 			result = Results::OutOfMemory;
@@ -163,13 +169,25 @@ const eae6320::Graphics::sColor& eae6320::Graphics::cMaterial::GetColor()
 	return m_color;
 }
 
+const eae6320::Graphics::sColor& eae6320::Graphics::cMaterial::GetReflectivity()
+{
+	return m_reflectivity;
+}
+
+float eae6320::Graphics::cMaterial::GetGloss()
+{
+	return m_gloss;
+}
+
 bool eae6320::Graphics::cMaterial::IsAlphaTransparencyEnabled() const
 {
 	return cEffect::s_manager.Get(m_effect)->m_renderState.IsAlphaTransparencyEnabled();
 }
 
-eae6320::Graphics::cMaterial::cMaterial(const sColor& i_color) :
-	m_color(i_color)
+eae6320::Graphics::cMaterial::cMaterial(const sColor& i_color, const sColor& i_reflectivity, float i_gloss) :
+	m_color(i_color),
+	m_reflectivity(i_reflectivity),
+	m_gloss(i_gloss)
 {
 
 }

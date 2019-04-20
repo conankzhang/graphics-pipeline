@@ -4,6 +4,7 @@
 #include "cMyGame.h"
 
 #include "cGameObject.h"
+#include "cSpriteObject.h"
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/UserInput/UserInput.h>
@@ -16,13 +17,18 @@
 void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate)
 {
 	Graphics::SubmitBackgroundColor(clearColor.GetLinearColor());
-	Graphics::SubmitLighting(ambientColor.GetLinearColor(), directionalLightColor.GetLinearColor(), lightDirection.GetNormalized());
+	Graphics::SubmitLighting(ambientColor.GetLinearColor(), directionalLightColor.GetLinearColor(), lightDirection.GetNormalized(), m_player->GetPosition(), pointLightColor.GetLinearColor());
 
 	Math::cMatrix_transformation transform_worldToCamera = m_camera->GetWorldToCameraTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
 	Math::cMatrix_transformation transform_cameraToProjected = m_camera->GetCameraToProjectedTransform();
 	Graphics::SubmitCamera(transform_worldToCamera, transform_cameraToProjected, m_camera->GetPosition(), i_elapsedSecondCount_systemTime, i_elapsedSecondCount_sinceLastSimulationUpdate);
 
 	Math::cMatrix_transformation transform_worldToProjected = transform_cameraToProjected * transform_worldToCamera;
+
+	//Math::cMatrix_transformation sprite_transform_localToWorld = m_sprite->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
+	//Graphics::SubmitSpriteCommand(m_sprite->GetScale(), m_sprite->GetMaterial(), sprite_transform_localToWorld);
+	//sprite_transform_localToWorld = m_spritePad->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
+	//Graphics::SubmitSpriteCommand(m_spritePad->GetScale(), m_spritePad->GetMaterial(), sprite_transform_localToWorld);
 
 	for (auto GameObject : m_gameObjects)
 	{
@@ -95,12 +101,12 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 	float angularSpeed = 0.0f;
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::Left))
 	{
-		angularSpeed += 1.0f;
+		angularSpeed += 0.5f;
 	}
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::Right))
 	{
-		angularSpeed -= 1.0f;
+		angularSpeed -= 0.5f;
 	}
 
 	m_camera->SetAngularSpeed(angularSpeed);
@@ -155,32 +161,50 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F1))
 	{
-		lightDirection.x += -0.5f;
+		if (lightDirection.x > -lightClamp)
+		{
+			lightDirection.x += -lightMoveSpeed;
+		}
 	}
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F2))
 	{
-		lightDirection.x += 0.5f;
+		if (lightDirection.x < lightClamp)
+		{
+			lightDirection.x += lightMoveSpeed;
+		}
 	}
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F3))
 	{
-		lightDirection.y += -0.5f;
+		if (lightDirection.y > -lightClamp)
+		{
+			lightDirection.y += -lightMoveSpeed;
+		}
 	}
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F4))
 	{
-		lightDirection.y += 0.5f;
+		if (lightDirection.y < lightClamp)
+		{
+			lightDirection.y += lightMoveSpeed;
+		}
 	}
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F5))
 	{
-		lightDirection.z += -0.5f;
+		if (lightDirection.z > -lightClamp)
+		{
+			lightDirection.z += -lightMoveSpeed;
+		}
 	}
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F6))
 	{
-		lightDirection.z += 0.5f;
+		if (lightDirection.z < lightClamp)
+		{
+			lightDirection.z += lightMoveSpeed;
+		}
 	}
 }
 
@@ -231,31 +255,31 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	clearColor.SetColor(0.13f, 0.24f, 0.33f, 1.0f);
 	ambientColor.SetColor(0.1f, 0.1f, 0.1f, 1.0f);
 	directionalLightColor.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+	pointLightColor.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	lightDirection.x = 1.0f;
 	lightDirection.y = 1.0f;
 	lightDirection.z = 1.0f;
 
-	//m_player = new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/standard.material");
-	//m_gameObjects.push_back(m_player);
+	m_player = new cGameObject(Math::sVector(0.0f, 0.0f, 1.0f), Math::cQuaternion(), "data/Meshes/smallSphere.mesh", "data/Materials/unlit.material");
+	m_gameObjects.push_back(m_player);
 
-	m_camera = new cCamera(Math::sVector(0.0f, 0.0f, 5.0f), Math::cQuaternion());
+	m_camera = new cCamera(Math::sVector(0.0f, 0.0f, 10.0f), Math::cQuaternion());
+	//m_sprite = new cSpriteObject(Math::sVector(0.7f, 0.7f, 0.0f), Math::sVector(0.3f, 0.3f, 1.0f), Math::cQuaternion(), "data/Materials/sprite.material");
+	//m_spritePad = new cSpriteObject(Math::sVector(-0.7f, 0.7f, 0.0f), Math::sVector(0.3f, 0.3f, 1.0f), Math::cQuaternion(), "data/Materials/spritePad.material");
 
 	// Grid
-	m_gameObjects.push_back( new cGameObject(Math::sVector(-1.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/sprite.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/brick.material") );
-	//m_gameObjects.push_back( new cGameObject(Math::sVector(0.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
-	//m_gameObjects.push_back( new cGameObject(Math::sVector(1.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(-3.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/brick.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/red.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(3.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/green.material") );
 
-	//m_gameObjects.push_back( new cGameObject(Math::sVector(-2.5f, 1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
-	//m_gameObjects.push_back( new cGameObject(Math::sVector(-0.5f, 1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
-	//m_gameObjects.push_back( new cGameObject(Math::sVector(1.5f, 1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
-	//m_gameObjects.push_back( new cGameObject(Math::sVector(3.5f, 1.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(-3.0f, 3.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/blue.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, 3.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/brick.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(3.0f, 3.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/red.material") );
 
-	//m_gameObjects.push_back( new cGameObject(Math::sVector(-2.5f, 2.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
-	//m_gameObjects.push_back( new cGameObject(Math::sVector(-0.5f, 2.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
-	//m_gameObjects.push_back( new cGameObject(Math::sVector(1.5f, 2.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
-	//m_gameObjects.push_back( new cGameObject(Math::sVector(3.5f, 2.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(-3.0f, -3.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/red.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, -3.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/green.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(3.0f, -3.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/blue.material") );
 
 	// Line
 	//m_gameObjects.push_back( new cGameObject(Math::sVector(-1.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/blue.material") );
@@ -283,6 +307,40 @@ eae6320::cResult eae6320::cMyGame::CleanUp()
 	m_gameObjects.clear();
 
 	DeleteGameObject(m_camera);
+
+	//if (m_sprite)
+	//{
+	//	const auto localResult = m_sprite->CleanUp();
+
+	//	if ( !localResult )
+	//	{
+	//		EAE6320_ASSERT( false );
+	//		if ( result )
+	//		{
+	//			result = localResult;
+	//		}
+	//	}
+
+	//	delete m_sprite;
+	//	m_sprite = nullptr;
+	//}
+
+	//if (m_spritePad)
+	//{
+	//	const auto localResult = m_spritePad->CleanUp();
+
+	//	if ( !localResult )
+	//	{
+	//		EAE6320_ASSERT( false );
+	//		if ( result )
+	//		{
+	//			result = localResult;
+	//		}
+	//	}
+
+	//	delete m_spritePad;
+	//	m_spritePad = nullptr;
+	//}
 
 	return result;
 }

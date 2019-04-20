@@ -15,7 +15,7 @@
 // Build
 //------
 
-eae6320::cResult eae6320::Assets::cMaterialLoader::LoadAsset(const char* const i_path, std::string& o_effectPath, std::string& o_texturePath, Graphics::sColor& o_color)
+eae6320::cResult eae6320::Assets::cMaterialLoader::LoadAsset(const char* const i_path, std::string& o_effectPath, std::string& o_texturePath, Graphics::sColor& o_color, Graphics::sColor& o_reflectivity, float& o_gloss)
 {
 	auto result = eae6320::Results::Success;
 
@@ -91,7 +91,7 @@ eae6320::cResult eae6320::Assets::cMaterialLoader::LoadAsset(const char* const i
 
 	// If this code is reached the asset file was loaded successfully,
 	// and its table is now at index -1
-	result = LoadTableValues(*luaState, o_effectPath, o_texturePath, o_color);
+	result = LoadTableValues(*luaState, o_effectPath, o_texturePath, o_color, o_reflectivity, o_gloss);
 
 	// Pop the table
 	lua_pop( luaState, 1 );
@@ -112,7 +112,7 @@ OnExit:
 	return result;
 }
 
-eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io_luaState, std::string& o_effectPath, std::string& o_texturePath, Graphics::sColor& o_color)
+eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io_luaState, std::string& o_effectPath, std::string& o_texturePath, Graphics::sColor& o_color, Graphics::sColor& o_reflectivity, float& o_gloss)
 {
 	auto result = eae6320::Results::Success;
 
@@ -192,6 +192,67 @@ eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io
 	else
 	{
 		o_texturePath = "Textures/default_diffuse.tga";
+		lua_pop( &io_luaState, 1 );
+	}
+
+	key = "reflectivity";
+	lua_pushstring( &io_luaState, key );
+	lua_gettable( &io_luaState, -2 );
+
+	if ( lua_istable( &io_luaState, -1 ) )
+	{
+		const auto valueCount = luaL_len( &io_luaState, -1 );
+		for (int i = 1; i <= valueCount; ++i)
+		{
+			lua_pushinteger(&io_luaState, i);
+			lua_gettable(&io_luaState, -2);
+			const auto value = lua_tonumber(&io_luaState, -1);
+
+			if (i == 1)
+			{
+				o_reflectivity.red = static_cast<float>(value);
+			}
+			else if (i == 2)
+			{
+				o_reflectivity.green = static_cast<float>(value);
+			}
+			else if (i == 3)
+			{
+				o_reflectivity.blue = static_cast<float>(value);
+			}
+			else if (i == 4)
+			{
+				o_reflectivity.alpha = static_cast<float>(value);
+			}
+
+			lua_pop(&io_luaState, 1);
+		}
+
+		lua_pop(&io_luaState, 1);
+	}
+	else
+	{
+		o_reflectivity.red = 0.5f;
+		o_reflectivity.green = 0.5f;
+		o_reflectivity.blue = 0.5f;
+		o_reflectivity.alpha = 0.5f;
+
+		lua_pop( &io_luaState, 1 );
+	}
+
+	key = "gloss";
+	lua_pushstring( &io_luaState, key );
+	lua_gettable( &io_luaState, -2 );
+
+	if ( lua_isnumber( &io_luaState, -1 ) )
+	{
+		const auto value = lua_tonumber( &io_luaState, -1 );
+		o_gloss = static_cast<float>(value);
+		lua_pop( &io_luaState, 1 );
+	}
+	else
+	{
+		o_gloss = 1000.0f;
 		lua_pop( &io_luaState, 1 );
 	}
 

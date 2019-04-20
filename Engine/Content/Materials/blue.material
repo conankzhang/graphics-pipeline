@@ -2,5 +2,6 @@ return
 {
 	path_effect = "Effects/standard.effect",
     color = { 1.0, 0.0, 0.0, 1.0 },
+    reflectivity = { 1.0, 1.0, 1.0, 1.0 },
+    gloss = 500.0,
 }
-
