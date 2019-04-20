@@ -13,6 +13,7 @@ return
 	meshes =
 	{
 		{ path = "Meshes/sphere.mesh" },
+		{ path = "Meshes/smallSphere.mesh" },
 	},
 
 	materials =
