@@ -805,6 +805,8 @@ namespace
 					fout << "			position = { " << vertex.vertex.x << ", " << vertex.vertex.y << ", " << -vertex.vertex.z << "},\n";
 					fout << "			texcoord = { " << vertex.vertex.u << ", " << 1 - vertex.vertex.v << "},\n";
 					fout << "			normal = { " << vertex.vertex.nx << ", " << vertex.vertex.ny << ", " << -vertex.vertex.nz << "},\n";
+					fout << "			tangent = { " << vertex.vertex.tx << ", " << vertex.vertex.ty << ", " << -vertex.vertex.tz << "},\n";
+					fout << "			bitangent = { " << -vertex.vertex.btx << ", " << -vertex.vertex.bty << ", " << vertex.vertex.btz << "},\n";
 					fout << "		}," "\n";
 				}
 
