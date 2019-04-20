@@ -26,9 +26,9 @@ void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_s
 	Math::cMatrix_transformation transform_worldToProjected = transform_cameraToProjected * transform_worldToCamera;
 
 	Math::cMatrix_transformation sprite_transform_localToWorld = m_sprite->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
-	Graphics::SubmitSpriteCommand(m_sprite->GetScale(), m_sprite->GetMaterial(), sprite_transform_localToWorld, transform_worldToProjected * sprite_transform_localToWorld);
+	Graphics::SubmitSpriteCommand(m_sprite->GetScale(), m_sprite->GetMaterial(), sprite_transform_localToWorld);
 	sprite_transform_localToWorld = m_spritePad->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
-	Graphics::SubmitSpriteCommand(m_spritePad->GetScale(), m_spritePad->GetMaterial(), sprite_transform_localToWorld, transform_worldToProjected * sprite_transform_localToWorld);
+	Graphics::SubmitSpriteCommand(m_spritePad->GetScale(), m_spritePad->GetMaterial(), sprite_transform_localToWorld);
 
 	for (auto GameObject : m_gameObjects)
 	{
