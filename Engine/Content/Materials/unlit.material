@@ -1,0 +1,8 @@
+return
+{
+	path_effect = "Effects/unlit.effect",
+    color = { 1.0, 1.0, 1.0, 1.0 },
+    reflectivity = { 0.5, 0.5, 0.5, 0.5 },
+    gloss = 0.5,
+}
+
