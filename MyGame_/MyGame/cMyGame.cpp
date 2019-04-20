@@ -251,7 +251,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 
 	// Grid
 	m_gameObjects.push_back( new cGameObject(Math::sVector(-2.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/smallSphere.mesh", "data/Materials/standard.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/brick.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/red.material") );
 	//m_gameObjects.push_back( new cGameObject(Math::sVector(0.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
 	//m_gameObjects.push_back( new cGameObject(Math::sVector(1.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/standard.material") );
 

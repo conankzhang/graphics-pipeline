@@ -66,9 +66,10 @@ void main(
 	float4 directionalColor = g_directionalLight_color * clampedValue;
 	float4 textureColor = SampleTexture2d(g_diffuseTexture, g_diffuse_samplerState, i_textureCoordinates);
 
-	float3 surfaceCamera = g_camera_position - i_position_world;
-	float3 H = normalize((normalize(surfaceCamera) + g_lightDirection) * 0.5 );
-	float dotClamped = saturate(dot(H, i_normal_world));
+	float3 V = normalize(g_camera_position - i_position_world);
+
+	float3 H = normalize((V + -g_lightDirection) * 0.5 );
+	float dotClamped = saturate(dot(i_normal_world, H));
 	float4 specularLight = g_reflectivity * pow(dotClamped, g_gloss) * directionalColor;
 
 	o_color = ((g_color * textureColor) + specularLight) * (directionalColor + g_ambient_color);
