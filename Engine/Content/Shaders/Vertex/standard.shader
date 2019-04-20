@@ -64,6 +64,8 @@ void main(
 	// so that the GPU can figure out which fragments need to be shaded
 	out float2 o_textureCoordinates : OTEXCOORD,
 	out float3 o_normal_world : ONORMAL,
+	out float3 o_tangent_world : OTANGENT,
+	out float3 o_bitangent_world : OBITANGENT,
 	out float3 o_position_world : OPOSITION,
 	out float4 o_vertexPosition_projected : SV_POSITION
 	)
@@ -75,7 +77,12 @@ void main(
 
 		// Project the normal from local space into world space
 		float4 normal_local = float4( i_normal, 0.0 );
+		float4 tangent_local = float4( i_tangent, 0.0 );
+		float4 bitangent_local = float4( i_bitangent, 0.0 );
+
 		o_normal_world = mul( g_transform_localToWorld, normal_local).xyz;
+		o_tangent_world = mul( g_transform_localToWorld, tangent_local).xyz;
+		o_bitangent_world = mul( g_transform_localToWorld, bitangent_local).xyz;
 
 		o_position_world = mul( g_transform_localToWorld, vertexPosition_local ).xyz;
 
