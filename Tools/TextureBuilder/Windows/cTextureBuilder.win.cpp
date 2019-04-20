@@ -22,7 +22,7 @@
 namespace
 {
 	eae6320::cResult BuildTexture( const char *const i_path, const bool i_shouldTextureBeCompressed, const uint8_t i_desiredSamplerState,
-		DirectX::ScratchImage &io_sourceImageThatMayNotBeValidAfterThisCall, DirectX::ScratchImage &o_texture );
+		DirectX::ScratchImage &io_sourceImageThatMayNotBeValidAfterThisCall, DirectX::ScratchImage &o_texture, bool i_buildSRGB);
 	constexpr eae6320::Graphics::TextureFormats::eType GetFormat( const DXGI_FORMAT i_dxgiFormat );
 	eae6320::cResult LoadSourceImage( const char *const i_path, DirectX::ScratchImage &o_image );
 	eae6320::cResult WriteTextureToFile( const char* const i_path_target, const DirectX::ScratchImage &i_texture, const uint8_t i_desiredSamplerState );
@@ -44,6 +44,7 @@ eae6320::cResult eae6320::Assets::cTextureBuilder::Build( const std::vector<std:
 
 	uint8_t desiredSamplerState = 0;
 	bool compressTexture = true;
+	bool buildSRGB = false;
 
 	// Initialize COM
 	{
@@ -72,6 +73,7 @@ eae6320::cResult eae6320::Assets::cTextureBuilder::Build( const std::vector<std:
 	{
 		if (i_arguments[0] == "color")
 		{
+			buildSRGB = true;
 			sourceImage.OverrideFormat(DirectX::MakeSRGB(sourceImage.GetMetadata().format));
 		}
 	}
@@ -90,7 +92,7 @@ eae6320::cResult eae6320::Assets::cTextureBuilder::Build( const std::vector<std:
 		return samplerStateBits;
 	}();
 	if ( !( result = BuildTexture( m_path_source, compressTexture, desiredSamplerState,
-		sourceImage, builtTexture ) ) )
+		sourceImage, builtTexture, buildSRGB ) ) )
 	{
 		goto OnExit;
 	}
@@ -116,7 +118,7 @@ OnExit:
 namespace
 {
 	eae6320::cResult BuildTexture( const char *const i_path, const bool i_shouldTextureBeCompressed, const uint8_t i_desiredSamplerState,
-		DirectX::ScratchImage &io_sourceImageThatMayNotBeValidAfterThisCall, DirectX::ScratchImage &o_texture )
+		DirectX::ScratchImage &io_sourceImageThatMayNotBeValidAfterThisCall, DirectX::ScratchImage &o_texture, bool i_buildSRGB)
 	{
 		const DWORD filterOptions = DirectX::TEX_FILTER_DEFAULT
 			| ( ( eae6320::Graphics::SamplerStates::GetEdgeBehaviorU( i_desiredSamplerState ) == eae6320::Graphics::SamplerStates::Tile )
@@ -132,7 +134,16 @@ namespace
 			// The uncompressed format is chosen naively and assumes "standard" textures
 			// (it will lose precision on any source images that use more than 8 bits per channel
 			// and lose information on any that aren't normalized [0,1])
-			constexpr auto formatToDecompressTo = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+			DXGI_FORMAT formatToDecompressTo;
+			if (i_buildSRGB)
+			{
+				formatToDecompressTo = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+			}
+			else
+			{
+				formatToDecompressTo = DXGI_FORMAT_R8G8B8A8_UNORM;
+			}
+
 			const auto result = DirectX::Decompress( io_sourceImageThatMayNotBeValidAfterThisCall.GetImages(), io_sourceImageThatMayNotBeValidAfterThisCall.GetImageCount(),
 				io_sourceImageThatMayNotBeValidAfterThisCall.GetMetadata(), formatToDecompressTo, uncompressedImage );
 			if ( FAILED( result ) )
@@ -249,7 +260,15 @@ namespace
 			// The texture builder code that I'm providing supports two kinds of compressed formats:
 			//	* BC1 (compressed with no alpha, used to be known as "DXT1")
 			//	* BC3 (compressed with alpha, used to be known as "DXT5")
-			const auto formatToCompressTo = resizedImage.IsAlphaAllOpaque() ? DXGI_FORMAT_BC1_UNORM_SRGB : DXGI_FORMAT_BC3_UNORM_SRGB;
+			DXGI_FORMAT formatToCompressTo;
+			if (i_buildSRGB)
+			{
+				formatToCompressTo = resizedImage.IsAlphaAllOpaque() ? DXGI_FORMAT_BC1_UNORM_SRGB : DXGI_FORMAT_BC3_UNORM_SRGB;
+			}
+			else
+			{
+				formatToCompressTo = resizedImage.IsAlphaAllOpaque() ? DXGI_FORMAT_BC1_UNORM : DXGI_FORMAT_BC3_UNORM;
+			}
 			constexpr DWORD useDefaultCompressionOptions = DirectX::TEX_COMPRESS_DEFAULT;
 			constexpr float useDefaultThreshold = DirectX::TEX_THRESHOLD_DEFAULT;
 			if ( FAILED( DirectX::Compress( imageWithMipMaps.GetImages(), imageWithMipMaps.GetImageCount(),
@@ -261,7 +280,17 @@ namespace
 		}
 		else
 		{
-			constexpr auto uncompressedFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+			DXGI_FORMAT uncompressedFormat;
+
+			if (i_buildSRGB)
+			{
+				uncompressedFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+			}
+			else
+			{
+				uncompressedFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+			}
+
 			if ( imageWithMipMaps.GetMetadata().format == uncompressedFormat )
 			{
 				// The texture is already in the final format

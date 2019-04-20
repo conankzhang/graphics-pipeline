@@ -76,6 +76,7 @@ namespace eae6320
 
 			cEffect::Handle m_effect;
 			cTexture::Handle m_texture;
+			cTexture::Handle m_normal;
 
 			sColor m_color;
 			sColor m_reflectivity;
@@ -98,7 +99,7 @@ namespace eae6320
 
 			// Initialization / Clean Up
 			//--------------------------
-			cResult InitializeMaterialData(const char i_effectPath[], const char i_texturePath[]);
+			cResult InitializeMaterialData(const char i_effectPath[], const char i_texturePath[], const char i_normalPath[]);
 			cResult CleanUp();
 
 			cMaterial(const sColor& i_color, const sColor& i_reflectivity, float i_gloss);
