@@ -182,6 +182,13 @@ void eae6320::Graphics::cMaterial::BindTexture()
 		EAE6320_ASSERT(texture);
 		texture->Bind(0);
 	}
+
+	{
+		EAE6320_ASSERT( m_normal );
+		auto* const normal = cTexture::s_manager.Get( m_normal );
+		EAE6320_ASSERT(normal);
+		normal->Bind(1);
+	}
 }
 
 uint_fast32_t eae6320::Graphics::cMaterial::GetEffectId()

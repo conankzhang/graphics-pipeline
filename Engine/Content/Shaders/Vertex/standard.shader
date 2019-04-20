@@ -54,6 +54,8 @@ void main(
 	in const float3 i_vertexPosition_local : POSITION,
 	in const float2 i_textureCoordinates : TEXCOORD,
 	in const float3 i_normal: NORMAL,
+	in const float3 i_tangent : TANGENT,
+	in const float3 i_bitangent : BITANGENT,
 
 	// Output
 	//=======

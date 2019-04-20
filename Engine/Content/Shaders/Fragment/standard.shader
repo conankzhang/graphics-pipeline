@@ -46,6 +46,7 @@ cbuffer g_constantBuffer_perDrawCall : register( b2 )
 };
 
 DeclareTexture2d(g_diffuseTexture, 0);
+DeclareTexture2d(g_normalTexture, 1);
 DeclareSamplerState(g_diffuse_samplerState, 0);
 
 // Entry Point
