@@ -252,7 +252,7 @@ eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io
 	}
 	else
 	{
-		o_gloss = 0.5f;
+		o_gloss = 1000.0f;
 		lua_pop( &io_luaState, 1 );
 	}
 

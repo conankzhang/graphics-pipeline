@@ -20,6 +20,8 @@ return
 	{
 		{ path = "Materials/standard.material" },
 		{ path = "Materials/red.material" },
+		{ path = "Materials/green.material" },
+		{ path = "Materials/blue.material" },
 		{ path = "Materials/unlit.material" },
 		{ path = "Materials/brick.material" },
 	},
