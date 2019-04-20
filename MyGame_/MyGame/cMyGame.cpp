@@ -161,32 +161,50 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F1))
 	{
-		lightDirection.x += -0.5f;
+		if (lightDirection.x > -lightClamp)
+		{
+			lightDirection.x += -lightMoveSpeed;
+		}
 	}
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F2))
 	{
-		lightDirection.x += 0.5f;
+		if (lightDirection.x < lightClamp)
+		{
+			lightDirection.x += lightMoveSpeed;
+		}
 	}
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F3))
 	{
-		lightDirection.y += -0.5f;
+		if (lightDirection.y > -lightClamp)
+		{
+			lightDirection.y += -lightMoveSpeed;
+		}
 	}
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F4))
 	{
-		lightDirection.y += 0.5f;
+		if (lightDirection.y < lightClamp)
+		{
+			lightDirection.y += lightMoveSpeed;
+		}
 	}
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F5))
 	{
-		lightDirection.z += -0.5f;
+		if (lightDirection.z > -lightClamp)
+		{
+			lightDirection.z += -lightMoveSpeed;
+		}
 	}
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::F6))
 	{
-		lightDirection.z += 0.5f;
+		if (lightDirection.z < lightClamp)
+		{
+			lightDirection.z += lightMoveSpeed;
+		}
 	}
 }
 

@@ -112,6 +112,9 @@ namespace eae6320
 		float cameraMoveSpeed = 3.0f;
 		float playerMoveSpeed = 3.0f;
 
+		float lightMoveSpeed = 1.0f;
+		float lightClamp = 10.0f;
+
 		virtual cResult Initialize() override;
 		virtual cResult CleanUp() override;
 	};
