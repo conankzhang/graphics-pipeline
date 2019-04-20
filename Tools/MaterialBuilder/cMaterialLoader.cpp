@@ -232,10 +232,10 @@ eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io
 	}
 	else
 	{
-		o_reflectivity.red = 1.0f;
-		o_reflectivity.green = 1.0f;
-		o_reflectivity.blue = 1.0f;
-		o_reflectivity.alpha = 1.0f;
+		o_reflectivity.red = 0.5f;
+		o_reflectivity.green = 0.5f;
+		o_reflectivity.blue = 0.5f;
+		o_reflectivity.alpha = 0.5f;
 
 		lua_pop( &io_luaState, 1 );
 	}
@@ -252,7 +252,7 @@ eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io
 	}
 	else
 	{
-		o_gloss = 1.0f;
+		o_gloss = 0.5f;
 		lua_pop( &io_luaState, 1 );
 	}
 

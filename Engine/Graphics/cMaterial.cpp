@@ -169,6 +169,16 @@ const eae6320::Graphics::sColor& eae6320::Graphics::cMaterial::GetColor()
 	return m_color;
 }
 
+const eae6320::Graphics::sColor& eae6320::Graphics::cMaterial::GetReflectivity()
+{
+	return m_reflectivity;
+}
+
+float eae6320::Graphics::cMaterial::GetGloss()
+{
+	return m_gloss;
+}
+
 bool eae6320::Graphics::cMaterial::IsAlphaTransparencyEnabled() const
 {
 	return cEffect::s_manager.Get(m_effect)->m_renderState.IsAlphaTransparencyEnabled();

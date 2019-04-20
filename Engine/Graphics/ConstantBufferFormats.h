@@ -58,6 +58,9 @@ namespace eae6320
 			struct sPerMaterial
 			{
 				sColor g_color;
+				sColor g_reflectivity;
+				float g_gloss;
+				float padding[3];	// For float4 alignment
 			};
 		}
 	}

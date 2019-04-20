@@ -89,6 +89,8 @@ namespace eae6320
 
 			uint_fast32_t GetEffectId();
 			const sColor& GetColor();
+			const sColor& GetReflectivity();
+			float GetGloss();
 
 			bool IsAlphaTransparencyEnabled() const;
 

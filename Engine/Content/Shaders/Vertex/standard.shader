@@ -62,6 +62,7 @@ void main(
 	// so that the GPU can figure out which fragments need to be shaded
 	out float2 o_textureCoordinates : OTEXCOORD,
 	out float3 o_normal_world : ONORMAL,
+	out float3 o_position_world : OPOSITION,
 	out float4 o_vertexPosition_projected : SV_POSITION
 	)
 {
@@ -73,6 +74,8 @@ void main(
 		// Project the normal from local space into world space
 		float4 normal_local = float4( i_normal, 0.0 );
 		o_normal_world = mul( g_transform_localToWorld, normal_local).xyz;
+
+		o_position_world = mul( g_transform_localToWorld, vertexPosition_local ).xyz;
 
 		o_textureCoordinates = i_textureCoordinates;
 	}
