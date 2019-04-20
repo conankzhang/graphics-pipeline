@@ -26,6 +26,9 @@ cbuffer g_constantBuffer_perFrame : register( b0 )
 	float g_elapsedSecondCount_simulationTime;
 	// For float4 alignment
 	float2 g_padding2;
+
+	float3 g_pointLight_position;
+	float g_padding3;
 };
 
 cbuffer g_constantBuffer_perMaterial : register( b1 )
@@ -33,7 +36,7 @@ cbuffer g_constantBuffer_perMaterial : register( b1 )
 	float4 g_color;
 	float4 g_reflectivity;
 	float g_gloss;
-	float3 g_padding3;
+	float3 g_padding4;
 };
 
 cbuffer g_constantBuffer_perDrawCall : register( b2 )

@@ -478,12 +478,14 @@ void eae6320::Graphics::SubmitBackgroundColor(const sColor& i_color)
 	s_dataBeingSubmittedByApplicationThread->clearColor = i_color;
 }
 
-void eae6320::Graphics::SubmitLighting(const sColor& i_color, const sColor& i_directionalLightColor, const Math::sVector& i_lightDirection)
+void eae6320::Graphics::SubmitLighting(const sColor& i_color, const sColor& i_directionalLightColor, const Math::sVector& i_lightDirection, const Math::sVector& i_pointLightPosition)
 {
 	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_lightDirection = i_lightDirection;
 	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_directionalLight_color = i_directionalLightColor;
 
 	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_ambient_color = i_color;
+
+	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_pointLight_position = i_pointLightPosition;
 }
 
 void eae6320::Graphics::SubmitCamera(eae6320::Math::cMatrix_transformation i_transform_worldToCamera, eae6320::Math::cMatrix_transformation i_transform_cameraToProjected, const Math::sVector& i_vector_cameraPosition, float i_elapsedSecondCount_systemTime, float i_elapsedSecondCount_simulationTime)

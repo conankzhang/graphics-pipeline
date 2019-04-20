@@ -42,6 +42,9 @@ namespace eae6320
 				float g_elapsedSecondCount_systemTime = 0.0f;
 				float g_elapsedSecondCount_simulationTime = 0.0f;
 				float padding2[2];	// For float4 alignment
+
+				Math::sVector g_pointLight_position;
+				float padding3[1];	// For float4 alignment
 			};
 
 			struct sPerDrawCall
