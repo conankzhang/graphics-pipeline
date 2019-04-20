@@ -101,12 +101,12 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 	float angularSpeed = 0.0f;
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::Left))
 	{
-		angularSpeed += 1.0f;
+		angularSpeed += 0.5f;
 	}
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::Right))
 	{
-		angularSpeed -= 1.0f;
+		angularSpeed -= 0.5f;
 	}
 
 	m_camera->SetAngularSpeed(angularSpeed);
