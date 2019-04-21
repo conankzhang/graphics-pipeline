@@ -2,6 +2,7 @@ return
 {
 	path_effect = "Effects/standard.effect",
     color = { 1.0, 1.0, 1.0, 1.0 },
+    gloss = 5000,
     path_texture = "Textures/Stone_02_COLOR.tga",
     path_normal = "Textures/Stone_02_NRM.tga",
 }
