@@ -254,7 +254,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 
 	clearColor.SetColor(0.13f, 0.24f, 0.33f, 1.0f);
 	ambientColor.SetColor(0.1f, 0.1f, 0.1f, 1.0f);
-	directionalLightColor.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+	directionalLightColor.SetColor(0.0f, 0.0f, 0.0f, 0.0f);
 	pointLightColor.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	lightDirection.x = 1.0f;
@@ -270,7 +270,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 
 	// Grid
 	m_gameObjects.push_back( new cGameObject(Math::sVector(-3.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/green.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/normal.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/tongue.material") );
 	m_gameObjects.push_back( new cGameObject(Math::sVector(3.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/blue.material") );
 
 	m_gameObjects.push_back( new cGameObject(Math::sVector(-3.0f, 3.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/brick.material") );

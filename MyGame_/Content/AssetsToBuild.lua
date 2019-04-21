@@ -15,7 +15,6 @@ return
 		{ path = "Meshes/sphere.mesh" },
 		{ path = "Meshes/smallSphere.mesh" },
 		{ path = "Meshes/quad.mesh" },
-		{ path = "Meshes/triangle.mesh" },
 	},
 
 	materials =
@@ -27,5 +26,6 @@ return
 		{ path = "Materials/unlit.material" },
 		{ path = "Materials/brick.material" },
 		{ path = "Materials/normal.material" },
+		{ path = "Materials/tongue.material" },
 	},
 }
