@@ -254,12 +254,12 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 
 	clearColor.SetColor(0.13f, 0.24f, 0.33f, 1.0f);
 	ambientColor.SetColor(0.1f, 0.1f, 0.1f, 1.0f);
-	directionalLightColor.SetColor(0.0f, 0.0f, 0.0f, 0.0f);
+	directionalLightColor.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 	pointLightColor.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	lightDirection.x = 1.0f;
 	lightDirection.y = 1.0f;
-	lightDirection.z = 1.0f;
+	lightDirection.z = -1.0f;
 
 	m_player = new cGameObject(Math::sVector(0.0f, 0.0f, 1.0f), Math::cQuaternion(), "data/Meshes/smallSphere.mesh", "data/Materials/unlit.material");
 	m_gameObjects.push_back(m_player);

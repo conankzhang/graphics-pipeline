@@ -802,7 +802,7 @@ namespace
 				for (sVertexInfo vertex : i_vertexArray)
 				{
 					fout << "		{" "\n";
-					fout << "			position = { " << vertex.vertex.x << ", " << vertex.vertex.y << ", " << -vertex.vertex.z << "},\n";
+					fout << "			position = { " << vertex.vertex.x << ", " << vertex.vertex.y << ", " << vertex.vertex.z << "},\n";
 					fout << "			texcoord = { " << vertex.vertex.u << ", " << 1 - vertex.vertex.v << "},\n";
 					fout << "			normal = { " << vertex.vertex.nx << ", " << vertex.vertex.ny << ", " << -vertex.vertex.nz << "},\n";
 					fout << "			tangent = { " << vertex.vertex.tx << ", " << vertex.vertex.ty << ", " << -vertex.vertex.tz << "},\n";
@@ -817,6 +817,7 @@ namespace
 				fout << "	indexArray =\n"
 					"	{" "\n";
 				int count = 0;
+				size_t temp;
 				for (size_t index : i_indexArray)
 				{
 					count++;
@@ -826,12 +827,13 @@ namespace
 					}
 					else if (count == 2)
 					{
-						fout << index << ", ";
+						temp = index;
 					}
 					else if (count == 3)
 					{
-						fout << index;
+						fout << index << ", ";
 						count = 0;
+						fout << temp;
 						fout << ",\n";
 					}
 				}

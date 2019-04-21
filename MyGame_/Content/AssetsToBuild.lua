@@ -15,6 +15,7 @@ return
 		{ path = "Meshes/sphere.mesh" },
 		{ path = "Meshes/smallSphere.mesh" },
 		{ path = "Meshes/quad.mesh" },
+		{ path = "Meshes/triangle.mesh" },
 	},
 
 	materials =
