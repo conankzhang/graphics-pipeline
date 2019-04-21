@@ -42,10 +42,16 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const std::string& i_materia
 	const auto effectPathSize = *reinterpret_cast<uint16_t*>( currentOffset );
 	currentOffset += sizeof( effectPathSize );
 
+	const auto texturePathSize = *reinterpret_cast<uint16_t*>( currentOffset );
+	currentOffset += sizeof( texturePathSize );
+
 	char* effectPath = reinterpret_cast<char*>( currentOffset );
 	currentOffset += effectPathSize * sizeof( char );
 
 	char* texturePath = reinterpret_cast<char*>( currentOffset );
+	currentOffset += texturePathSize* sizeof( char );
+
+	char* normalPath = reinterpret_cast<char*>( currentOffset );
 
 	// Allocate a new material
 	{
@@ -57,7 +63,7 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const std::string& i_materia
 		}
 	}
 
-	if ( !( result = newMaterial->InitializeMaterialData( effectPath, texturePath) ) )
+	if ( !( result = newMaterial->InitializeMaterialData( effectPath, texturePath, normalPath) ) )
 	{
 		EAE6320_ASSERTF( false, "Initialization of new mesh failed" );
 		goto OnExit;
@@ -83,7 +89,7 @@ OnExit:
 	return result;
 }
 
-eae6320::cResult eae6320::Graphics::cMaterial::InitializeMaterialData(const char i_effectPath[], const char i_texturePath[])
+eae6320::cResult eae6320::Graphics::cMaterial::InitializeMaterialData(const char i_effectPath[], const char i_texturePath[], const char i_normalPath[])
 {
 	auto result = Results::Success;
 
@@ -96,6 +102,12 @@ eae6320::cResult eae6320::Graphics::cMaterial::InitializeMaterialData(const char
 	if ( !( result = eae6320::Graphics::cTexture::s_manager.Load( i_texturePath, m_texture) ) )
 	{
 		EAE6320_ASSERT( false );
+		goto OnExit;
+	}
+
+	if (!(result = eae6320::Graphics::cTexture::s_manager.Load(i_normalPath, m_normal)))
+	{
+		EAE6320_ASSERT(false);
 		goto OnExit;
 	}
 
@@ -134,6 +146,19 @@ eae6320::cResult eae6320::Graphics::cMaterial::CleanUp()
 		}
 	}
 
+	if ( m_normal )
+	{
+		const auto localResult = cTexture::s_manager.Release( m_normal );
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+	}
+
 	return result;
 }
 
@@ -156,6 +181,13 @@ void eae6320::Graphics::cMaterial::BindTexture()
 		auto* const texture = cTexture::s_manager.Get( m_texture );
 		EAE6320_ASSERT(texture);
 		texture->Bind(0);
+	}
+
+	{
+		EAE6320_ASSERT( m_normal );
+		auto* const normal = cTexture::s_manager.Get( m_normal );
+		EAE6320_ASSERT(normal);
+		normal->Bind(1);
 	}
 }
 

@@ -39,7 +39,7 @@ eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry(VertexFormats::sMe
 			// (by using so-called "semantic" names so that, for example,
 			// "POSITION" here matches with "POSITION" in shader code).
 			// Note that OpenGL uses arbitrarily assignable number IDs to do the same thing.
-			constexpr unsigned int vertexElementCount = 3;
+			constexpr unsigned int vertexElementCount = 5;
 			D3D11_INPUT_ELEMENT_DESC layoutDescription[vertexElementCount] = {};
 			{
 				// Slot 0
@@ -89,6 +89,36 @@ eae6320::cResult eae6320::Graphics::cMesh::InitializeGeometry(VertexFormats::sMe
 					normalElement.Format = DXGI_FORMAT_R32G32B32_FLOAT;
 					normalElement.InputSlot = 0;
 					normalElement.AlignedByteOffset = offsetof( eae6320::Graphics::VertexFormats::sMesh, nx );
+					normalElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+					normalElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
+				}
+
+				// TANGENT
+				// 3 floats == 12 bytes
+				// Offset = 0
+				{
+					auto& normalElement = layoutDescription[3];
+
+					normalElement.SemanticName = "TANGENT";
+					normalElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
+					normalElement.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+					normalElement.InputSlot = 0;
+					normalElement.AlignedByteOffset = offsetof( eae6320::Graphics::VertexFormats::sMesh, tx );
+					normalElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+					normalElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
+				}
+
+				// BITANGENT
+				// 3 floats == 12 bytes
+				// Offset = 0
+				{
+					auto& normalElement = layoutDescription[4];
+
+					normalElement.SemanticName = "BITANGENT";
+					normalElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
+					normalElement.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+					normalElement.InputSlot = 0;
+					normalElement.AlignedByteOffset = offsetof( eae6320::Graphics::VertexFormats::sMesh, btx );
 					normalElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 					normalElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
 				}

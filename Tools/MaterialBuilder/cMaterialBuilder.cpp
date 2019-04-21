@@ -25,14 +25,16 @@ eae6320::cResult eae6320::Assets::cMaterialBuilder::Build(const std::vector<std:
 
 	std::string effectPath;
 	std::string texturePath;
+	std::string normalPath;
 	Graphics::sColor color;
 	Graphics::sColor reflectivity;
 	float gloss;
 	size_t effectPathSize = 0;
+	size_t texturePathSize = 0;
 
 	std::ofstream outFile ( m_path_target, std::ofstream::binary);
 	{
-		if ( !( result = cMaterialLoader::LoadAsset( m_path_source, effectPath, texturePath, color, reflectivity, gloss)) )
+		if ( !( result = cMaterialLoader::LoadAsset( m_path_source, effectPath, texturePath, normalPath, color, reflectivity, gloss)) )
 		{
 			EAE6320_ASSERTF( false, "Loading material failed" );
 			goto OnExit;
@@ -41,9 +43,11 @@ eae6320::cResult eae6320::Assets::cMaterialBuilder::Build(const std::vector<std:
 
 	effectPath.insert(0, "data/");
 	texturePath.insert(0, "data/");
+	normalPath.insert(0, "data/");
 
 	// + 1 for null terminator count
 	effectPathSize = effectPath.size() + 1;
+	texturePathSize = texturePath.size() + 1;
 
 	// write to outfile
 	if (!outFile.is_open())
@@ -55,10 +59,14 @@ eae6320::cResult eae6320::Assets::cMaterialBuilder::Build(const std::vector<std:
 	outFile.write ( reinterpret_cast<char *>(&reflectivity.GetLinearColor()), sizeof( reflectivity) );
 	outFile.write ( reinterpret_cast<char *>(&gloss), sizeof( gloss ) );
 	outFile.write ( (char *)&effectPathSize, sizeof( uint16_t ) );
+	outFile.write ( (char *)&texturePathSize, sizeof( uint16_t ) );
 	outFile.write ( effectPath.c_str(), effectPath.size() );
 	outFile.put('\0');
 	outFile.write ( texturePath.c_str(), texturePath.size());
 	outFile.put('\0');
+	outFile.write ( normalPath.c_str(), normalPath.size());
+	outFile.put('\0');
+
 OnExit:
 	outFile.close();
 

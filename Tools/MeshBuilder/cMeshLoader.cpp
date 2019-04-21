@@ -205,6 +205,16 @@ eae6320::cResult eae6320::Assets::cMeshLoader::LoadTableValues_vertexArray_verti
 					goto OnExit;
 				}
 
+				if ( !( result = LoadTableValues_vertexArray_vertices_tangent( io_luaState, io_vertexData, i ) ) )
+				{
+					goto OnExit;
+				}
+
+				if ( !( result = LoadTableValues_vertexArray_vertices_bitangent( io_luaState, io_vertexData, i ) ) )
+				{
+					goto OnExit;
+				}
+
 				lua_pop( &io_luaState, 1 );
 			}
 			else
@@ -414,6 +424,128 @@ eae6320::cResult eae6320::Assets::cMeshLoader::LoadTableValues_vertexArray_verti
 		else if (i == 3)
 		{
 			io_vertexData[i_index - 1].nz = static_cast<float>(value);
+		}
+
+		lua_pop( &io_luaState, 1 );
+	}
+
+	return result;
+}
+
+eae6320::cResult eae6320::Assets::cMeshLoader::LoadTableValues_vertexArray_vertices_tangent(lua_State& io_luaState, std::vector<Graphics::VertexFormats::sMesh>& io_vertexData, int i_index)
+{
+	auto result = eae6320::Results::Success;
+
+	constexpr auto* const key = "tangent";
+	lua_pushstring( &io_luaState, key );
+	lua_gettable( &io_luaState, -2 );
+
+	if ( lua_istable( &io_luaState, -1 ) )
+	{
+		if ( !( result = LoadTableValues_vertexArray_vertices_tangent_values( io_luaState, io_vertexData, i_index) ) )
+		{
+			goto OnExit;
+		}
+	}
+	else
+	{
+		result = eae6320::Results::InvalidFile;
+		std::cerr << "The value at \"" << key << "\" must be a table "
+			"(instead of a " << luaL_typename( &io_luaState, -1 ) << ")" << std::endl;
+		goto OnExit;
+	}
+
+OnExit:
+
+	// Pop the textures table
+	lua_pop( &io_luaState, 1 );
+
+	return result;
+}
+
+eae6320::cResult eae6320::Assets::cMeshLoader::LoadTableValues_vertexArray_vertices_tangent_values(lua_State& io_luaState, std::vector<Graphics::VertexFormats::sMesh>& io_vertexData, int i_index)
+{
+	auto result = eae6320::Results::Success;
+
+	const auto valueCount = luaL_len( &io_luaState, -1 );
+	for ( int i = 1; i <= valueCount; ++i )
+	{
+		lua_pushinteger( &io_luaState, i );
+		lua_gettable( &io_luaState, -2 );
+		const auto value = lua_tonumber( &io_luaState, -1 );
+
+		if (i == 1)
+		{
+			io_vertexData[i_index - 1].tx = static_cast<float>(value);
+		}
+		else if (i == 2)
+		{
+			io_vertexData[i_index - 1].ty = static_cast<float>(value);
+		}
+		else if (i == 3)
+		{
+			io_vertexData[i_index - 1].tz = static_cast<float>(value);
+		}
+
+		lua_pop( &io_luaState, 1 );
+	}
+
+	return result;
+}
+
+eae6320::cResult eae6320::Assets::cMeshLoader::LoadTableValues_vertexArray_vertices_bitangent(lua_State& io_luaState, std::vector<Graphics::VertexFormats::sMesh>& io_vertexData, int i_index)
+{
+	auto result = eae6320::Results::Success;
+
+	constexpr auto* const key = "bitangent";
+	lua_pushstring( &io_luaState, key );
+	lua_gettable( &io_luaState, -2 );
+
+	if ( lua_istable( &io_luaState, -1 ) )
+	{
+		if ( !( result = LoadTableValues_vertexArray_vertices_bitangent_values( io_luaState, io_vertexData, i_index) ) )
+		{
+			goto OnExit;
+		}
+	}
+	else
+	{
+		result = eae6320::Results::InvalidFile;
+		std::cerr << "The value at \"" << key << "\" must be a table "
+			"(instead of a " << luaL_typename( &io_luaState, -1 ) << ")" << std::endl;
+		goto OnExit;
+	}
+
+OnExit:
+
+	// Pop the textures table
+	lua_pop( &io_luaState, 1 );
+
+	return result;
+}
+
+eae6320::cResult eae6320::Assets::cMeshLoader::LoadTableValues_vertexArray_vertices_bitangent_values(lua_State& io_luaState, std::vector<Graphics::VertexFormats::sMesh>& io_vertexData, int i_index)
+{
+	auto result = eae6320::Results::Success;
+
+	const auto valueCount = luaL_len( &io_luaState, -1 );
+	for ( int i = 1; i <= valueCount; ++i )
+	{
+		lua_pushinteger( &io_luaState, i );
+		lua_gettable( &io_luaState, -2 );
+		const auto value = lua_tonumber( &io_luaState, -1 );
+
+		if (i == 1)
+		{
+			io_vertexData[i_index - 1].btx = static_cast<float>(value);
+		}
+		else if (i == 2)
+		{
+			io_vertexData[i_index - 1].bty = static_cast<float>(value);
+		}
+		else if (i == 3)
+		{
+			io_vertexData[i_index - 1].btz = static_cast<float>(value);
 		}
 
 		lua_pop( &io_luaState, 1 );

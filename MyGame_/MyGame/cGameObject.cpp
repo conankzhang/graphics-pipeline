@@ -102,5 +102,5 @@ eae6320::Math::sVector eae6320::cGameObject::GetForward()
 
 eae6320::Math::sVector eae6320::cGameObject::GetPosition()
 {
-	return m_rigidBody.position;
+	return Math::sVector(m_rigidBody.position.x, m_rigidBody.position.y, -m_rigidBody.position.z);
 }
