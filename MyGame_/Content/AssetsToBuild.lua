@@ -25,5 +25,6 @@ return
 		{ path = "Materials/blue.material" },
 		{ path = "Materials/unlit.material" },
 		{ path = "Materials/brick.material" },
+		{ path = "Materials/normal.material" },
 	},
 }
