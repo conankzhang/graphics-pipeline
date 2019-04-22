@@ -209,19 +209,19 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::PageUp))
 	{
-		gloss += 10.0f;
+		gloss += 5.0f;
 	}
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::PageDown))
 	{
-		if (gloss > 15.0f)
+		if (gloss > 5.0f)
 		{
-			gloss -= 10.0f;
+			gloss -= 5.0f;
 		}
 
-		if(gloss < 15.0f)
+		if(gloss < 5.0f)
 		{
-			gloss = 15.0f;
+			gloss = 0.0f;
 		}
 	}
 }

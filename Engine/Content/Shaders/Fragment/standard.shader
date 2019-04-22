@@ -130,7 +130,7 @@ void main(
 	// Point Diffuse
 	float3 pL = normalize(g_pointLight_position - i_position_world);
 	float4 pLiD = g_pointLight_color * PI;
-	float attenuate = 1 / max(length(pL), 1);
+	float attenuate = 1 / max(length(g_pointLight_position - i_position_world), 1);
 	float4 pLoD =  pLiD * saturate(dot(pL, tangentNormal)) * attenuate;
 
 	// Final Diffuse
