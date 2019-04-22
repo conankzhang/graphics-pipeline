@@ -6,6 +6,11 @@
 
 #include <Shaders/shaders.inc>
 
+// Constants
+//=================
+
+static const float PI = 3.14159265f;
+
 // Constant Buffers
 //=================
 
@@ -109,6 +114,22 @@ void main(
 	float attenuation = 1 - (saturate(length(L) / 5));
 	float4 pSpecularLight = (attenuation) * g_reflectivity * pow(pDotClamped, g_gloss) * positionColor;
 
+	// Calculate Final Color
 	float4 textureColor = SampleTexture2d(g_diffuseTexture, g_diffuse_samplerState, i_textureCoordinates);
-	o_color = ((g_color * textureColor) + dSpecularLight + pSpecularLight) * (directionalColor + g_ambient_color + (positionColor * attenuation));
+
+	// Original
+	//o_color = ( ((g_color * textureColor) / PI) + dSpecularLight + pSpecularLight) * (directionalColor + g_ambient_color + (positionColor * attenuation));
+
+	float4 FLV = (g_color * textureColor) / PI;
+
+	float4 dLi = g_directionalLight_color * PI;
+	float4 dLo = dLi * saturate(dot(g_lightDirection, tangentNormal));
+
+	float3 pL = normalize(g_pointLight_position - i_position_world);
+	float4 pLi = g_pointLight_color * PI;
+	float attenuate = 1 / max(length(L), 1);
+	float4 pLo =  pLi * saturate(dot(pL, tangentNormal)) * attenuate;
+
+	float4 diffuse = FLV * (dLo + pLo + g_ambient_color);
+	o_color = diffuse;
 }
