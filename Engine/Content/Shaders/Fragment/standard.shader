@@ -124,8 +124,8 @@ void main(
 	float4 dFLV = (g_color * textureColor) / PI;
 
 	// Directional Diffuse
-	float4 dLiD = g_directionalLight_color * PI;
-	float4 dLoD = dLiD * saturate(dot(g_lightDirection, tangentNormal));
+	float4 dLi = g_directionalLight_color * PI;
+	float4 dLoD = dLi * saturate(dot(g_lightDirection, tangentNormal));
 
 	// Point Diffuse
 	float3 pL = normalize(g_pointLight_position - i_position_world);
@@ -136,18 +136,31 @@ void main(
 	// Final Diffuse
 	float4 diffuse = dFLV * (dLoD + pLoD + g_ambient_color);
 
-	// Directional Specular
+	// Directional D(h)
 	float3 dV = normalize(g_camera_position - i_position_world);
 	float3 dH = normalize( (dV + g_lightDirection) * 0.5 );
 	float dDotClamped = saturate(dot(tangentNormal, dH));
 
 	float4 dD = ((g_gloss + 2) / 2 * PI) * pow(dDotClamped, g_gloss);
 
+	// Directional F(l, h)
 	float4 leftDf = 1 - g_fresnel;
 	float4 rightDf = pow((1 - dot(g_lightDirection, dH)), 5);
 	float4 dF = g_fresnel + (leftDf * rightDf);
 
-	float4 specular = dD * dF;
+	// Directional G(l, v, h)
+	float4 dG = abs(dot(tangentNormal, dV)) * abs(dot(tangentNormal, g_lightDirection));
+
+	// Directional Specular FLV
+	float4 dFLVsTop = (dD * dF * dG);
+	float4 dFLVsBottom = (4 * dG);
+	float4 dFLVs = dFLVsTop / dFLVsBottom;
+
+	// Directional Specular
+	float4 directionalSpecular = dFLVs * dLi * saturate(dot(tangentNormal, g_lightDirection));
+
+	// Final Specular
+	float4 specular = directionalSpecular;
 
 	// Combine diffuse and specular
 	o_color = diffuse + specular;
