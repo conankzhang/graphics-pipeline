@@ -143,7 +143,11 @@ void main(
 
 	float4 dD = ((g_gloss + 2) / 2 * PI) * pow(dDotClamped, g_gloss);
 
-	float4 specular = dD;
+	float4 leftDf = 1 - g_fresnel;
+	float4 rightDf = pow((1 - dot(g_lightDirection, dH)), 5);
+	float4 dF = g_fresnel + (leftDf * rightDf);
+
+	float4 specular = dD * dF;
 
 	// Combine diffuse and specular
 	o_color = diffuse + specular;
