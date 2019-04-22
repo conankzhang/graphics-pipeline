@@ -88,38 +88,6 @@ void main(
 	float4 mapNormal = (SampleTexture2d( g_normalTexture, g_diffuse_samplerState, i_textureCoordinates) - 0.5) * 2.0;
 	float3 tangentNormal = normalize(mul(rotation_textureToSomeOtherSpace, mapNormal.xyz));
 
-	// // Directional Light Diffuse
-	// const float dDotProduct = dot(g_lightDirection, tangentNormal);
-	// const float dClampedValue = saturate(dDotProduct);
-
-	// float4 directionalColor = g_directionalLight_color * dClampedValue;
-
-	// // Directional Light Specular
-	// float3 V = normalize(g_camera_position - i_position_world);
-
-	// float3 dH = normalize((V + g_lightDirection) * 0.5 );
-	// float dDotClamped = saturate(dot(tangentNormal, dH));
-	// float4 dSpecularLight = g_reflectivity * pow(dDotClamped, g_gloss) * directionalColor;
-
-	// // Point Light Diffuse
-	// float3 L = (g_pointLight_position - i_position_world);
-
-	// const float pDotProduct = dot(L, tangentNormal);
-	// const float pClampedValue = saturate(pDotProduct);
-
-	// float4 positionColor = g_pointLight_color * pClampedValue;
-
-	// // Point Light Specular
-	// float3 pH = normalize((V + L) * 0.5 );
-	// float pDotClamped = saturate(dot(tangentNormal, pH));
-	// float attenuation = 1 - (saturate(length(L) / 5));
-	// float4 pSpecularLight = (attenuation) * g_reflectivity * pow(pDotClamped, g_gloss) * positionColor;
-
-	// float4 textureColor = SampleTexture2d(g_diffuseTexture, g_diffuse_samplerState, i_textureCoordinates);
-
-	// // Original
-	// o_color = ( ((g_color * textureColor) / PI) + dSpecularLight + pSpecularLight) * (directionalColor + g_ambient_color + (positionColor * attenuation));
-
 	// Material Color
 	float4 textureColor = SampleTexture2d(g_diffuseTexture, g_diffuse_samplerState, i_textureCoordinates);
 	float4 dFLV = (g_color * textureColor) / PI;
@@ -137,56 +105,34 @@ void main(
 	// Final Diffuse
 	float4 diffuse = dFLV * (dLoD + pLoD + g_ambient_color);
 
-	// Directional D(h)
-	float3 dV = normalize(g_camera_position - i_position_world);
-	float3 dH = normalize( (dV + g_lightDirection) * 0.5 );
-	float dDotClamped = saturate(dot(tangentNormal, dH));
-
-	float4 dD = ((g_gloss + 2) / 2 * PI) * pow(dDotClamped, g_gloss);
-
-	// Directional F(l, h)
-	float4 leftDf = 1 - g_fresnel;
-	float4 rightDf = pow((1 - dot(g_lightDirection, dH)), 5);
-	float4 dF = g_fresnel + (leftDf * rightDf);
-
-	// Directional G(l, v, h)
-	float4 dG = abs(dot(tangentNormal, dV)) * abs(dot(tangentNormal, g_lightDirection));
-
-	// Directional Specular FLV
-	float4 dFLVsTop = (dD * dF * dG);
-	float4 dFLVsBottom = (4 * dG);
-	float4 dFLVs = dFLVsTop / dFLVsBottom;
-
 	// Directional Specular
-	float4 directionalSpecular = dFLVs * dLi * saturate(dot(tangentNormal, g_lightDirection));
+	float4 DhLeft = ((g_gloss) + 2 )/ 8;
 
-	// Positional D(h)
-	float3 L = normalize((g_pointLight_position - i_position_world));
+	float3 V = normalize(g_camera_position - i_position_world);
+	float3 dH = normalize( (V + g_lightDirection) * 0.5 );
 
-	float3 pV = normalize(g_camera_position - i_position_world);
-	float3 pH = normalize( (dV + L) * 0.5 );
-	float pDotClamped = saturate(dot(tangentNormal, pH));
+	float4 dDhRight = pow(dot(tangentNormal, dH), g_gloss);
+	float4 dDh = DhLeft * dDhRight;
 
-	float4 pD = ((g_gloss + 2) / 2 * PI) * pow(pDotClamped, g_gloss);
+	float4 FLeft = g_fresnel + (1 - g_fresnel);
+	float4 dFRight = pow((1 - dot(g_lightDirection, dH)), 5);
+	float4 dF = FLeft * dFRight;
 
-	// Positional F(l, h)
-	float4 leftPf = 1 - g_fresnel;
-	float4 rightPf = pow((1 - dot(g_lightDirection, pH)), 5);
-	float4 pF = g_fresnel + (leftPf * rightPf);
-
-	// Positional G(l, v, h)
-	float4 pG = abs(dot(tangentNormal, pV)) * abs(dot(tangentNormal, L));
-
-	// Positional Specular FLV
-	float4 pFLVsTop = (pD * pF * pG);
-	float4 pFLVsBottom = (4 * pG);
-	float4 pFLVs = pFLVsTop / pFLVsBottom;
+	float4 directionalSpecular = dDh * dF * dot(tangentNormal, g_lightDirection);
 
 	// Positional Specular
-	float4 positionalSpecular = pFLVs * pLi * saturate(dot(tangentNormal, L)) * attenuation;
+	float3 pH = normalize( (V + pL) * 0.5 );
+
+	float4 pDhRight = pow(dot(tangentNormal, pH), g_gloss);
+	float4 pDh = DhLeft * pDhRight;
+
+	float4 pFRight = pow((1 - dot(pL, pH)), 5);
+	float4 pF = FLeft * pFRight;
+
+	float4 positionSpecular = pDh * pF * dot(tangentNormal, pL);
 
 	// Final Specular
-	float4 specular = directionalSpecular + positionalSpecular;
+	float4 specular = directionalSpecular + positionSpecular;
 
 	// Combine diffuse and specular
 	o_color = diffuse + specular;
