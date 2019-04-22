@@ -114,7 +114,7 @@ void main(
 	float3 V = normalize(g_camera_position - i_position_world);
 	float3 dH = normalize( (V + g_lightDirection) * 0.5 );
 
-	float4 dDhRight = pow(dot(tangentNormal, dH), gloss);
+	float4 dDhRight = pow(saturate(dot(tangentNormal, dH)), gloss);
 	float4 dDh = DhLeft * dDhRight;
 
 	float4 FLeft = g_fresnel + (1 - g_fresnel);
@@ -126,7 +126,7 @@ void main(
 	// Positional Specular
 	float3 pH = normalize( (V + pL) * 0.5 );
 
-	float4 pDhRight = pow(dot(tangentNormal, pH), gloss);
+	float4 pDhRight = pow(saturate(dot(tangentNormal, pH)), gloss);
 	float4 pDh = DhLeft * pDhRight;
 
 	float4 pFRight = pow((1 - dot(pL, pH)), 5);
