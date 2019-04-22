@@ -525,8 +525,8 @@ void eae6320::Graphics::SubmitDrawCommand(unsigned int i_distance, const cMesh::
 
 	s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[i_material.GetIndex()].g_color = cMaterial::s_manager.UnsafeGet(i_material.GetIndex())->GetColor();
 	s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[i_material.GetIndex()].g_reflectivity = cMaterial::s_manager.UnsafeGet(i_material.GetIndex())->GetReflectivity();
-	//s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[i_material.GetIndex()].g_gloss = cMaterial::s_manager.UnsafeGet(i_material.GetIndex())->GetGloss();
-	s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[i_material.GetIndex()].g_gloss = i_gloss;
+	s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[i_material.GetIndex()].g_gloss = cMaterial::s_manager.UnsafeGet(i_material.GetIndex())->GetGloss();
+	//s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[i_material.GetIndex()].g_gloss = i_gloss;
 	s_dataBeingSubmittedByApplicationThread->constantData_perMaterial[i_material.GetIndex()].g_fresnel = cMaterial::s_manager.UnsafeGet(i_material.GetIndex())->GetFresnel();
 
 	s_dataBeingSubmittedByApplicationThread->constantData_perDrawCall[s_dataBeingSubmittedByApplicationThread->renderCount].g_transform_localToWorld = i_transform_localToWorld;

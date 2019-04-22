@@ -209,14 +209,14 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::PageUp))
 	{
-		gloss += 100.0f;
+		gloss += 10.0f;
 	}
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::PageDown))
 	{
 		if (gloss > 5.0f)
 		{
-			gloss -= 100.0f;
+			gloss -= 10.0f;
 		}
 
 		if(gloss < 5.0f)
@@ -289,7 +289,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	// Grid
 	m_gameObjects.push_back( new cGameObject(Math::sVector(-3.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/stones.material") );
 	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/stones.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(3.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/stones.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(3.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/stones.material") );
 
 	m_gameObjects.push_back( new cGameObject(Math::sVector(-3.0f, 3.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/stones.material") );
 	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, 3.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/stones.material") );
