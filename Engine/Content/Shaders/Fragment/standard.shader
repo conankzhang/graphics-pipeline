@@ -119,7 +119,7 @@ void main(
 
 	float4 FLeft = g_fresnel + (1 - g_fresnel);
 	float4 dFRight = pow((1 - dot(g_lightDirection, dH)), 5);
-	float4 dF = dot(FLeft, dFRight);
+	float4 dF = FLeft * dFRight;
 
 	float4 directionalSpecular = dDh * dF * dot(tangentNormal, g_lightDirection);
 
@@ -130,7 +130,7 @@ void main(
 	float4 pDh = DhLeft * pDhRight;
 
 	float4 pFRight = pow((1 - dot(pL, pH)), 5);
-	float4 pF = dot(FLeft, pFRight);
+	float4 pF = FLeft * pFRight;
 
 	float4 positionSpecular = pDh * pF * dot(tangentNormal, pL);
 
