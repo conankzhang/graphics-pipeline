@@ -130,9 +130,9 @@ void main(
 
 	// Point Diffuse
 	float3 pL = normalize(g_pointLight_position - i_position_world);
-	float4 pLiD = g_pointLight_color * PI;
-	float attenuate = 1 / max(length(g_pointLight_position - i_position_world), 1);
-	float4 pLoD =  pLiD * saturate(dot(pL, tangentNormal)) * attenuate;
+	float4 pLi = g_pointLight_color * PI;
+	float attenuation = 1 / max(length(g_pointLight_position - i_position_world), 1);
+	float4 pLoD =  pLi * saturate(dot(pL, tangentNormal)) * attenuation;
 
 	// Final Diffuse
 	float4 diffuse = dFLV * (dLoD + pLoD + g_ambient_color);
@@ -160,8 +160,33 @@ void main(
 	// Directional Specular
 	float4 directionalSpecular = dFLVs * dLi * saturate(dot(tangentNormal, g_lightDirection));
 
+	// Positional D(h)
+	float3 L = normalize((g_pointLight_position - i_position_world));
+
+	float3 pV = normalize(g_camera_position - i_position_world);
+	float3 pH = normalize( (dV + L) * 0.5 );
+	float pDotClamped = saturate(dot(tangentNormal, pH));
+
+	float4 pD = ((g_gloss + 2) / 2 * PI) * pow(pDotClamped, g_gloss);
+
+	// Positional F(l, h)
+	float4 leftPf = 1 - g_fresnel;
+	float4 rightPf = pow((1 - dot(g_lightDirection, pH)), 5);
+	float4 pF = g_fresnel + (leftPf * rightPf);
+
+	// Positional G(l, v, h)
+	float4 pG = abs(dot(tangentNormal, pV)) * abs(dot(tangentNormal, L));
+
+	// Positional Specular FLV
+	float4 pFLVsTop = (pD * pF * pG);
+	float4 pFLVsBottom = (4 * pG);
+	float4 pFLVs = pFLVsTop / pFLVsBottom;
+
+	// Positional Specular
+	float4 positionalSpecular = pFLVs * pLi * saturate(dot(tangentNormal, L)) * attenuation;
+
 	// Final Specular
-	float4 specular = directionalSpecular;
+	float4 specular = directionalSpecular + positionalSpecular;
 
 	// Combine diffuse and specular
 	o_color = diffuse + specular;
