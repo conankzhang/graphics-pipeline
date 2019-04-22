@@ -22,7 +22,7 @@
 namespace
 {
 	eae6320::cResult BuildTexture( const char *const i_path, const bool i_shouldTextureBeCompressed, const uint8_t i_desiredSamplerState,
-		DirectX::ScratchImage &io_sourceImageThatMayNotBeValidAfterThisCall, DirectX::ScratchImage &o_texture, bool i_buildSRGB);
+		DirectX::ScratchImage &io_sourceImageThatMayNotBeValidAfterThisCall, DirectX::ScratchImage &o_texture, bool i_buildSRGB, bool i_isRough);
 	constexpr eae6320::Graphics::TextureFormats::eType GetFormat( const DXGI_FORMAT i_dxgiFormat );
 	eae6320::cResult LoadSourceImage( const char *const i_path, DirectX::ScratchImage &o_image );
 	eae6320::cResult WriteTextureToFile( const char* const i_path_target, const DirectX::ScratchImage &i_texture, const uint8_t i_desiredSamplerState );
@@ -45,6 +45,7 @@ eae6320::cResult eae6320::Assets::cTextureBuilder::Build( const std::vector<std:
 	uint8_t desiredSamplerState = 0;
 	bool compressTexture = true;
 	bool buildSRGB = false;
+	bool isRough = false;
 
 	// Initialize COM
 	{
@@ -76,6 +77,10 @@ eae6320::cResult eae6320::Assets::cTextureBuilder::Build( const std::vector<std:
 			buildSRGB = true;
 			sourceImage.OverrideFormat(DirectX::MakeSRGB(sourceImage.GetMetadata().format));
 		}
+		else if (i_arguments[0] == "rough")
+		{
+			isRough = true;
+		}
 	}
 
 	// The code I am providing always compresses the texture in a pre-defined way;
@@ -92,7 +97,7 @@ eae6320::cResult eae6320::Assets::cTextureBuilder::Build( const std::vector<std:
 		return samplerStateBits;
 	}();
 	if ( !( result = BuildTexture( m_path_source, compressTexture, desiredSamplerState,
-		sourceImage, builtTexture, buildSRGB ) ) )
+		sourceImage, builtTexture, buildSRGB, isRough ) ) )
 	{
 		goto OnExit;
 	}
@@ -118,7 +123,7 @@ OnExit:
 namespace
 {
 	eae6320::cResult BuildTexture( const char *const i_path, const bool i_shouldTextureBeCompressed, const uint8_t i_desiredSamplerState,
-		DirectX::ScratchImage &io_sourceImageThatMayNotBeValidAfterThisCall, DirectX::ScratchImage &o_texture, bool i_buildSRGB)
+		DirectX::ScratchImage &io_sourceImageThatMayNotBeValidAfterThisCall, DirectX::ScratchImage &o_texture, bool i_buildSRGB, bool i_isRough)
 	{
 		const DWORD filterOptions = DirectX::TEX_FILTER_DEFAULT
 			| ( ( eae6320::Graphics::SamplerStates::GetEdgeBehaviorU( i_desiredSamplerState ) == eae6320::Graphics::SamplerStates::Tile )
@@ -264,6 +269,10 @@ namespace
 			if (i_buildSRGB)
 			{
 				formatToCompressTo = resizedImage.IsAlphaAllOpaque() ? DXGI_FORMAT_BC1_UNORM_SRGB : DXGI_FORMAT_BC3_UNORM_SRGB;
+			}
+			else if (i_isRough)
+			{
+				formatToCompressTo = DXGI_FORMAT_BC4_UNORM;
 			}
 			else
 			{
