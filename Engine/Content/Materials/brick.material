@@ -5,5 +5,6 @@ return
     gloss = 5000,
     path_texture = "Textures/Stone_02_COLOR.tga",
     path_normal = "Textures/Stone_02_NRM.tga",
+    path_rough = "Textures/Stone_02_SPEC.tga",
 }
 

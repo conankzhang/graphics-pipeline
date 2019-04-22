@@ -105,6 +105,8 @@ void main(
 	// Final Diffuse
 	float4 diffuse = dFLV * (dLoD + pLoD + g_ambient_color);
 
+	float gloss = SampleTexture2d( g_roughTexture, g_diffuse_samplerState, i_textureCoordinates).r;
+
 	// Directional Specular
 	float4 DhLeft = ((g_gloss) + 2 )/ 8;
 

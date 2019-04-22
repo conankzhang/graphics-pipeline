@@ -287,9 +287,9 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	//m_spritePad = new cSpriteObject(Math::sVector(-0.7f, 0.7f, 0.0f), Math::sVector(0.3f, 0.3f, 1.0f), Math::cQuaternion(), "data/Materials/spritePad.material");
 
 	// Grid
-	m_gameObjects.push_back( new cGameObject(Math::sVector(-3.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/stones.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(-3.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/chip.material") );
 	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/stones.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(3.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/stones.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(3.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/brick.material") );
 
 	m_gameObjects.push_back( new cGameObject(Math::sVector(-3.0f, 3.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/stones.material") );
 	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, 3.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/stones.material") );
