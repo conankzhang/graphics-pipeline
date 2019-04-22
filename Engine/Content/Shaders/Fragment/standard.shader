@@ -6,6 +6,11 @@
 
 #include <Shaders/shaders.inc>
 
+// Constants
+//=================
+
+static const float PI = 3.14159265f;
+
 // Constant Buffers
 //=================
 
@@ -37,7 +42,8 @@ cbuffer g_constantBuffer_perMaterial : register( b1 )
 	float4 g_color;
 	float4 g_reflectivity;
 	float g_gloss;
-	float3 g_padding4;
+	float g_fresnel;
+	float2 g_padding4;
 };
 
 cbuffer g_constantBuffer_perDrawCall : register( b2 )
@@ -47,6 +53,7 @@ cbuffer g_constantBuffer_perDrawCall : register( b2 )
 
 DeclareTexture2d(g_diffuseTexture, 0);
 DeclareTexture2d(g_normalTexture, 1);
+DeclareTexture2d(g_roughTexture, 2);
 DeclareSamplerState(g_diffuse_samplerState, 0);
 
 // Entry Point
@@ -81,33 +88,55 @@ void main(
 	float4 mapNormal = (SampleTexture2d( g_normalTexture, g_diffuse_samplerState, i_textureCoordinates) - 0.5) * 2.0;
 	float3 tangentNormal = normalize(mul(rotation_textureToSomeOtherSpace, mapNormal.xyz));
 
-	// Directional Light Diffuse
-	const float dDotProduct = dot(g_lightDirection, tangentNormal);
-	const float dClampedValue = saturate(dDotProduct);
-
-	float4 directionalColor = g_directionalLight_color * dClampedValue;
-
-	// Directional Light Specular
-	float3 V = normalize(g_camera_position - i_position_world);
-
-	float3 dH = normalize((V + g_lightDirection) * 0.5 );
-	float dDotClamped = saturate(dot(tangentNormal, dH));
-	float4 dSpecularLight = g_reflectivity * pow(dDotClamped, g_gloss) * directionalColor;
-
-	// Point Light Diffuse
-	float3 L = (g_pointLight_position - i_position_world);
-
-	const float pDotProduct = dot(L, tangentNormal);
-	const float pClampedValue = saturate(pDotProduct);
-
-	float4 positionColor = g_pointLight_color * pClampedValue;
-
-	// Point Light Specular
-	float3 pH = normalize((V + L) * 0.5 );
-	float pDotClamped = saturate(dot(tangentNormal, pH));
-	float attenuation = 1 - (saturate(length(L) / 5));
-	float4 pSpecularLight = (attenuation) * g_reflectivity * pow(pDotClamped, g_gloss) * positionColor;
-
+	// Material Color
 	float4 textureColor = SampleTexture2d(g_diffuseTexture, g_diffuse_samplerState, i_textureCoordinates);
-	o_color = ((g_color * textureColor) + dSpecularLight + pSpecularLight) * (directionalColor + g_ambient_color + (positionColor * attenuation));
+	float4 dFLV = (g_color * textureColor) / PI;
+
+	// Directional Diffuse
+	float4 dLi = g_directionalLight_color * PI;
+	float4 dLoD = dLi * saturate(dot(g_lightDirection, tangentNormal));
+
+	// Point Diffuse
+	float3 pL = normalize(g_pointLight_position - i_position_world);
+	float4 pLi = g_pointLight_color * PI;
+	float attenuation = 1 / max(length(g_pointLight_position - i_position_world), 1);
+	float4 pLoD =  pLi * saturate(dot(pL, tangentNormal)) * attenuation;
+
+	// Final Diffuse
+	float4 diffuse = dFLV * (dLoD + pLoD + g_ambient_color);
+
+	float roughness = SampleTexture2d( g_roughTexture, g_diffuse_samplerState, i_textureCoordinates).r;
+	float gloss = pow(2, (1 - roughness) * 8);
+
+	// Directional Specular
+	float4 DhLeft = ((gloss) + 2 )/ 8;
+
+	float3 V = normalize(g_camera_position - i_position_world);
+	float3 dH = normalize( (V + g_lightDirection) * 0.5 );
+
+	float4 dDhRight = pow(saturate(dot(tangentNormal, dH)), gloss);
+	float4 dDh = DhLeft * dDhRight;
+
+	float4 FLeft = g_fresnel + (1 - g_fresnel);
+	float4 dFRight = pow((1 - dot(g_lightDirection, dH)), 5);
+	float4 dF = FLeft * dFRight;
+
+	float4 directionalSpecular = dDh * dF * dot(tangentNormal, g_lightDirection);
+
+	// Positional Specular
+	float3 pH = normalize( (V + pL) * 0.5 );
+
+	float4 pDhRight = pow(saturate(dot(tangentNormal, pH)), gloss);
+	float4 pDh = DhLeft * pDhRight;
+
+	float4 pFRight = pow((1 - dot(pL, pH)), 5);
+	float4 pF = FLeft * pFRight;
+
+	float4 positionSpecular = pDh * pF * dot(tangentNormal, pL);
+
+	// Final Specular
+	float4 specular = directionalSpecular + positionSpecular;
+
+	// Combine diffuse and specular
+	o_color = diffuse + specular;
 }

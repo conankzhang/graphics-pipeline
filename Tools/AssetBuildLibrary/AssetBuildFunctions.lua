@@ -358,6 +358,12 @@ NewAssetTypeInfo( "materials",
 		else
 		  RegisterAssetToBeBuilt( material.path_normal, "textures", { "normal" } )
 		end
+		if( material.path_rough == nil) then
+		  default_rough = "Textures/default_rough.tga"
+		  RegisterAssetToBeBuilt( default_rough, "textures", { "rough" } )
+		else
+		  RegisterAssetToBeBuilt( material.path_rough, "textures", { "rough" } )
+		end
 	  end
 	end,
 	ConvertSourceRelativePathToBuiltRelativePath = function( i_sourceRelativePath )

@@ -5,5 +5,5 @@ return
     gloss = 200,
     path_texture = "Textures/stones_col.jpg",
     path_normal = "Textures/stones_nrm.jpg",
+    path_rough = "Textures/stones_rgh.jpg",
 }
-

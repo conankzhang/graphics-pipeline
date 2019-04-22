@@ -113,7 +113,8 @@ namespace eae6320
 			struct sTextureInfo
 			{
 				uint16_t width, height;
-				uint8_t mipMapCount;
+				uint8_t mipMapCount : 7;
+				uint8_t isCubeMap : 1;
 				eType format;
 			};
 		}
