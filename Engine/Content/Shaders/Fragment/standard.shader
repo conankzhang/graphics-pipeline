@@ -88,7 +88,7 @@ void main(
 	float4 mapNormal = (SampleTexture2d( g_normalTexture, g_diffuse_samplerState, i_textureCoordinates) - 0.5) * 2.0;
 	float3 tangentNormal = normalize(mul(rotation_textureToSomeOtherSpace, mapNormal.xyz));
 
-	// Directional Light Diffuse
+	// // Directional Light Diffuse
 	// const float dDotProduct = dot(g_lightDirection, tangentNormal);
 	// const float dClampedValue = saturate(dDotProduct);
 
@@ -115,12 +115,13 @@ void main(
 	// float attenuation = 1 - (saturate(length(L) / 5));
 	// float4 pSpecularLight = (attenuation) * g_reflectivity * pow(pDotClamped, g_gloss) * positionColor;
 
-	// Original
-	//o_color = ( ((g_color * textureColor) / PI) + dSpecularLight + pSpecularLight) * (directionalColor + g_ambient_color + (positionColor * attenuation));
+	// float4 textureColor = SampleTexture2d(g_diffuseTexture, g_diffuse_samplerState, i_textureCoordinates);
 
-	float4 textureColor = SampleTexture2d(g_diffuseTexture, g_diffuse_samplerState, i_textureCoordinates);
+	// // Original
+	// o_color = ( ((g_color * textureColor) / PI) + dSpecularLight + pSpecularLight) * (directionalColor + g_ambient_color + (positionColor * attenuation));
 
 	// Material Color
+	float4 textureColor = SampleTexture2d(g_diffuseTexture, g_diffuse_samplerState, i_textureCoordinates);
 	float4 dFLV = (g_color * textureColor) / PI;
 
 	// Directional Diffuse
