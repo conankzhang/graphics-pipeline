@@ -33,7 +33,7 @@ namespace eae6320
 			// Inherited Implementation
 			//=========================
 		public:
-			static cResult LoadAsset( const char* const i_path, std::string& o_effectPath, std::string& o_texturePath, std::string& o_normalPath, Graphics::sColor& o_color, Graphics::sColor& o_reflectivity, float& o_gloss);
+			static cResult LoadAsset( const char* const i_path, std::string& o_effectPath, std::string& o_texturePath, std::string& o_normalPath, std::string& o_roughPath, Graphics::sColor& o_color, Graphics::sColor& o_reflectivity, float& o_gloss);
 
 		private:
 
@@ -43,7 +43,7 @@ namespace eae6320
 
 			// Implementation
 			//===============
-			static cResult LoadTableValues(lua_State& io_luaState, std::string& o_effectPath, std::string& o_texturePath, std::string& o_normalPath, Graphics::sColor& o_color, Graphics::sColor& o_reflectivity, float& o_gloss);
+			static cResult LoadTableValues(lua_State& io_luaState, std::string& o_effectPath, std::string& o_texturePath, std::string& o_normalPath, std::string& o_roughPath, Graphics::sColor& o_color, Graphics::sColor& o_reflectivity, float& o_gloss);
 
 		};
 	}
