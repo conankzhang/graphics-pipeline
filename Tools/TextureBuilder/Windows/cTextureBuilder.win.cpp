@@ -390,164 +390,170 @@ namespace
 		return SUCCEEDED( result ) ? eae6320::Results::Success : eae6320::Results::Failure;
 	}
 
-	eae6320::cResult WriteTextureToFile( const char* const i_path_target, const DirectX::ScratchImage &i_texture, const uint8_t i_desiredSamplerState )
+	eae6320::cResult WriteTextureToFile(const char* const i_path_target, const DirectX::ScratchImage &i_texture, const uint8_t i_desiredSamplerState)
 	{
 		auto result = eae6320::Results::Success;
 
 		// Open the file
-		std::ofstream fout( i_path_target, std::ofstream::out | std::ofstream::trunc | std::ofstream::binary );
-		if ( !fout.is_open() )
+		std::ofstream fout(i_path_target, std::ofstream::out | std::ofstream::trunc | std::ofstream::binary);
+		if (!fout.is_open())
 		{
 			result = eae6320::Results::Failure;
-			eae6320::Assets::OutputErrorMessageWithFileInfo( i_path_target, "Target texture file couldn't be opened for writing" );
+			eae6320::Assets::OutputErrorMessageWithFileInfo(i_path_target, "Target texture file couldn't be opened for writing");
 			return result;
 		}
-		const eae6320::cScopeCleanUp scopeCleanUp( [i_path_target, &fout]
+		const eae6320::cScopeCleanUp scopeCleanUp([i_path_target, &fout]
+		{
+			if (fout.is_open())
 			{
-				if ( fout.is_open() )
+				fout.close();
+				if (fout.is_open())
 				{
-					fout.close();
-					if ( fout.is_open() )
-					{
-						eae6320::Assets::OutputWarningMessageWithFileInfo( i_path_target,
-							"Failed to close the target texture file after writing" );
-					}
+					eae6320::Assets::OutputWarningMessageWithFileInfo(i_path_target,
+						"Failed to close the target texture file after writing");
 				}
-			} );
+			}
+		});
 
 		// Write the texture information
 		eae6320::Graphics::TextureFormats::sTextureInfo textureInfo;
 		{
 			auto &metadata = i_texture.GetMetadata();
-			if ( metadata.width < ( 1u << ( sizeof( textureInfo.width ) * 8 ) ) )
+			if (metadata.width < (1u << (sizeof(textureInfo.width) * 8)))
 			{
-				textureInfo.width = static_cast<uint16_t>( metadata.width );
+				textureInfo.width = static_cast<uint16_t>(metadata.width);
 			}
 			else
 			{
 				result = eae6320::Results::Failure;
-				eae6320::Assets::OutputErrorMessageWithFileInfo( i_path_target,
-					"The width (%u) is too big for a sTextureInfo", metadata.width );
+				eae6320::Assets::OutputErrorMessageWithFileInfo(i_path_target,
+					"The width (%u) is too big for a sTextureInfo", metadata.width);
 				return result;
 			}
-			if ( metadata.height < ( 1u << ( sizeof( textureInfo.height ) * 8 ) ) )
+			if (metadata.height < (1u << (sizeof(textureInfo.height) * 8)))
 			{
-				textureInfo.height = static_cast<uint16_t>( metadata.height );
+				textureInfo.height = static_cast<uint16_t>(metadata.height);
 			}
 			else
 			{
 				result = eae6320::Results::Failure;
-				eae6320::Assets::OutputErrorMessageWithFileInfo( i_path_target,
-					"The height (%u) is too big for a sTextureInfo", metadata.height );
+				eae6320::Assets::OutputErrorMessageWithFileInfo(i_path_target,
+					"The height (%u) is too big for a sTextureInfo", metadata.height);
 				return result;
 			}
-			if ( metadata.mipLevels < ( 1u << ( sizeof( textureInfo.mipMapCount ) * 8 ) ) )
+			if (metadata.mipLevels < (1u << 7))
 			{
-				textureInfo.mipMapCount = static_cast<uint8_t>( metadata.mipLevels );
+				textureInfo.mipMapCount = static_cast<uint8_t>(metadata.mipLevels);
 			}
 			else
 			{
 				result = eae6320::Results::Failure;
-				eae6320::Assets::OutputErrorMessageWithFileInfo( i_path_target,
-					"There are too many MIP levels (%u) for a sTextureInfo", metadata.mipLevels );
+				eae6320::Assets::OutputErrorMessageWithFileInfo(i_path_target,
+					"There are too many MIP levels (%u) for a sTextureInfo", metadata.mipLevels);
 				return result;
 			}
-			textureInfo.format = GetFormat( metadata.format );
-			if ( textureInfo.format == eae6320::Graphics::TextureFormats::Unknown )
+			textureInfo.isCubeMap = metadata.IsCubemap();
+			textureInfo.format = GetFormat(metadata.format);
+			if (textureInfo.format == eae6320::Graphics::TextureFormats::Unknown)
 			{
 				result = eae6320::Results::Failure;
-				eae6320::Assets::OutputErrorMessageWithFileInfo( i_path_target,
-					"The DXGI_Format (%i) isn't valid for a sTextureInfo", metadata.format );
+				eae6320::Assets::OutputErrorMessageWithFileInfo(i_path_target,
+					"The DXGI_Format (%i) isn't valid for a sTextureInfo", metadata.format);
 				return result;
 			}
 		}
 		{
-			const auto byteCountToWrite = sizeof( textureInfo );
-			fout.write( reinterpret_cast<const char*>( &textureInfo ), byteCountToWrite );
-			if ( !fout.good() )
+			const auto byteCountToWrite = sizeof(textureInfo);
+			fout.write(reinterpret_cast<const char*>(&textureInfo), byteCountToWrite);
+			if (!fout.good())
 			{
 				result = eae6320::Results::Failure;
-				eae6320::Assets::OutputErrorMessageWithFileInfo( i_path_target,
-					"Failed to write %u bytes for the texture information", byteCountToWrite );
+				eae6320::Assets::OutputErrorMessageWithFileInfo(i_path_target,
+					"Failed to write %u bytes for the texture information", byteCountToWrite);
 				return result;
 			}
 		}
 		// Write the data for each MIP map
 		{
-			auto currentWidth = static_cast<uint_fast16_t>( textureInfo.width );
-			auto currentHeight = static_cast<uint_fast16_t>( textureInfo.height );
-			const auto blockSize = eae6320::Graphics::TextureFormats::GetSizeOfBlock( textureInfo.format );
-			const auto mipMapCount = static_cast<uint_fast8_t>( textureInfo.mipMapCount );
-			if ( mipMapCount == i_texture.GetImageCount() )
+			const auto mipMapCount = static_cast<uint_fast8_t>(textureInfo.mipMapCount);
+			const auto isCubeMap = i_texture.GetMetadata().IsCubemap();
+			const uint_fast8_t imageCountPerMipMap = !isCubeMap ? 1 : 6;
+			if ((mipMapCount * imageCountPerMipMap) == i_texture.GetImageCount())
 			{
-				const auto* const mipMaps = i_texture.GetImages();
-				for ( uint_fast8_t i = 0; i < mipMapCount; ++i )
+				const auto blockSize = eae6320::Graphics::TextureFormats::GetSizeOfBlock(textureInfo.format);
+				for (uint_fast8_t j = 0; j < imageCountPerMipMap; ++j)
 				{
-					const auto& currentMipMap = mipMaps[i];
-					// Calculate how much memory this MIP level uses
-					size_t singleRowSize, currentMipLevelSize;
+					auto currentWidth = static_cast<uint_fast16_t>(textureInfo.width);
+					auto currentHeight = static_cast<uint_fast16_t>(textureInfo.height);
+					const auto* const mipMaps = i_texture.GetImages();
+					for (uint_fast8_t i = 0; i < mipMapCount; ++i)
 					{
-						if ( blockSize > 0 )
+						// Calculate how much memory this MIP level uses
+						size_t singleRowSize, currentMipLevelSize;
 						{
-							// A non-zero block size means that the texture is using block compression
-							const auto blockCount_singleRow = ( currentWidth + 3 ) / 4;
-							const auto byteCount_singleRow = blockCount_singleRow * blockSize;
-							singleRowSize = byteCount_singleRow;
-							const auto rowCount = ( currentHeight + 3 ) / 4;
-							const auto byteCount_currentMipLevel = byteCount_singleRow * rowCount;
-							currentMipLevelSize = byteCount_currentMipLevel;
+							if (blockSize > 0)
+							{
+								// A non-zero block size means that the texture is using block compression
+								const auto blockCount_singleRow = (currentWidth + 3) / 4;
+								const auto byteCount_singleRow = blockCount_singleRow * blockSize;
+								singleRowSize = byteCount_singleRow;
+								const auto rowCount = (currentHeight + 3) / 4;
+								const auto byteCount_currentMipLevel = byteCount_singleRow * rowCount;
+								currentMipLevelSize = byteCount_currentMipLevel;
+							}
+							else
+							{
+								// A block of zero size means that the texture is uncompressed
+								constexpr auto channelCount = 4;
+								constexpr auto byteCount_singleTexel = channelCount * sizeof(uint8_t);
+								const auto byteCount_singleRow = currentWidth * byteCount_singleTexel;
+								singleRowSize = byteCount_singleRow;
+								const auto byteCount_currentMipLevel = byteCount_singleRow * currentHeight;
+								currentMipLevelSize = byteCount_currentMipLevel;
+							}
 						}
-						else
-						{
-							// A block of zero size means that the texture is uncompressed
-							constexpr auto channelCount = 4;
-							constexpr auto byteCount_singleTexel = channelCount * sizeof( uint8_t );
-							const auto byteCount_singleRow = currentWidth * byteCount_singleTexel;
-							singleRowSize = byteCount_singleRow;
-							const auto byteCount_currentMipLevel = byteCount_singleRow * currentHeight;
-							currentMipLevelSize = byteCount_currentMipLevel;
-						}
-					}
-					if ( singleRowSize != currentMipMap.rowPitch )
-					{
-						result = eae6320::Results::Failure;
-						eae6320::Assets::OutputErrorMessageWithFileInfo( i_path_target,
-							"Unexpected mismatch between calculated byte count for a single row of MIP map #%u (%u) and DirectXTex row pitch (%u)",
-							i, singleRowSize, currentMipMap.rowPitch );
-						return result;
-					}
-					if ( currentMipLevelSize != currentMipMap.slicePitch )
-					{
-						result = eae6320::Results::Failure;
-						eae6320::Assets::OutputErrorMessageWithFileInfo( i_path_target,
-							"Unexpected mismatch between calculated byte count for MIP map #%u (%u) and DirectXTex slice pitch (%u)",
-							i, currentMipLevelSize, currentMipMap.slicePitch );
-						return result;
-					}
-					// Write this MIP map
-					{
-						fout.write( reinterpret_cast<const char*>( currentMipMap.pixels ), currentMipLevelSize );
-						if ( !fout.good() )
+						const auto& currentMipMap = mipMaps[(j * mipMapCount) + i];
+						if (singleRowSize != currentMipMap.rowPitch)
 						{
 							result = eae6320::Results::Failure;
-							eae6320::Assets::OutputErrorMessageWithFileInfo( i_path_target,
-								"Failed to write %u bytes for MIP map #%u", currentMipLevelSize, i );
+							eae6320::Assets::OutputErrorMessageWithFileInfo(i_path_target,
+								"Unexpected mismatch between calculated byte count for a single row of MIP map #%u (%u) and DirectXTex row pitch (%u)",
+								i, singleRowSize, currentMipMap.rowPitch);
 							return result;
 						}
-					}
-					// Update dimensions for the next iteration
-					{
-						currentWidth = std::max( currentWidth / 2, 1u );
-						currentHeight = std::max( currentHeight / 2, 1u );
+						if (currentMipLevelSize != currentMipMap.slicePitch)
+						{
+							result = eae6320::Results::Failure;
+							eae6320::Assets::OutputErrorMessageWithFileInfo(i_path_target,
+								"Unexpected mismatch between calculated byte count for MIP map #%u (%u) and DirectXTex slice pitch (%u)",
+								i, currentMipLevelSize, currentMipMap.slicePitch);
+							return result;
+						}
+						// Write this MIP map
+						{
+							fout.write(reinterpret_cast<const char*>(currentMipMap.pixels), currentMipLevelSize);
+							if (!fout.good())
+							{
+								result = eae6320::Results::Failure;
+								eae6320::Assets::OutputErrorMessageWithFileInfo(i_path_target,
+									"Failed to write %u bytes for MIP map #%u", currentMipLevelSize, i);
+								return result;
+							}
+						}
+						// Update dimensions for the next iteration
+						{
+							currentWidth = std::max(currentWidth / 2, 1u);
+							currentHeight = std::max(currentHeight / 2, 1u);
+						}
 					}
 				}
 			}
 			else
 			{
 				result = eae6320::Results::Failure;
-				eae6320::Assets::OutputErrorMessageWithFileInfo( i_path_target,
+				eae6320::Assets::OutputErrorMessageWithFileInfo(i_path_target,
 					"Unexpected mismatch between MIP map count (%u) and DirectXTex image count (%u)",
-					mipMapCount, i_texture.GetImageCount() );
+					mipMapCount, i_texture.GetImageCount());
 				return result;
 			}
 		}

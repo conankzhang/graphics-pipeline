@@ -87,14 +87,17 @@ eae6320::cResult eae6320::Graphics::cTexture::Initialize( const std::string& i_p
 	// but that actually have multiple textures associated with that single resource
 	// (e.g. MIP maps, volume textures, texture arrays))
 	const auto mipMapCount = static_cast<uint_fast8_t>( m_info.mipMapCount );
+	const bool isCubeMap = m_info.isCubeMap;
+	const uint_fast8_t imageCountPerMipMap = !isCubeMap ? 1 : 6;
 	{
-		subResourceData = new (std::nothrow) D3D11_SUBRESOURCE_DATA[mipMapCount];
+		const auto subResourceCount = mipMapCount * imageCountPerMipMap;
+		subResourceData = new (std::nothrow) D3D11_SUBRESOURCE_DATA[subResourceCount];
 		if ( !subResourceData )
 		{
 			result = Results::OutOfMemory;
-			EAE6320_ASSERTF( false, "Couldn't allocate an array of %u subresource data structs", mipMapCount );
+			EAE6320_ASSERTF( false, "Couldn't allocate an array of %u subresource data structs", subResourceCount );
 			Logging::OutputError( "Failed to allocate an array of %u subresource data structs for the texture %s",
-				mipMapCount, i_path.c_str() );
+				subResourceCount, i_path.c_str() );
 			return result;
 		}
 	}
@@ -102,62 +105,67 @@ eae6320::cResult eae6320::Graphics::cTexture::Initialize( const std::string& i_p
 	const auto width = static_cast<uint_fast16_t>( m_info.width );
 	const auto height = static_cast<uint_fast16_t>( m_info.height );
 	{
-		auto currentWidth = width;
-		auto currentHeight = height;
 		auto currentOffset = reinterpret_cast<uintptr_t>( i_textureData );
 		const auto finalOffset = currentOffset + i_textureDataSize;
 		const auto blockSize = TextureFormats::GetSizeOfBlock( m_info.format );
-		for ( uint_fast8_t i = 0; i < mipMapCount; ++i )
+		uint_fast8_t currentIndex = 0;
+		for ( uint_fast8_t j = 0; j < imageCountPerMipMap; ++j )
 		{
-			// Calculate how much memory this MIP level uses
-			size_t singleRowSize, currentMipLevelSize;
+			auto currentWidth = width;
+			auto currentHeight = height;
+			for ( uint_fast8_t i = 0; i < mipMapCount; ++i )
 			{
-				if ( blockSize > 0 )
+				// Calculate how much memory this MIP level uses
+				size_t singleRowSize, currentMipLevelSize;
 				{
-					// A non-zero block size means that the texture is using block compression
-					const auto blockCount_singleRow = ( currentWidth + 3 ) / 4;
-					const auto byteCount_singleRow = blockCount_singleRow * blockSize;
-					singleRowSize = byteCount_singleRow;
-					const auto rowCount = ( currentHeight + 3 ) / 4;
-					const auto byteCount_currentMipLevel = byteCount_singleRow * rowCount;
-					currentMipLevelSize = byteCount_currentMipLevel;
+					if ( blockSize > 0 )
+					{
+						// A non-zero block size means that the texture is using block compression
+						const auto blockCount_singleRow = ( currentWidth + 3 ) / 4;
+						const auto byteCount_singleRow = blockCount_singleRow * blockSize;
+						singleRowSize = byteCount_singleRow;
+						const auto rowCount = ( currentHeight + 3 ) / 4;
+						const auto byteCount_currentMipLevel = byteCount_singleRow * rowCount;
+						currentMipLevelSize = byteCount_currentMipLevel;
+					}
+					else
+					{
+						// A block of zero size means that the texture is uncompressed
+						constexpr auto channelCount = 4;
+						constexpr auto byteCount_singleTexel = channelCount * sizeof( uint8_t );
+						const auto byteCount_singleRow = currentWidth * byteCount_singleTexel;
+						singleRowSize = byteCount_singleRow;
+						const auto byteCount_currentMipLevel = byteCount_singleRow * currentHeight;
+						currentMipLevelSize = byteCount_currentMipLevel;
+					}
 				}
-				else
+				// Set the data into the subresource
 				{
-					// A block of zero size means that the texture is uncompressed
-					constexpr auto channelCount = 4;
-					constexpr auto byteCount_singleTexel = channelCount * sizeof( uint8_t );
-					const auto byteCount_singleRow = currentWidth * byteCount_singleTexel;
-					singleRowSize = byteCount_singleRow;
-					const auto byteCount_currentMipLevel = byteCount_singleRow * currentHeight;
-					currentMipLevelSize = byteCount_currentMipLevel;
+					EAE6320_ASSERT( currentIndex == ( j * mipMapCount ) + i );
+					auto& currentSubResourceData = subResourceData[currentIndex++];
+					currentSubResourceData.pSysMem = reinterpret_cast<void*>( currentOffset );
+					EAE6320_ASSERT( singleRowSize < std::numeric_limits<decltype(currentSubResourceData.SysMemPitch)>::max() );
+					currentSubResourceData.SysMemPitch = static_cast<unsigned int>( singleRowSize );
+					EAE6320_ASSERT( currentMipLevelSize < std::numeric_limits<decltype(currentSubResourceData.SysMemSlicePitch)>::max() );
+					currentSubResourceData.SysMemSlicePitch = static_cast<unsigned int>( currentMipLevelSize );
 				}
-			}
-			// Set the data into the subresource
-			{
-				auto& currentSubResourceData = subResourceData[i];
-				currentSubResourceData.pSysMem = reinterpret_cast<void*>( currentOffset );
-				EAE6320_ASSERT( singleRowSize < std::numeric_limits<decltype(currentSubResourceData.SysMemPitch)>::max() );
-				currentSubResourceData.SysMemPitch = static_cast<unsigned int>( singleRowSize );
-				EAE6320_ASSERT( currentMipLevelSize < std::numeric_limits<decltype(currentSubResourceData.SysMemSlicePitch)>::max() );
-				currentSubResourceData.SysMemSlicePitch = static_cast<unsigned int>( currentMipLevelSize );
-			}
-			// Update current data for next iteration
-			{
 				currentOffset += currentMipLevelSize;
-				if ( currentOffset <= finalOffset )
+				// Update current data for next iteration
 				{
-					currentWidth = std::max( currentWidth / 2, 1u );
-					currentHeight = std::max( currentHeight / 2, 1u );
-				}
-				else
-				{
-					result = Results::InvalidFile;
-					EAE6320_ASSERTF( false, "Texture file %s is too small to contain MIP map #%u",
-						i_path.c_str(), i );
-					Logging::OutputError( "The texture file %s is too small to contain MIP map #%u",
-						i_path.c_str(), i );
-					return result;
+					if ( currentOffset <= finalOffset )
+					{
+						currentWidth = std::max( currentWidth / 2, 1u );
+						currentHeight = std::max( currentHeight / 2, 1u );
+					}
+					else
+					{
+						result = Results::InvalidFile;
+						EAE6320_ASSERTF( false, "Texture file %s is too small to contain MIP map #%u",
+							i_path.c_str(), i );
+						Logging::OutputError( "The texture file %s is too small to contain MIP map #%u",
+							i_path.c_str(), i );
+						return result;
+					}
 				}
 			}
 		}
@@ -173,7 +181,7 @@ eae6320::cResult eae6320::Graphics::cTexture::Initialize( const std::string& i_p
 			textureDescription.Width = static_cast<unsigned int>( width );
 			textureDescription.Height = static_cast<unsigned int>( height );
 			textureDescription.MipLevels = static_cast<unsigned int>( mipMapCount );
-			textureDescription.ArraySize = 1;
+			textureDescription.ArraySize = imageCountPerMipMap;
 			textureDescription.Format = dxgiFormat;
 			{
 				DXGI_SAMPLE_DESC& sampleDescription = textureDescription.SampleDesc;
@@ -183,7 +191,7 @@ eae6320::cResult eae6320::Graphics::cTexture::Initialize( const std::string& i_p
 			textureDescription.Usage = D3D11_USAGE_IMMUTABLE;	// The texture will never change once it's been created
 			textureDescription.BindFlags = D3D11_BIND_SHADER_RESOURCE;	// This texture will be used by shaders
 			textureDescription.CPUAccessFlags = 0;	// No CPU access is necessary
-			textureDescription.MiscFlags = 0;
+			textureDescription.MiscFlags = !isCubeMap ? 0 : D3D11_RESOURCE_MISC_TEXTURECUBE;
 		}
 		const auto d3dResult = direct3dDevice->CreateTexture2D( &textureDescription, subResourceData, &resource );
 		if ( FAILED( d3dResult ) )
@@ -203,11 +211,23 @@ eae6320::cResult eae6320::Graphics::cTexture::Initialize( const std::string& i_p
 		D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDescription{};
 		{
 			shaderResourceViewDescription.Format = dxgiFormat;
-			shaderResourceViewDescription.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+			if ( !isCubeMap )
 			{
-				D3D11_TEX2D_SRV& shaderResourceView2dDescription = shaderResourceViewDescription.Texture2D;
-				shaderResourceView2dDescription.MostDetailedMip = 0;	// Use the highest resolution in the texture resource
-				shaderResourceView2dDescription.MipLevels = -1;	// Use all MIP levels
+				shaderResourceViewDescription.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+				{
+					D3D11_TEX2D_SRV& shaderResourceView2dDescription = shaderResourceViewDescription.Texture2D;
+					shaderResourceView2dDescription.MostDetailedMip = 0;	// Use the highest resolution in the texture resource
+					shaderResourceView2dDescription.MipLevels = -1;	// Use all MIP levels
+				}
+			}
+			else
+			{
+				shaderResourceViewDescription.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+				{
+					D3D11_TEXCUBE_SRV& shaderResourceView2dDescription = shaderResourceViewDescription.TextureCube;
+					shaderResourceView2dDescription.MostDetailedMip = 0;	// Use the highest resolution in the texture resource
+					shaderResourceView2dDescription.MipLevels = -1;	// Use all MIP levels
+				}
 			}
 		}
 		const auto d3dResult = direct3dDevice->CreateShaderResourceView( resource, &shaderResourceViewDescription, &m_textureView );
