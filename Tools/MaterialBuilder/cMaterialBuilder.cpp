@@ -30,13 +30,14 @@ eae6320::cResult eae6320::Assets::cMaterialBuilder::Build(const std::vector<std:
 	Graphics::sColor color;
 	Graphics::sColor reflectivity;
 	float gloss;
+	float fresnel;
 	size_t effectPathSize = 0;
 	size_t texturePathSize = 0;
 	size_t normalPathSize = 0;
 
 	std::ofstream outFile ( m_path_target, std::ofstream::binary);
 	{
-		if ( !( result = cMaterialLoader::LoadAsset( m_path_source, effectPath, texturePath, normalPath, roughPath, color, reflectivity, gloss)) )
+		if ( !( result = cMaterialLoader::LoadAsset( m_path_source, effectPath, texturePath, normalPath, roughPath, color, reflectivity, gloss, fresnel)) )
 		{
 			EAE6320_ASSERTF( false, "Loading material failed" );
 			goto OnExit;
@@ -62,6 +63,7 @@ eae6320::cResult eae6320::Assets::cMaterialBuilder::Build(const std::vector<std:
 	outFile.write ( reinterpret_cast<char *>(&color.GetLinearColor()), sizeof( color ) );
 	outFile.write ( reinterpret_cast<char *>(&reflectivity.GetLinearColor()), sizeof( reflectivity) );
 	outFile.write ( reinterpret_cast<char *>(&gloss), sizeof( gloss ) );
+	outFile.write ( reinterpret_cast<char *>(&fresnel), sizeof( fresnel ) );
 	outFile.write ( (char *)&effectPathSize, sizeof( uint16_t ) );
 	outFile.write ( (char *)&texturePathSize, sizeof( uint16_t ) );
 	outFile.write ( (char *)&normalPathSize, sizeof( uint16_t ) );

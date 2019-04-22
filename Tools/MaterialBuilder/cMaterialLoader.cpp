@@ -15,7 +15,7 @@
 // Build
 //------
 
-eae6320::cResult eae6320::Assets::cMaterialLoader::LoadAsset(const char* const i_path, std::string& o_effectPath, std::string& o_texturePath, std::string& o_normalPath, std::string& o_roughPath, Graphics::sColor& o_color, Graphics::sColor& o_reflectivity, float& o_gloss)
+eae6320::cResult eae6320::Assets::cMaterialLoader::LoadAsset(const char* const i_path, std::string& o_effectPath, std::string& o_texturePath, std::string& o_normalPath, std::string& o_roughPath, Graphics::sColor& o_color, Graphics::sColor& o_reflectivity, float& o_gloss, float& o_fresnel)
 {
 	auto result = eae6320::Results::Success;
 
@@ -91,7 +91,7 @@ eae6320::cResult eae6320::Assets::cMaterialLoader::LoadAsset(const char* const i
 
 	// If this code is reached the asset file was loaded successfully,
 	// and its table is now at index -1
-	result = LoadTableValues(*luaState, o_effectPath, o_texturePath, o_normalPath, o_roughPath, o_color, o_reflectivity, o_gloss);
+	result = LoadTableValues(*luaState, o_effectPath, o_texturePath, o_normalPath, o_roughPath, o_color, o_reflectivity, o_gloss, o_fresnel);
 
 	// Pop the table
 	lua_pop( luaState, 1 );
@@ -112,7 +112,7 @@ OnExit:
 	return result;
 }
 
-eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io_luaState, std::string& o_effectPath, std::string& o_texturePath, std::string& o_normalPath, std::string& o_roughPath, Graphics::sColor& o_color, Graphics::sColor& o_reflectivity, float& o_gloss)
+eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io_luaState, std::string& o_effectPath, std::string& o_texturePath, std::string& o_normalPath, std::string& o_roughPath, Graphics::sColor& o_color, Graphics::sColor& o_reflectivity, float& o_gloss, float& o_fresnel)
 {
 	auto result = eae6320::Results::Success;
 
@@ -253,6 +253,22 @@ eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io
 	else
 	{
 		o_gloss = 1000.0f;
+		lua_pop( &io_luaState, 1 );
+	}
+
+	key = "fresnel";
+	lua_pushstring( &io_luaState, key );
+	lua_gettable( &io_luaState, -2 );
+
+	if ( lua_isnumber( &io_luaState, -1 ) )
+	{
+		const auto value = lua_tonumber( &io_luaState, -1 );
+		o_fresnel = static_cast<float>(value);
+		lua_pop( &io_luaState, 1 );
+	}
+	else
+	{
+		o_fresnel = 0.04f;
 		lua_pop( &io_luaState, 1 );
 	}
 

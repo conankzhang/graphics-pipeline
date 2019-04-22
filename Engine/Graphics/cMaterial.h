@@ -83,6 +83,7 @@ namespace eae6320
 			sColor m_reflectivity;
 
 			float m_gloss;
+			float m_fresnel;
 
 			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
 
@@ -93,6 +94,7 @@ namespace eae6320
 			const sColor& GetColor();
 			const sColor& GetReflectivity();
 			float GetGloss();
+			float GetFresnel();
 
 			bool IsAlphaTransparencyEnabled() const;
 
@@ -103,7 +105,7 @@ namespace eae6320
 			cResult InitializeMaterialData(const char i_effectPath[], const char i_texturePath[], const char i_normalPath[], const char i_roughPath[]);
 			cResult CleanUp();
 
-			cMaterial(const sColor& i_color, const sColor& i_reflectivity, float i_gloss);
+			cMaterial(const sColor& i_color, const sColor& i_reflectivity, float i_gloss, float i_fresnel);
 			~cMaterial();
 		};
 	}
