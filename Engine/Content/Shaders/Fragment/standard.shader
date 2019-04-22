@@ -105,15 +105,16 @@ void main(
 	// Final Diffuse
 	float4 diffuse = dFLV * (dLoD + pLoD + g_ambient_color);
 
-	float gloss = SampleTexture2d( g_roughTexture, g_diffuse_samplerState, i_textureCoordinates).r;
+	float roughness = SampleTexture2d( g_roughTexture, g_diffuse_samplerState, i_textureCoordinates).r;
+	float gloss = pow(2, (1 - roughness) * 8);
 
 	// Directional Specular
-	float4 DhLeft = ((g_gloss) + 2 )/ 8;
+	float4 DhLeft = ((gloss) + 2 )/ 8;
 
 	float3 V = normalize(g_camera_position - i_position_world);
 	float3 dH = normalize( (V + g_lightDirection) * 0.5 );
 
-	float4 dDhRight = pow(dot(tangentNormal, dH), g_gloss);
+	float4 dDhRight = pow(dot(tangentNormal, dH), gloss);
 	float4 dDh = DhLeft * dDhRight;
 
 	float4 FLeft = g_fresnel + (1 - g_fresnel);
@@ -125,7 +126,7 @@ void main(
 	// Positional Specular
 	float3 pH = normalize( (V + pL) * 0.5 );
 
-	float4 pDhRight = pow(dot(tangentNormal, pH), g_gloss);
+	float4 pDhRight = pow(dot(tangentNormal, pH), gloss);
 	float4 pDh = DhLeft * pDhRight;
 
 	float4 pFRight = pow((1 - dot(pL, pH)), 5);
