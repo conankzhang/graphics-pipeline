@@ -120,16 +120,24 @@ void main(
 	// Original
 	//o_color = ( ((g_color * textureColor) / PI) + dSpecularLight + pSpecularLight) * (directionalColor + g_ambient_color + (positionColor * attenuation));
 
-	float4 FLV = (g_color * textureColor) / PI;
+	// Material Color
+	float4 dFLV = (g_color * textureColor) / PI;
 
-	float4 dLi = g_directionalLight_color * PI;
-	float4 dLo = dLi * saturate(dot(g_lightDirection, tangentNormal));
+	// Directional Diffuse
+	float4 dLiD = g_directionalLight_color * PI;
+	float4 dLoD = dLiD * saturate(dot(g_lightDirection, tangentNormal));
 
+	// Point Diffuse
 	float3 pL = normalize(g_pointLight_position - i_position_world);
-	float4 pLi = g_pointLight_color * PI;
+	float4 pLiD = g_pointLight_color * PI;
 	float attenuate = 1 / max(length(L), 1);
-	float4 pLo =  pLi * saturate(dot(pL, tangentNormal)) * attenuate;
+	float4 pLoD =  pLiD * saturate(dot(pL, tangentNormal)) * attenuate;
 
-	float4 diffuse = FLV * (dLo + pLo + g_ambient_color);
+	// Final Diffuse
+	float4 diffuse = dFLV * (dLoD + pLoD + g_ambient_color);
+
+	// Directional Specular
+
+	// Combine diffuse and specular
 	o_color = diffuse;
 }
