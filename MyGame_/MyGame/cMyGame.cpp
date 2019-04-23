@@ -225,7 +225,7 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 
 		if(gloss < 5.0f)
 		{
-			gloss = 0.0f;
+			gloss = 0.1f;
 		}
 	}
 }

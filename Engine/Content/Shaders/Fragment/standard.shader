@@ -118,9 +118,9 @@ void main(
 	float4 dDhRight = pow(saturate(dot(tangentNormal, dH)), gloss);
 	float4 dDh = DhLeft * dDhRight;
 
-	float4 FLeft = g_fresnel + (1 - g_fresnel);
+	float4 FLeft = (1 - g_fresnel);
 	float4 dFRight = pow((1 - dot(g_lightDirection, dH)), 5);
-	float4 dF = FLeft * dFRight;
+	float4 dF = g_fresnel + (FLeft * dFRight);
 
 	float4 directionalSpecular = dDh * dF * dot(tangentNormal, g_lightDirection);
 
@@ -131,14 +131,12 @@ void main(
 	float4 pDh = DhLeft * pDhRight;
 
 	float4 pFRight = pow((1 - dot(pL, pH)), 5);
-	float4 pF = FLeft * pFRight;
+	float4 pF = g_fresnel + (FLeft * pFRight);
 
 	float4 positionSpecular = pDh * pF * dot(tangentNormal, pL);
 
 	// Final Specular
 	float4 specular = directionalSpecular + positionSpecular;
-
-	//float4 environmentColor = SampleTextureCube(g_environmentTexture, g_diffuse_samplerState, i_position_world);
 
 	// Combine diffuse and specular
 	o_color = diffuse + specular;
