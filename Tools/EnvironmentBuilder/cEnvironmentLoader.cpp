@@ -14,7 +14,7 @@
 // Build
 //------
 
-eae6320::cResult eae6320::Assets::cEnvironmentLoader::LoadAsset(const char* const i_path, std::string& o_environmentPath)
+eae6320::cResult eae6320::Assets::cEnvironmentLoader::LoadAsset(const char* const i_path, std::string& o_environmentPath, std::string& o_effectPath)
 {
 	auto result = eae6320::Results::Success;
 
@@ -90,7 +90,7 @@ eae6320::cResult eae6320::Assets::cEnvironmentLoader::LoadAsset(const char* cons
 
 	// If this code is reached the asset file was loaded successfully,
 	// and its table is now at index -1
-	result = LoadTableValues(*luaState, o_environmentPath);
+	result = LoadTableValues(*luaState, o_environmentPath, o_effectPath);
 
 	// Pop the table
 	lua_pop( luaState, 1 );
@@ -111,7 +111,7 @@ OnExit:
 	return result;
 }
 
-eae6320::cResult eae6320::Assets::cEnvironmentLoader::LoadTableValues(lua_State& io_luaState, std::string& o_environmentPath)
+eae6320::cResult eae6320::Assets::cEnvironmentLoader::LoadTableValues(lua_State& io_luaState, std::string& o_environmentPath, std::string& o_effectPath)
 {
 	auto result = eae6320::Results::Success;
 
@@ -128,6 +128,22 @@ eae6320::cResult eae6320::Assets::cEnvironmentLoader::LoadTableValues(lua_State&
 	else
 	{
 		o_environmentPath = "Textures/default_environment.dds";
+		lua_pop( &io_luaState, 1 );
+	}
+
+	key = "path_effect";
+	lua_pushstring( &io_luaState, key );
+	lua_gettable( &io_luaState, -2 );
+
+	if ( lua_isstring( &io_luaState, -1 ) )
+	{
+		const auto value = lua_tostring( &io_luaState, -1 );
+		o_effectPath = static_cast<std::string>(value);
+		lua_pop( &io_luaState, 1 );
+	}
+	else
+	{
+		o_effectPath = "Effects/environment.effect";
 		lua_pop( &io_luaState, 1 );
 	}
 

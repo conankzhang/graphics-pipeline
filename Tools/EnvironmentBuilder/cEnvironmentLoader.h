@@ -25,7 +25,7 @@ namespace eae6320
 			// Inherited Implementation
 			//=========================
 		public:
-			static cResult LoadAsset( const char* const i_path, std::string& o_environmentPath);
+			static cResult LoadAsset( const char* const i_path, std::string& o_environmentPath, std::string& o_effectPath);
 
 		private:
 
@@ -35,7 +35,7 @@ namespace eae6320
 
 			// Implementation
 			//===============
-			static cResult LoadTableValues(lua_State& io_luaState, std::string& o_environmentPath);
+			static cResult LoadTableValues(lua_State& io_luaState, std::string& o_environmentPath, std::string& o_effectPath);
 
 		};
 	}

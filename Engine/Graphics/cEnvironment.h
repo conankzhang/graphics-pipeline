@@ -18,6 +18,7 @@
 #include <Engine/Assets/cManager.h>
 #include <Engine/Results/Results.h>
 #include <Engine/Graphics/cTexture.h>
+#include <Engine/Graphics/cEffect.h>
 
 #ifdef EAE6320_PLATFORM_GL
 	#include "OpenGL/Includes.h"
@@ -57,7 +58,7 @@ namespace eae6320
 			//--------------------------
 			static cResult Load(const std::string& i_environmentPath, cEnvironment*& o_Environment);
 
-			void BindTexture();
+			void Bind();
 
 			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cEnvironment);
 			EAE6320_ASSETS_DECLAREREFERENCECOUNTINGFUNCTIONS();
@@ -71,6 +72,7 @@ namespace eae6320
 
 		public:
 			cTexture::Handle m_environment;
+			cEffect::Handle m_effect;
 
 			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
 
@@ -81,7 +83,7 @@ namespace eae6320
 
 			// Initialization / Clean Up
 			//--------------------------
-			cResult InitializeEnvironmentData(const char i_environmentPath[]);
+			cResult InitializeEnvironmentData(const char i_environmentPath[], const char i_effectPath[]);
 			cResult CleanUp();
 
 			cEnvironment();

@@ -33,7 +33,13 @@ eae6320::cResult eae6320::Graphics::cEnvironment::Load(const std::string& i_envi
 	const auto environmentPathSize = *reinterpret_cast<uint16_t*>( currentOffset );
 	currentOffset += sizeof( environmentPathSize );
 
+	const auto effectPathSize = *reinterpret_cast<uint16_t*>( currentOffset );
+	currentOffset += sizeof( effectPathSize );
+
 	char* environmentPath = reinterpret_cast<char*>( currentOffset );
+	currentOffset += environmentPathSize * sizeof( char );
+
+	char* effectPath = reinterpret_cast<char*>( currentOffset );
 
 	// Allocate a new material
 	{
@@ -45,7 +51,7 @@ eae6320::cResult eae6320::Graphics::cEnvironment::Load(const std::string& i_envi
 		}
 	}
 
-	if ( !( result = newEnvironment->InitializeEnvironmentData( environmentPath) ) )
+	if ( !( result = newEnvironment->InitializeEnvironmentData( environmentPath, effectPath) ) )
 	{
 		EAE6320_ASSERTF( false, "Initialization of new environment failed" );
 		goto OnExit;
@@ -71,11 +77,17 @@ OnExit:
 	return result;
 }
 
-eae6320::cResult eae6320::Graphics::cEnvironment::InitializeEnvironmentData(const char i_environmentPath[])
+eae6320::cResult eae6320::Graphics::cEnvironment::InitializeEnvironmentData(const char i_environmentPath[], const char i_effectPath[])
 {
 	auto result = Results::Success;
 
 	if ( !( result = eae6320::Graphics::cTexture::s_manager.Load( i_environmentPath, m_environment) ) )
+	{
+		EAE6320_ASSERT( false );
+		goto OnExit;
+	}
+
+	if ( !( result = eae6320::Graphics::cEffect::s_manager.Load( i_effectPath, m_effect) ) )
 	{
 		EAE6320_ASSERT( false );
 		goto OnExit;
@@ -103,17 +115,38 @@ eae6320::cResult eae6320::Graphics::cEnvironment::CleanUp()
 		}
 	}
 
+	if ( m_effect )
+	{
+		const auto localResult = cEffect::s_manager.Release( m_effect );
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+	}
+
 	return result;
 }
 
-void eae6320::Graphics::cEnvironment::BindTexture()
+void eae6320::Graphics::cEnvironment::Bind()
 {
-	// Environment
+	// Texture
 	{
 		EAE6320_ASSERT( m_environment );
 		auto* const environment = cTexture::s_manager.Get( m_environment );
 		EAE6320_ASSERT(environment);
 		environment->Bind(3);
+	}
+
+	// Effect
+	{
+		EAE6320_ASSERT( m_effect );
+		auto* const effect = cEffect::s_manager.Get( m_effect );
+		EAE6320_ASSERT(effect);
+		effect->RenderFrame();
 	}
 }
 

@@ -22,11 +22,13 @@ eae6320::cResult eae6320::Assets::cEnvironmentBuilder::Build(const std::vector<s
 	std::string errorMessage;
 
 	std::string environmentPath;
+	std::string effectPath;
 	size_t environmentPathSize = 0;
+	size_t effectPathSize = 0;
 
 	std::ofstream outFile ( m_path_target, std::ofstream::binary);
 	{
-		if ( !( result = cEnvironmentLoader::LoadAsset( m_path_source, environmentPath)) )
+		if ( !( result = cEnvironmentLoader::LoadAsset( m_path_source, environmentPath, effectPath)) )
 		{
 			EAE6320_ASSERTF( false, "Loading material failed" );
 			goto OnExit;
@@ -34,9 +36,11 @@ eae6320::cResult eae6320::Assets::cEnvironmentBuilder::Build(const std::vector<s
 	}
 
 	environmentPath.insert(0, "data/");
+	effectPath.insert(0, "data/");
 
 	// + 1 for null terminator count
 	environmentPathSize = environmentPath.size() + 1;
+	effectPathSize= effectPath.size() + 1;
 
 	// write to outfile
 	if (!outFile.is_open())
@@ -45,7 +49,10 @@ eae6320::cResult eae6320::Assets::cEnvironmentBuilder::Build(const std::vector<s
 	}
 
 	outFile.write ( (char *)&environmentPathSize, sizeof( uint16_t ) );
+	outFile.write ( (char *)&effectPathSize, sizeof( uint16_t ) );
 	outFile.write ( environmentPath.c_str(), environmentPath.size() );
+	outFile.put('\0');
+	outFile.write ( effectPath.c_str(), effectPath.size() );
 	outFile.put('\0');
 
 OnExit:

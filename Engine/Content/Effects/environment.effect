@@ -1,0 +1,8 @@
+return
+{
+	path_vertexShader = "Shaders/Vertex/environment.shader",
+	path_fragmentShader = "Shaders/Fragment/environment.shader",
+	AlphaTransparency = false,
+	DepthBuffering = true,
+	DrawBothTriangleSides = false,
+}
