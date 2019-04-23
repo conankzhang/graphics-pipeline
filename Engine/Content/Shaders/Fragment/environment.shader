@@ -46,7 +46,11 @@ DeclareSamplerState(g_diffuse_samplerState, 0);
 //============
 
 void main(
-	in const float3 i_position : OPOSITION,
+	in const float2 i_textureCoordinates : OTEXCOORD,
+	in const float3 i_normal_world : ONORMAL,
+	in const float3 i_tangent_world : OTANGENT,
+	in const float3 i_bitangent_world : OBITANGENT,
+	in const float3 i_position_world : OPOSITION,
 	// Output
 	//=======
 
@@ -56,6 +60,6 @@ void main(
 
 	)
 {
-	float4 environmentColor = SampleTextureCube(g_environmentTexture, g_diffuse_samplerState, i_position);
+	float4 environmentColor = SampleTextureCube(g_environmentTexture, g_diffuse_samplerState, i_position_world);
 	o_color = (environmentColor);
 }
