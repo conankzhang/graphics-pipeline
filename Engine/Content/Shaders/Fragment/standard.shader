@@ -54,6 +54,7 @@ cbuffer g_constantBuffer_perDrawCall : register( b2 )
 DeclareTexture2d(g_diffuseTexture, 0);
 DeclareTexture2d(g_normalTexture, 1);
 DeclareTexture2d(g_roughTexture, 2);
+DeclareTextureCube(g_environmentTexture, 3);
 DeclareSamplerState(g_diffuse_samplerState, 0);
 
 // Entry Point
@@ -136,6 +137,8 @@ void main(
 
 	// Final Specular
 	float4 specular = directionalSpecular + positionSpecular;
+
+	float4 environmentColor = SampleTextureCube(g_environmentTexture, g_diffuse_samplerState, g_lightDirection);
 
 	// Combine diffuse and specular
 	o_color = diffuse + specular;

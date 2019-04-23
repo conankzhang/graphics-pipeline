@@ -169,6 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cConstantBuffer.cpp" />
+    <ClCompile Include="cEnvironment.cpp" />
     <ClCompile Include="cMaterial.cpp" />
     <ClCompile Include="cMesh.cpp" />
     <ClCompile Include="cRenderState.cpp" />
@@ -192,6 +193,7 @@
   <ItemGroup>
     <ClInclude Include="cConstantBuffer.h" />
     <ClInclude Include="cEffect.h" />
+    <ClInclude Include="cEnvironment.h" />
     <ClInclude Include="cMaterial.h" />
     <ClInclude Include="cMesh.h" />
     <ClInclude Include="Configuration.h" />

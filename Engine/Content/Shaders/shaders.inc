@@ -19,9 +19,11 @@
 
 	#define DeclareConstantBuffer( i_name, i_id ) cbuffer i_name : register( b##i_id )
 	#define DeclareTexture2d( i_name, i_id ) Texture2D i_name : register( t##i_id )
+	#define DeclareTextureCube( i_name, i_id ) TextureCube i_name : register( t##i_id )
 	#define DeclareSamplerState( i_name, i_id ) SamplerState i_name : register( s##i_id )
 
 	#define SampleTexture2d( i_texture, i_samplerState, i_uv ) i_texture.Sample( i_samplerState, i_uv )
+	#define SampleTextureCube( i_texture, i_samplerState, i_xyz ) i_texture.Sample( i_samplerState, i_xyz )
 
 #elif defined( EAE6320_PLATFORM_GL )
 
