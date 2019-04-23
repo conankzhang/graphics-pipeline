@@ -1,0 +1,4 @@
+return
+{
+	path_environment = "Textures/default_environment.dds",
+}

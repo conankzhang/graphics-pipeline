@@ -394,6 +394,36 @@ NewAssetTypeInfo( "textures",
 	end,
   }
 )
+
+-- Environment Asset Type
+--------------------
+NewAssetTypeInfo( "environments",
+  {
+	RegisterReferencedAssets = function( i_sourceRelativePath )
+	  local sourceAbsolutePath = FindSourceContentAbsolutePathFromRelativePath( i_sourceRelativePath )
+	  if DoesFileExist( sourceAbsolutePath ) then
+		local environment = dofile( sourceAbsolutePath )
+		RegisterAssetToBeBuilt( environment.path_environment, "textures", { "color" } )
+		if( environment.path_environment == nil) then
+		  default_environment = "Textures/default_environment.dds"
+		  RegisterAssetToBeBuilt( default_environment, "textures", { "color" } )
+		else
+		  RegisterAssetToBeBuilt( environment.path_environment, "textures", { "color" } )
+		end
+	  end
+	end,
+	ConvertSourceRelativePathToBuiltRelativePath = function( i_sourceRelativePath )
+		-- Change the source file extension to the binary version:want
+		local relativeDirectory, file = i_sourceRelativePath:match( "(.-)([^/\\]+)$" )
+		local fileName, extensionWithPeriod = file:match( "([^%.]+)(.*)" )
+		return relativeDirectory .. fileName .. extensionWithPeriod
+	end,
+	GetBuilderRelativePath = function()
+		return "EnvironmentBuilder.exe"
+	end,
+  }
+)
+
 -- Local Function Definitions
 --===========================
 

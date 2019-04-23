@@ -127,7 +127,7 @@ eae6320::cResult eae6320::Assets::cEnvironmentLoader::LoadTableValues(lua_State&
 	}
 	else
 	{
-		o_environmentPath = "Environments/default_environment.dds";
+		o_environmentPath = "Textures/default_environment.dds";
 		lua_pop( &io_luaState, 1 );
 	}
 

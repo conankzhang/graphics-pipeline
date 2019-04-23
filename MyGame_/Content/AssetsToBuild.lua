@@ -21,8 +21,14 @@ return
 	{
 		{ path = "Materials/standard.material" },
 		{ path = "Materials/unlit.material" },
+		{ path = "Materials/red.material" },
 		{ path = "Materials/stones.material" },
 		{ path = "Materials/brick.material" },
 		{ path = "Materials/chip.material" },
+	},
+
+	environments =
+	{
+		{ path = "Environments/day.environment" },
 	},
 }
