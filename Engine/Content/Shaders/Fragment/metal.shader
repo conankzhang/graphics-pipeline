@@ -103,8 +103,11 @@ void main(
 	float attenuation = 1 / max(length(g_pointLight_position - i_position_world), 1);
 	float4 pLoD =  pLi * saturate(dot(pL, tangentNormal)) * attenuation;
 
+	float3 dReflectedDirection = reflect(i_position_world - g_camera_position, tangentNormal);
+	float4 environmentColor = SampleTextureCube(g_environmentTexture, g_diffuse_samplerState, dReflectedDirection) * 0.2;
+
 	// Final Diffuse
-	float4 diffuse = dFLV * (dLoD + pLoD + g_ambient_color);
+	float4 diffuse = (dFLV + environmentColor) * (dLoD + pLoD + g_ambient_color);
 
 	float roughness = SampleTexture2d( g_roughTexture, g_diffuse_samplerState, i_textureCoordinates).r;
 	float gloss = pow(2, roughness * 8);
