@@ -5,6 +5,7 @@
 
 #include "cGameObject.h"
 #include "cSpriteObject.h"
+#include "cEnvironmentObject.h"
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/UserInput/UserInput.h>
@@ -279,6 +280,8 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	lightDirection.y = 1.0f;
 	lightDirection.z = -1.0f;
 
+	//m_environment = new cEnvironmentObject("data/Environments/day.environment");
+
 	m_player = new cGameObject(Math::sVector(0.0f, 0.0f, 1.0f), Math::cQuaternion(), "data/Meshes/smallSphere.mesh", "data/Materials/unlit.material");
 	m_gameObjects.push_back(m_player);
 
@@ -325,6 +328,23 @@ eae6320::cResult eae6320::cMyGame::CleanUp()
 	m_gameObjects.clear();
 
 	DeleteGameObject(m_camera);
+	if (m_environment)
+	{
+		const auto localResult = m_environment->CleanUp();
+
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+
+		delete m_environment;
+		m_environment = nullptr;
+	}
+
 
 	//if (m_sprite)
 	//{
