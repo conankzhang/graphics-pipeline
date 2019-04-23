@@ -104,11 +104,11 @@ void main(
 	float4 pLoD =  pLi * saturate(dot(pL, tangentNormal)) * attenuation;
 
 	// Calculate reflectance
-	float3 dReflectedDirection = normalize(reflect(i_position_world - g_camera_position, tangentNormal));
+	float3 dReflectedDirection = normalize(reflect(tangentNormal, i_position_world - g_camera_position));
 	float4 environmentColor = SampleTextureCube(g_environmentTexture, g_diffuse_samplerState, dReflectedDirection);
 
 	float4 FLeft = (1 - g_fresnel);
-	float4 dFRightE = pow((1 - dot(dReflectedDirection, tangentNormal)), 5);
+	float4 dFRightE = pow((1 - dot(normalize(g_camera_position - i_position_world), tangentNormal)), 5);
 
 	environmentColor *= g_fresnel + (FLeft * dFRightE);
 

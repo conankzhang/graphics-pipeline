@@ -3,7 +3,7 @@ return
 	path_effect = "Effects/metal.effect",
     color = { 1.0, 1.0, 1.0, 1.0 },
     gloss = 200,
-    fresnel = 0.3,
+    fresnel = 0.2,
     reflectivity = { 1.0, 0.86, 0.57, 1.0},
     path_texture = "Textures/black.png",
     path_normal = "Textures/chip_nrm.png",
