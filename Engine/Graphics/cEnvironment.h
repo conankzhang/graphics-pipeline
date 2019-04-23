@@ -70,7 +70,6 @@ namespace eae6320
 			// and the best way to provide it.
 
 		public:
-
 			cTexture::Handle m_environment;
 
 			EAE6320_ASSETS_DECLAREREFERENCECOUNT();

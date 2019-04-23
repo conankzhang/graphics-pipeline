@@ -10,6 +10,7 @@
 #include "cShader.h"
 #include "cEffect.h"
 #include "cSprite.h"
+#include "cEnvironment.h"
 #include "sColor.h"
 #include "sContext.h"
 #include "VertexFormats.h"
@@ -53,6 +54,7 @@ namespace
 		uint_fast32_t currentBoundMaterialId = 65537;
 		uint_fast32_t currentBoundEffectId = 65537;
 		eae6320::Graphics::sColor clearColor;
+		uint_fast32_t environmentId = 65537;
 		uint16_t renderCount;
 	};
 
@@ -145,6 +147,8 @@ void eae6320::Graphics::RenderFrame()
 	size_t t = sizeof(*s_dataBeingRenderedByRenderThread);
 	sColor clearColor = s_dataBeingRenderedByRenderThread->clearColor;
 	s_View.ClearColor(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha);
+
+	//cEnvironment::s_manager.UnsafeGet(s_dataBeingRenderedByRenderThread->environmentId)->BindTexture();
 
 	bool renderSpritesOnce = false;
 	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->renderCount; ++i)
@@ -476,6 +480,11 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 void eae6320::Graphics::SubmitBackgroundColor(const sColor& i_color)
 {
 	s_dataBeingSubmittedByApplicationThread->clearColor = i_color;
+}
+
+void eae6320::Graphics::SubmitEnvironment(uint_fast32_t i_environment)
+{
+	s_dataBeingSubmittedByApplicationThread->environmentId = i_environment;
 }
 
 void eae6320::Graphics::SubmitLighting(const sColor& i_color, const sColor& i_directionalLightColor, const Math::sVector& i_lightDirection, const Math::sVector& i_pointLightPosition, const sColor& i_pointLightColor)

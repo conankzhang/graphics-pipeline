@@ -30,5 +30,6 @@ return
 	environments =
 	{
 		{ path = "Environments/day.environment" },
+		{ path = "Environments/night.environment" },
 	},
 }

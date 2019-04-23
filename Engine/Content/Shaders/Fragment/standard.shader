@@ -138,7 +138,7 @@ void main(
 	// Final Specular
 	float4 specular = directionalSpecular + positionSpecular;
 
-	float4 environmentColor = SampleTextureCube(g_environmentTexture, g_diffuse_samplerState, g_lightDirection);
+	//float4 environmentColor = SampleTextureCube(g_environmentTexture, g_diffuse_samplerState, i_position_world);
 
 	// Combine diffuse and specular
 	o_color = diffuse + specular;
