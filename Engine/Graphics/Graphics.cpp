@@ -157,7 +157,7 @@ void eae6320::Graphics::RenderFrame()
 
 		unsigned int effectId;
 		unsigned int materialId;
-		if (drawCommand.nCommand == RenderCommand::IndependentDraw)
+		if (drawCommand.nCommand == RenderCommand::IndependentDraw || drawCommand.nCommand == RenderCommand::EnvironmentDraw)
 		{
 			effectId = drawCommand.nPriority1;
 			materialId = drawCommand.nPriority2;
@@ -507,7 +507,7 @@ void eae6320::Graphics::SubmitCamera(eae6320::Math::cMatrix_transformation i_tra
 	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_vector_cameraPosition = i_vector_cameraPosition;;
 }
 
-void eae6320::Graphics::SubmitDrawCommand(unsigned int i_distance, const cMesh::Handle& i_mesh, const cMaterial::Handle& i_material, Math::cMatrix_transformation& i_transform_localToWorld, const Math::cMatrix_transformation& i_transform_localToProjected, float i_gloss)
+void eae6320::Graphics::SubmitDrawCommand(unsigned int i_distance, const cMesh::Handle& i_mesh, const cMaterial::Handle& i_material, Math::cMatrix_transformation& i_transform_localToWorld, const Math::cMatrix_transformation& i_transform_localToProjected, float i_gloss, bool firstSubmit)
 {
 	DrawCommand drawCommand;
 
@@ -527,6 +527,11 @@ void eae6320::Graphics::SubmitDrawCommand(unsigned int i_distance, const cMesh::
 		drawCommand.nPriority1 = cMaterial::s_manager.Get(i_material)->GetEffectId();
 		drawCommand.nPriority2 = i_material.GetIndex();
 		drawCommand.nPriority3 = i_distance;
+	}
+
+	if (firstSubmit)
+	{
+		drawCommand.nCommand = RenderCommand::EnvironmentDraw;
 	}
 
 	drawCommand.nMeshId = i_mesh.GetIndex();

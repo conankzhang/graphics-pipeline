@@ -32,10 +32,12 @@ void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_s
 	//sprite_transform_localToWorld = m_spritePad->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
 	//Graphics::SubmitSpriteCommand(m_spritePad->GetScale(), m_spritePad->GetMaterial(), sprite_transform_localToWorld);
 
+	bool firstSubmit = true;
 	for (auto GameObject : m_gameObjects)
 	{
 		Math::cMatrix_transformation transform_localToWorld = GameObject->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
-		Graphics::SubmitDrawCommand(m_camera->CalculateNormalizedCameraDistance(GameObject->GetPosition()), GameObject->GetMesh(), GameObject->GetMaterial(), transform_localToWorld, transform_worldToProjected * transform_localToWorld, gloss);
+		Graphics::SubmitDrawCommand(m_camera->CalculateNormalizedCameraDistance(GameObject->GetPosition()), GameObject->GetMesh(), GameObject->GetMaterial(), transform_localToWorld, transform_worldToProjected * transform_localToWorld, gloss, firstSubmit);
+		firstSubmit = false;
 	}
 }
 

@@ -57,8 +57,11 @@ void main(
 	// but must match the C call to CreateInputLayout()
 
 	// These values come from one of the VertexFormats::sMesh that the vertex buffer was filled with in C code
-	in const float2 i_vertexPosition_local : POSITION,
+	in const float3 i_vertexPosition_local : POSITION,
 	in const float2 i_textureCoordinates : TEXCOORD,
+	in const float3 i_normal: NORMAL,
+	in const float3 i_tangent : TANGENT,
+	in const float3 i_bitangent : BITANGENT,
 
 	// Output
 	//=======
@@ -66,24 +69,27 @@ void main(
 	// An SV_POSITION value must always be output from every vertex shader
 	// so that the GPU can figure out which fragments need to be shaded
 	out float2 o_textureCoordinates : OTEXCOORD,
+	out float3 o_normal_world : ONORMAL,
+	out float3 o_tangent_world : OTANGENT,
+	out float3 o_bitangent_world : OBITANGENT,
+	out float3 o_position : OPOSITION,
 	out float4 o_vertexPosition_projected : SV_POSITION
 	)
 {
-	{
-		// Project the vertex from local space into projected space
-		float4 vertexPosition_local = float4( i_vertexPosition_local, 0.0, 1.0 );
+	// Project the vertex from local space into projected space
+	float4 vertexPosition_local = float4( i_vertexPosition_local, 1.0 );
+	o_vertexPosition_projected = mul( g_transform_localToProjected, vertexPosition_local );
 
-		float4x4 scalingMatrix = {
-			g_scale_x, 0, 0, 0,
-			0, g_scale_y, 0, 0,
-			0, 0, 0, 0,
-			0, 0, 0, 1
-		};
+	// Project the normal from local space into world space
+	float4 normal_local = float4( i_normal, 0.0 );
+	float4 tangent_local = float4( i_tangent, 0.0 );
+	float4 bitangent_local = float4( i_bitangent, 0.0 );
 
-		vertexPosition_local = mul(scalingMatrix , vertexPosition_local);
+	o_normal_world = mul( g_transform_localToWorld, normal_local).xyz;
+	o_tangent_world = mul( g_transform_localToWorld, tangent_local).xyz;
+	o_bitangent_world = mul( g_transform_localToWorld, bitangent_local).xyz;
 
-		o_vertexPosition_projected = mul( g_transform_localToWorld, vertexPosition_local );
+	o_position = mul( g_transform_localToWorld, vertexPosition_local ).xyz;
 
-		o_textureCoordinates = i_textureCoordinates;
-	}
+	o_textureCoordinates = i_textureCoordinates;
 }

@@ -39,13 +39,14 @@ cbuffer g_constantBuffer_perDrawCall : register( b2 )
 };
 
 DeclareTexture2d(g_diffuseTexture, 0);
+DeclareTextureCube(g_environmentTexture, 3);
 DeclareSamplerState(g_diffuse_samplerState, 0);
 
 // Entry Point
 //============
 
 void main(
-	in const float2 i_textureCoordinates : OTEXCOORD,
+	in const float3 i_position : OPOSITION,
 	// Output
 	//=======
 
@@ -55,6 +56,6 @@ void main(
 
 	)
 {
-	float4 textureColor = SampleTexture2d(g_diffuseTexture, g_diffuse_samplerState, i_textureCoordinates);
-	o_color = (g_color * textureColor);
+	float4 environmentColor = SampleTextureCube(g_environmentTexture, g_diffuse_samplerState, i_position);
+	o_color = (environmentColor);
 }
