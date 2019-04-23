@@ -70,6 +70,11 @@ void eae6320::cGameObject::Update(const float i_elapsedSecondCount_sinceLastUpda
 	m_rigidBody.Update(i_elapsedSecondCount_sinceLastUpdate);
 }
 
+void eae6320::cGameObject::SetPosition(Math::sVector i_position)
+{
+	m_rigidBody.position = i_position;
+}
+
 void eae6320::cGameObject::SetVelocity(eae6320::Math::sVector i_velocity)
 {
 	m_rigidBody.velocity = i_velocity;

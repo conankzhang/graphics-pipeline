@@ -25,6 +25,7 @@ namespace eae6320
 {
 	class cGameObject;
 	class cSpriteObject;
+	class cEnvironmentObject;
 }
 
 // Class Declaration
@@ -103,11 +104,13 @@ namespace eae6320
 
 		Math::sVector lightDirection;
 
+		cGameObject* m_environmentObject = nullptr;
 		cGameObject* m_player = nullptr;
 		cCamera* m_camera = nullptr;
 
 		cSpriteObject* m_sprite = nullptr;
 		cSpriteObject* m_spritePad = nullptr;
+		cEnvironmentObject* m_environment = nullptr;
 
 		std::vector<cGameObject*> m_gameObjects;
 

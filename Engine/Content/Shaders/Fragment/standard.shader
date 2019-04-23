@@ -54,6 +54,7 @@ cbuffer g_constantBuffer_perDrawCall : register( b2 )
 DeclareTexture2d(g_diffuseTexture, 0);
 DeclareTexture2d(g_normalTexture, 1);
 DeclareTexture2d(g_roughTexture, 2);
+DeclareTextureCube(g_environmentTexture, 3);
 DeclareSamplerState(g_diffuse_samplerState, 0);
 
 // Entry Point
@@ -102,11 +103,20 @@ void main(
 	float attenuation = 1 / max(length(g_pointLight_position - i_position_world), 1);
 	float4 pLoD =  pLi * saturate(dot(pL, tangentNormal)) * attenuation;
 
+	// Calculate reflectance
+	float3 dReflectedDirection = normalize(reflect(tangentNormal, i_position_world - g_camera_position));
+	float4 environmentColor = SampleTextureCube(g_environmentTexture, g_diffuse_samplerState, dReflectedDirection);
+
+	float4 FLeft = (1 - g_fresnel);
+	float4 dFRightE = pow((1 - dot(normalize(g_camera_position - i_position_world), tangentNormal)), 5);
+
+	environmentColor *= g_fresnel + (FLeft * dFRightE);
+
 	// Final Diffuse
-	float4 diffuse = dFLV * (dLoD + pLoD + g_ambient_color);
+	float4 diffuse = (dFLV + environmentColor) * (dLoD + pLoD + g_ambient_color);
 
 	float roughness = SampleTexture2d( g_roughTexture, g_diffuse_samplerState, i_textureCoordinates).r;
-	float gloss = pow(2, (1 - roughness) * 8);
+	float gloss = pow(2, roughness * 8);
 
 	// Directional Specular
 	float4 DhLeft = ((gloss) + 2 )/ 8;
@@ -117,9 +127,8 @@ void main(
 	float4 dDhRight = pow(saturate(dot(tangentNormal, dH)), gloss);
 	float4 dDh = DhLeft * dDhRight;
 
-	float4 FLeft = g_fresnel + (1 - g_fresnel);
 	float4 dFRight = pow((1 - dot(g_lightDirection, dH)), 5);
-	float4 dF = FLeft * dFRight;
+	float4 dF = g_fresnel + (FLeft * dFRight);
 
 	float4 directionalSpecular = dDh * dF * dot(tangentNormal, g_lightDirection);
 
@@ -130,7 +139,7 @@ void main(
 	float4 pDh = DhLeft * pDhRight;
 
 	float4 pFRight = pow((1 - dot(pL, pH)), 5);
-	float4 pF = FLeft * pFRight;
+	float4 pF = g_fresnel + (FLeft * pFRight);
 
 	float4 positionSpecular = pDh * pF * dot(tangentNormal, pL);
 

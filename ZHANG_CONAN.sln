@@ -133,6 +133,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXTex", "External\Dire
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TextureBuilder", "Tools\TextureBuilder\TextureBuilder.vcxproj", "{993B1636-47B0-4B72-BF1D-22F149B5A479}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EnvironmentBuilder", "Tools\EnvironmentBuilder\EnvironmentBuilder.vcxproj", "{6BC6385C-FE3A-4834-8041-EA876867376E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -453,6 +455,14 @@ Global
 		{993B1636-47B0-4B72-BF1D-22F149B5A479}.Release|x64.Build.0 = Release|x64
 		{993B1636-47B0-4B72-BF1D-22F149B5A479}.Release|x86.ActiveCfg = Release|Win32
 		{993B1636-47B0-4B72-BF1D-22F149B5A479}.Release|x86.Build.0 = Release|Win32
+		{6BC6385C-FE3A-4834-8041-EA876867376E}.Debug|x64.ActiveCfg = Debug|x64
+		{6BC6385C-FE3A-4834-8041-EA876867376E}.Debug|x64.Build.0 = Debug|x64
+		{6BC6385C-FE3A-4834-8041-EA876867376E}.Debug|x86.ActiveCfg = Debug|Win32
+		{6BC6385C-FE3A-4834-8041-EA876867376E}.Debug|x86.Build.0 = Debug|Win32
+		{6BC6385C-FE3A-4834-8041-EA876867376E}.Release|x64.ActiveCfg = Release|x64
+		{6BC6385C-FE3A-4834-8041-EA876867376E}.Release|x64.Build.0 = Release|x64
+		{6BC6385C-FE3A-4834-8041-EA876867376E}.Release|x86.ActiveCfg = Release|Win32
+		{6BC6385C-FE3A-4834-8041-EA876867376E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -498,6 +508,7 @@ Global
 		{3EBD55FA-C142-4AC8-B9AC-6088CDF77F43} = {31B05C03-4BB2-4A0D-B621-B41DA6B0F57E}
 		{0449CAF6-40FB-4A48-A7D1-03170F1A577F} = {EE37D457-6F3F-4596-B682-FC8CB683E326}
 		{993B1636-47B0-4B72-BF1D-22F149B5A479} = {31B05C03-4BB2-4A0D-B621-B41DA6B0F57E}
+		{6BC6385C-FE3A-4834-8041-EA876867376E} = {31B05C03-4BB2-4A0D-B621-B41DA6B0F57E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A89F366F-0B7F-464F-90A8-A4828B273298}

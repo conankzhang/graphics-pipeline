@@ -15,14 +15,23 @@ return
 		{ path = "Meshes/sphere.mesh" },
 		{ path = "Meshes/smallSphere.mesh" },
 		{ path = "Meshes/quad.mesh" },
+		{ path = "Meshes/environment.mesh" },
 	},
 
 	materials =
 	{
 		{ path = "Materials/standard.material" },
 		{ path = "Materials/unlit.material" },
-		{ path = "Materials/stones.material" },
+		{ path = "Materials/red.material" },
 		{ path = "Materials/brick.material" },
 		{ path = "Materials/chip.material" },
+		{ path = "Materials/environment.material" },
+		{ path = "Materials/metal.material" },
+	},
+
+	environments =
+	{
+		{ path = "Environments/day.environment" },
+		{ path = "Environments/night.environment" },
 	},
 }

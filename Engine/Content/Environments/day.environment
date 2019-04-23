@@ -1,0 +1,4 @@
+return
+{
+	path_environment = "Textures/day.dds",
+}

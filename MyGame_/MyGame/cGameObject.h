@@ -37,6 +37,7 @@ namespace eae6320
 
 		void Update(const float i_elapsedSecondCount_sinceLastUpdate);
 
+		void SetPosition(Math::sVector i_position);
 		void SetVelocity(Math::sVector i_velocity);
 		void SetAngularSpeed(float i_angularSpeed);
 

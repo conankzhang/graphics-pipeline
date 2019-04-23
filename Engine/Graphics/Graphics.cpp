@@ -10,6 +10,7 @@
 #include "cShader.h"
 #include "cEffect.h"
 #include "cSprite.h"
+#include "cEnvironment.h"
 #include "sColor.h"
 #include "sContext.h"
 #include "VertexFormats.h"
@@ -53,6 +54,7 @@ namespace
 		uint_fast32_t currentBoundMaterialId = 65537;
 		uint_fast32_t currentBoundEffectId = 65537;
 		eae6320::Graphics::sColor clearColor;
+		uint_fast32_t environmentId = 65537;
 		uint16_t renderCount;
 	};
 
@@ -146,6 +148,8 @@ void eae6320::Graphics::RenderFrame()
 	sColor clearColor = s_dataBeingRenderedByRenderThread->clearColor;
 	s_View.ClearColor(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha);
 
+	cEnvironment::s_manager.UnsafeGet(s_dataBeingRenderedByRenderThread->environmentId)->Bind();
+
 	bool renderSpritesOnce = false;
 	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->renderCount; ++i)
 	{
@@ -153,7 +157,7 @@ void eae6320::Graphics::RenderFrame()
 
 		unsigned int effectId;
 		unsigned int materialId;
-		if (drawCommand.nCommand == RenderCommand::IndependentDraw)
+		if (drawCommand.nCommand == RenderCommand::IndependentDraw || drawCommand.nCommand == RenderCommand::EnvironmentDraw)
 		{
 			effectId = drawCommand.nPriority1;
 			materialId = drawCommand.nPriority2;
@@ -478,6 +482,11 @@ void eae6320::Graphics::SubmitBackgroundColor(const sColor& i_color)
 	s_dataBeingSubmittedByApplicationThread->clearColor = i_color;
 }
 
+void eae6320::Graphics::SubmitEnvironment(uint_fast32_t i_environment)
+{
+	s_dataBeingSubmittedByApplicationThread->environmentId = i_environment;
+}
+
 void eae6320::Graphics::SubmitLighting(const sColor& i_color, const sColor& i_directionalLightColor, const Math::sVector& i_lightDirection, const Math::sVector& i_pointLightPosition, const sColor& i_pointLightColor)
 {
 	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_lightDirection = i_lightDirection;
@@ -498,7 +507,7 @@ void eae6320::Graphics::SubmitCamera(eae6320::Math::cMatrix_transformation i_tra
 	s_dataBeingSubmittedByApplicationThread->constantData_perFrame.g_vector_cameraPosition = i_vector_cameraPosition;;
 }
 
-void eae6320::Graphics::SubmitDrawCommand(unsigned int i_distance, const cMesh::Handle& i_mesh, const cMaterial::Handle& i_material, Math::cMatrix_transformation& i_transform_localToWorld, const Math::cMatrix_transformation& i_transform_localToProjected, float i_gloss)
+void eae6320::Graphics::SubmitDrawCommand(unsigned int i_distance, const cMesh::Handle& i_mesh, const cMaterial::Handle& i_material, Math::cMatrix_transformation& i_transform_localToWorld, const Math::cMatrix_transformation& i_transform_localToProjected, float i_gloss, bool firstSubmit)
 {
 	DrawCommand drawCommand;
 
@@ -518,6 +527,11 @@ void eae6320::Graphics::SubmitDrawCommand(unsigned int i_distance, const cMesh::
 		drawCommand.nPriority1 = cMaterial::s_manager.Get(i_material)->GetEffectId();
 		drawCommand.nPriority2 = i_material.GetIndex();
 		drawCommand.nPriority3 = i_distance;
+	}
+
+	if (firstSubmit)
+	{
+		drawCommand.nCommand = RenderCommand::EnvironmentDraw;
 	}
 
 	drawCommand.nMeshId = i_mesh.GetIndex();

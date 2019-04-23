@@ -5,6 +5,7 @@
 
 #include "cGameObject.h"
 #include "cSpriteObject.h"
+#include "cEnvironmentObject.h"
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/UserInput/UserInput.h>
@@ -18,6 +19,7 @@ void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_s
 {
 	Graphics::SubmitBackgroundColor(clearColor.GetLinearColor());
 	Graphics::SubmitLighting(ambientColor.GetLinearColor(), directionalLightColor.GetLinearColor(), lightDirection.GetNormalized(), m_player->GetPosition(), pointLightColor.GetLinearColor());
+	Graphics::SubmitEnvironment(m_environment->GetEnvironment().GetIndex());
 
 	Math::cMatrix_transformation transform_worldToCamera = m_camera->GetWorldToCameraTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
 	Math::cMatrix_transformation transform_cameraToProjected = m_camera->GetCameraToProjectedTransform();
@@ -30,10 +32,12 @@ void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_s
 	//sprite_transform_localToWorld = m_spritePad->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
 	//Graphics::SubmitSpriteCommand(m_spritePad->GetScale(), m_spritePad->GetMaterial(), sprite_transform_localToWorld);
 
+	bool firstSubmit = true;
 	for (auto GameObject : m_gameObjects)
 	{
 		Math::cMatrix_transformation transform_localToWorld = GameObject->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
-		Graphics::SubmitDrawCommand(m_camera->CalculateNormalizedCameraDistance(GameObject->GetPosition()), GameObject->GetMesh(), GameObject->GetMaterial(), transform_localToWorld, transform_worldToProjected * transform_localToWorld, gloss);
+		Graphics::SubmitDrawCommand(m_camera->CalculateNormalizedCameraDistance(GameObject->GetPosition()), GameObject->GetMesh(), GameObject->GetMaterial(), transform_localToWorld, transform_worldToProjected * transform_localToWorld, gloss, firstSubmit);
+		firstSubmit = false;
 	}
 }
 
@@ -221,7 +225,7 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 
 		if(gloss < 5.0f)
 		{
-			gloss = 0.0f;
+			gloss = 0.1f;
 		}
 	}
 }
@@ -279,6 +283,11 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	lightDirection.y = 1.0f;
 	lightDirection.z = -1.0f;
 
+	m_environment = new cEnvironmentObject("data/Environments/night.environment");
+
+	m_environmentObject = new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/environment.mesh", "data/Materials/environment.material");
+	m_gameObjects.push_back(m_environmentObject);
+
 	m_player = new cGameObject(Math::sVector(0.0f, 0.0f, 1.0f), Math::cQuaternion(), "data/Meshes/smallSphere.mesh", "data/Materials/unlit.material");
 	m_gameObjects.push_back(m_player);
 
@@ -287,17 +296,8 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	//m_spritePad = new cSpriteObject(Math::sVector(-0.7f, 0.7f, 0.0f), Math::sVector(0.3f, 0.3f, 1.0f), Math::cQuaternion(), "data/Materials/spritePad.material");
 
 	// Grid
-	m_gameObjects.push_back( new cGameObject(Math::sVector(-3.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/chip.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/stones.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(3.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/brick.material") );
-
-	m_gameObjects.push_back( new cGameObject(Math::sVector(-3.0f, 3.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/stones.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, 3.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/stones.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(3.0f, 3.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/stones.material") );
-
-	m_gameObjects.push_back( new cGameObject(Math::sVector(-3.0f, -3.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/stones.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, -3.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/stones.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(3.0f, -3.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/stones.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(-2.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/chip.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(2.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/metal.material") );
 
 	// Line
 	//m_gameObjects.push_back( new cGameObject(Math::sVector(-1.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/blue.material") );
@@ -325,6 +325,23 @@ eae6320::cResult eae6320::cMyGame::CleanUp()
 	m_gameObjects.clear();
 
 	DeleteGameObject(m_camera);
+	if (m_environment)
+	{
+		const auto localResult = m_environment->CleanUp();
+
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+
+		delete m_environment;
+		m_environment = nullptr;
+	}
+
 
 	//if (m_sprite)
 	//{
