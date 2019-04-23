@@ -110,7 +110,7 @@ void main(
 	float4 FLeft = (1 - g_fresnel);
 	float4 dFRightE = pow((1 - dot(dReflectedDirection, tangentNormal)), 5);
 
-	environmentColor *= g_fresnel + (FLeft * dFRightE);
+	environmentColor *= g_fresnel + (FLeft * dFRightE) * g_reflectivity;
 
 	// Final Diffuse
 	float4 diffuse = (dFLV + environmentColor) * (dLoD + pLoD + g_ambient_color);
@@ -145,6 +145,7 @@ void main(
 
 	// Final Specular
 	float4 specular = directionalSpecular + positionSpecular;
+	specular *= g_reflectivity;
 
 	// Combine diffuse and specular
 	o_color = diffuse + specular;
