@@ -104,6 +104,7 @@ namespace eae6320
 
 		Math::sVector lightDirection;
 
+		cGameObject* m_environmentObject = nullptr;
 		cGameObject* m_player = nullptr;
 		cCamera* m_camera = nullptr;
 

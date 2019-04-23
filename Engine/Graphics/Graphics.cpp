@@ -148,7 +148,7 @@ void eae6320::Graphics::RenderFrame()
 	sColor clearColor = s_dataBeingRenderedByRenderThread->clearColor;
 	s_View.ClearColor(clearColor.red, clearColor.green, clearColor.blue, clearColor.alpha);
 
-	//cEnvironment::s_manager.UnsafeGet(s_dataBeingRenderedByRenderThread->environmentId)->BindTexture();
+	cEnvironment::s_manager.UnsafeGet(s_dataBeingRenderedByRenderThread->environmentId)->Bind();
 
 	bool renderSpritesOnce = false;
 	for (uint16_t i = 0; i < s_dataBeingRenderedByRenderThread->renderCount; ++i)

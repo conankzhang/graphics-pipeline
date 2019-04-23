@@ -18,7 +18,6 @@
 #include <Engine/Assets/cManager.h>
 #include <Engine/Results/Results.h>
 #include <Engine/Graphics/cTexture.h>
-#include <Engine/Graphics/cEffect.h>
 
 #ifdef EAE6320_PLATFORM_GL
 	#include "OpenGL/Includes.h"
@@ -72,8 +71,6 @@ namespace eae6320
 
 		public:
 			cTexture::Handle m_environment;
-			cEffect::Handle m_effect;
-
 			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
 
 			// Implementation
@@ -83,7 +80,7 @@ namespace eae6320
 
 			// Initialization / Clean Up
 			//--------------------------
-			cResult InitializeEnvironmentData(const char i_environmentPath[], const char i_effectPath[]);
+			cResult InitializeEnvironmentData(const char i_environmentPath[]);
 			cResult CleanUp();
 
 			cEnvironment();

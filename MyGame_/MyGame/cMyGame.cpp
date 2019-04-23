@@ -18,8 +18,8 @@
 void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate)
 {
 	Graphics::SubmitBackgroundColor(clearColor.GetLinearColor());
-	//Graphics::SubmitEnvironment(m_environment->GetEnvironment().GetIndex());
 	Graphics::SubmitLighting(ambientColor.GetLinearColor(), directionalLightColor.GetLinearColor(), lightDirection.GetNormalized(), m_player->GetPosition(), pointLightColor.GetLinearColor());
+	Graphics::SubmitEnvironment(m_environment->GetEnvironment().GetIndex());
 
 	Math::cMatrix_transformation transform_worldToCamera = m_camera->GetWorldToCameraTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
 	Math::cMatrix_transformation transform_cameraToProjected = m_camera->GetCameraToProjectedTransform();
@@ -281,7 +281,10 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	lightDirection.y = 1.0f;
 	lightDirection.z = -1.0f;
 
-	//m_environment = new cEnvironmentObject("data/Environments/day.environment");
+	m_environment = new cEnvironmentObject("data/Environments/day.environment");
+
+	m_environmentObject = new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/environment.mesh", "data/Materials/environment.material");
+	m_gameObjects.push_back(m_environmentObject);
 
 	m_player = new cGameObject(Math::sVector(0.0f, 0.0f, 1.0f), Math::cQuaternion(), "data/Meshes/smallSphere.mesh", "data/Materials/unlit.material");
 	m_gameObjects.push_back(m_player);
