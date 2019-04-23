@@ -1,0 +1,9 @@
+return
+{
+	path_effect = "Effects/metal.effect",
+    color = { 1.0, 0.0, 0.0, 1.0 },
+    gloss = 200,
+    path_texture = "Textures/black.png",
+    path_normal = "Textures/chip_nrm.png",
+    path_rough = "Textures/chip_rgh.png",
+}
