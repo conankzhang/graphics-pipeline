@@ -55,6 +55,7 @@ DeclareTexture2d(g_diffuseTexture, 0);
 DeclareTexture2d(g_normalTexture, 1);
 DeclareTexture2d(g_roughTexture, 2);
 DeclareTextureCube(g_environmentTexture, 3);
+DeclareTexture2d(g_parallaxTexture, 4);
 DeclareSamplerState(g_diffuse_samplerState, 0);
 
 // Entry Point
@@ -86,11 +87,59 @@ void main(
 		tangent.z, bitangent.z, normal.z
 	);
 
-	float4 mapNormal = (SampleTexture2d( g_normalTexture, g_diffuse_samplerState, i_textureCoordinates) - 0.5) * 2.0;
+	// Calculate Parallax Texture
+	float3 eyeDirection = normalize(g_camera_position - i_position_world);
+	float3 viewDirection = -eyeDirection;
+
+	float3 viewDirectionTS = mul(viewDirection, rotation_textureToSomeOtherSpace);
+	float2 maxParallaxOffset = -viewDirectionTS.xy * 0.05 / viewDirectionTS.z;
+
+	int sampleCount = (int)lerp(64, 8, dot(eyeDirection, normal));
+	float zStep = 1.0f / (float)sampleCount;
+
+	float2 texStep = maxParallaxOffset * zStep;
+
+	float2 dx = ddx(i_textureCoordinates);
+	float2 dy = ddy(i_textureCoordinates);
+
+	int sampleIndex = 0;
+	float2 currentCoordinateOffset = 0;
+	float2 previousCoordinateOffset = 0;
+	float2 finalCoordinateOffset = 0;
+	float currentRayZ = 1.0f - zStep;
+	float previousRayZ = 1.0f;
+	float currentHeight = 0.0f;
+	float previousHeight = 0.0f;
+
+	while(sampleIndex < sampleCount + 1)
+	{
+		currentHeight = g_parallaxTexture.SampleGrad(g_diffuse_samplerState, i_textureCoordinates + currentCoordinateOffset, dx, dy).a;
+
+		if(currentHeight > currentRayZ)
+		{
+			float t = (previousHeight - previousRayZ) / (previousHeight - currentHeight + currentRayZ - previousRayZ);
+			finalCoordinateOffset = previousCoordinateOffset + t * texStep;
+			sampleIndex = sampleCount + 1;
+		}
+		else
+		{
+			++sampleIndex;
+			previousCoordinateOffset = currentCoordinateOffset;
+			previousRayZ = currentRayZ;
+			previousHeight = currentHeight;
+			currentCoordinateOffset += texStep;
+			currentRayZ -= zStep;
+		}
+	}
+
+	float2 parallaxCoordinates = i_textureCoordinates + finalCoordinateOffset;
+
+	// Get Normal
+	float4 mapNormal = (SampleTexture2d( g_normalTexture, g_diffuse_samplerState, parallaxCoordinates) - 0.5) * 2.0;
 	float3 tangentNormal = normalize(mul(rotation_textureToSomeOtherSpace, mapNormal.xyz));
 
 	// Material Color
-	float4 textureColor = SampleTexture2d(g_diffuseTexture, g_diffuse_samplerState, i_textureCoordinates);
+	float4 textureColor = SampleTexture2d(g_diffuseTexture, g_diffuse_samplerState, parallaxCoordinates);
 	float4 dFLV = (g_color * textureColor) / PI;
 
 	// Directional Diffuse
@@ -115,7 +164,7 @@ void main(
 	// Final Diffuse
 	float4 diffuse = (dFLV + environmentColor) * (dLoD + pLoD + g_ambient_color);
 
-	float roughness = SampleTexture2d( g_roughTexture, g_diffuse_samplerState, i_textureCoordinates).r;
+	float roughness = SampleTexture2d( g_roughTexture, g_diffuse_samplerState, parallaxCoordinates).r;
 	float gloss = pow(2, roughness * 8);
 
 	// Directional Specular
