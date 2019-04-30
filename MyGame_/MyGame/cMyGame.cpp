@@ -283,7 +283,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	lightDirection.y = 1.0f;
 	lightDirection.z = -1.0f;
 
-	m_environment = new cEnvironmentObject("data/Environments/night.environment");
+	m_environment = new cEnvironmentObject("data/Environments/day.environment");
 
 	m_environmentObject = new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/environment.mesh", "data/Materials/environment.material");
 	m_gameObjects.push_back(m_environmentObject);

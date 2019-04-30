@@ -15,7 +15,7 @@
 // Build
 //------
 
-eae6320::cResult eae6320::Assets::cMaterialLoader::LoadAsset(const char* const i_path, std::string& o_effectPath, std::string& o_texturePath, std::string& o_normalPath, std::string& o_roughPath, Graphics::sColor& o_color, Graphics::sColor& o_reflectivity, float& o_gloss, float& o_fresnel)
+eae6320::cResult eae6320::Assets::cMaterialLoader::LoadAsset(const char* const i_path, std::string& o_effectPath, std::string& o_texturePath, std::string& o_normalPath, std::string& o_roughPath, std::string& o_parallaxPath, Graphics::sColor& o_color, Graphics::sColor& o_reflectivity, float& o_gloss, float& o_fresnel)
 {
 	auto result = eae6320::Results::Success;
 
@@ -91,7 +91,7 @@ eae6320::cResult eae6320::Assets::cMaterialLoader::LoadAsset(const char* const i
 
 	// If this code is reached the asset file was loaded successfully,
 	// and its table is now at index -1
-	result = LoadTableValues(*luaState, o_effectPath, o_texturePath, o_normalPath, o_roughPath, o_color, o_reflectivity, o_gloss, o_fresnel);
+	result = LoadTableValues(*luaState, o_effectPath, o_texturePath, o_normalPath, o_roughPath, o_parallaxPath, o_color, o_reflectivity, o_gloss, o_fresnel);
 
 	// Pop the table
 	lua_pop( luaState, 1 );
@@ -112,7 +112,7 @@ OnExit:
 	return result;
 }
 
-eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io_luaState, std::string& o_effectPath, std::string& o_texturePath, std::string& o_normalPath, std::string& o_roughPath, Graphics::sColor& o_color, Graphics::sColor& o_reflectivity, float& o_gloss, float& o_fresnel)
+eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io_luaState, std::string& o_effectPath, std::string& o_texturePath, std::string& o_normalPath, std::string& o_roughPath, std::string& o_parallaxPath, Graphics::sColor& o_color, Graphics::sColor& o_reflectivity, float& o_gloss, float& o_fresnel)
 {
 	auto result = eae6320::Results::Success;
 
@@ -301,6 +301,22 @@ eae6320::cResult eae6320::Assets::cMaterialLoader::LoadTableValues(lua_State& io
 	else
 	{
 		o_roughPath = "Textures/default_rough.tga";
+		lua_pop( &io_luaState, 1 );
+	}
+
+	key = "path_parallax";
+	lua_pushstring( &io_luaState, key );
+	lua_gettable( &io_luaState, -2 );
+
+	if ( lua_isstring( &io_luaState, -1 ) )
+	{
+		const auto value = lua_tostring( &io_luaState, -1 );
+		o_parallaxPath = static_cast<std::string>(value);
+		lua_pop( &io_luaState, 1 );
+	}
+	else
+	{
+		o_parallaxPath = "Textures/default_parallax.tga";
 		lua_pop( &io_luaState, 1 );
 	}
 

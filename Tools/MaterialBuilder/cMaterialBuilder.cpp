@@ -27,6 +27,7 @@ eae6320::cResult eae6320::Assets::cMaterialBuilder::Build(const std::vector<std:
 	std::string texturePath;
 	std::string normalPath;
 	std::string roughPath;
+	std::string parallaxPath;
 	Graphics::sColor color;
 	Graphics::sColor reflectivity;
 	float gloss;
@@ -34,10 +35,12 @@ eae6320::cResult eae6320::Assets::cMaterialBuilder::Build(const std::vector<std:
 	size_t effectPathSize = 0;
 	size_t texturePathSize = 0;
 	size_t normalPathSize = 0;
+	size_t roughPathSize = 0;
+	size_t parallaxPathSize = 0;
 
 	std::ofstream outFile ( m_path_target, std::ofstream::binary);
 	{
-		if ( !( result = cMaterialLoader::LoadAsset( m_path_source, effectPath, texturePath, normalPath, roughPath, color, reflectivity, gloss, fresnel)) )
+		if ( !( result = cMaterialLoader::LoadAsset( m_path_source, effectPath, texturePath, normalPath, roughPath, parallaxPath, color, reflectivity, gloss, fresnel)) )
 		{
 			EAE6320_ASSERTF( false, "Loading material failed" );
 			goto OnExit;
@@ -48,11 +51,14 @@ eae6320::cResult eae6320::Assets::cMaterialBuilder::Build(const std::vector<std:
 	texturePath.insert(0, "data/");
 	normalPath.insert(0, "data/");
 	roughPath.insert(0, "data/");
+	parallaxPath.insert(0, "data/");
 
 	// + 1 for null terminator count
 	effectPathSize = effectPath.size() + 1;
 	texturePathSize = texturePath.size() + 1;
 	normalPathSize = normalPath.size() + 1;
+	roughPathSize = roughPath.size() + 1;
+	parallaxPathSize = parallaxPath.size() + 1;
 
 	// write to outfile
 	if (!outFile.is_open())
@@ -67,6 +73,8 @@ eae6320::cResult eae6320::Assets::cMaterialBuilder::Build(const std::vector<std:
 	outFile.write ( (char *)&effectPathSize, sizeof( uint16_t ) );
 	outFile.write ( (char *)&texturePathSize, sizeof( uint16_t ) );
 	outFile.write ( (char *)&normalPathSize, sizeof( uint16_t ) );
+	outFile.write ( (char *)&roughPathSize, sizeof( uint16_t ) );
+	outFile.write ( (char *)&parallaxPathSize, sizeof( uint16_t ) );
 	outFile.write ( effectPath.c_str(), effectPath.size() );
 	outFile.put('\0');
 	outFile.write ( texturePath.c_str(), texturePath.size());
@@ -74,6 +82,8 @@ eae6320::cResult eae6320::Assets::cMaterialBuilder::Build(const std::vector<std:
 	outFile.write ( normalPath.c_str(), normalPath.size());
 	outFile.put('\0');
 	outFile.write ( roughPath.c_str(), roughPath.size());
+	outFile.put('\0');
+	outFile.write ( parallaxPath.c_str(), parallaxPath.size());
 	outFile.put('\0');
 
 OnExit:
