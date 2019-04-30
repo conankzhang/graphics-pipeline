@@ -3,6 +3,7 @@ return
 	path_effect = "Effects/parallax.effect",
     color = { 1.0, 1.0, 1.0, 1.0 },
     gloss = 200,
+    fresnel = 0,
     path_texture = "Textures/Pebbles_diff.tif",
     path_normal = "Textures/Pebbles_ddn.tif",
     path_rough = "Textures/Pebbles_spec.tif",
