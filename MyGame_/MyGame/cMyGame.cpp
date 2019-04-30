@@ -296,7 +296,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	//m_spritePad = new cSpriteObject(Math::sVector(-0.7f, 0.7f, 0.0f), Math::sVector(0.3f, 0.3f, 1.0f), Math::cQuaternion(), "data/Materials/spritePad.material");
 
 	// Grid
-	m_gameObjects.push_back( new cGameObject(Math::sVector(-2.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/chip.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(-2.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/parallax.material") );
 	m_gameObjects.push_back( new cGameObject(Math::sVector(2.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/metal.material") );
 
 	// Line
