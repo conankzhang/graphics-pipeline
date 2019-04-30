@@ -43,7 +43,8 @@ cbuffer g_constantBuffer_perMaterial : register( b1 )
 	float4 g_reflectivity;
 	float g_gloss;
 	float g_fresnel;
-	float2 g_padding4;
+	float g_height;
+	float g_padding4;
 };
 
 cbuffer g_constantBuffer_perDrawCall : register( b2 )
@@ -92,7 +93,7 @@ void main(
 	float3 viewDirection = -eyeDirection;
 
 	float3 viewDirectionTS = mul(viewDirection, rotation_textureToSomeOtherSpace);
-	float2 maxParallaxOffset = -viewDirectionTS.xy * 0.05 / viewDirectionTS.z;
+	float2 maxParallaxOffset = -viewDirectionTS.xy * g_height / viewDirectionTS.z;
 
 	int sampleCount = (int)lerp(64, 8, dot(eyeDirection, normal));
 	float zStep = 1.0f / (float)sampleCount;

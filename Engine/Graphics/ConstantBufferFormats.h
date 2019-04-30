@@ -65,7 +65,8 @@ namespace eae6320
 				sColor g_reflectivity;
 				float g_gloss;
 				float g_fresnel;
-				float padding[2];	// For float4 alignment
+				float g_height;
+				float padding;	// For float4 alignment
 			};
 		}
 	}
