@@ -1,2 +1,2 @@
-# ECSGameEngine
-A custom game engine built around an entity-component-system gameplay framework.
+# Graphics Pipeline
+A custom game engine exploring the entire graphics pipeline for real-time game rendering.
