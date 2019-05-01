@@ -364,6 +364,12 @@ NewAssetTypeInfo( "materials",
 		else
 		  RegisterAssetToBeBuilt( material.path_rough, "textures", { "rough" } )
 		end
+		if( material.path_parallax == nil) then
+		  default_parallax = "Textures/default_parallax.tga"
+		  RegisterAssetToBeBuilt( default_parallax, "textures", { "color" } )
+		else
+		  RegisterAssetToBeBuilt( material.path_parallax, "textures", { "color" } )
+		end
 	  end
 	end,
 	ConvertSourceRelativePathToBuiltRelativePath = function( i_sourceRelativePath )

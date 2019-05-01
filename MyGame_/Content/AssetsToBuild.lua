@@ -27,6 +27,7 @@ return
 		{ path = "Materials/chip.material" },
 		{ path = "Materials/environment.material" },
 		{ path = "Materials/metal.material" },
+		{ path = "Materials/parallax.material" },
 	},
 
 	environments =

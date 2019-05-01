@@ -51,6 +51,12 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const std::string& i_materia
 	const auto normalPathSize = *reinterpret_cast<uint16_t*>( currentOffset );
 	currentOffset += sizeof( normalPathSize );
 
+	const auto roughPathSize = *reinterpret_cast<uint16_t*>( currentOffset );
+	currentOffset += sizeof( roughPathSize );
+
+	const auto parallaxPathSize = *reinterpret_cast<uint16_t*>( currentOffset );
+	currentOffset += sizeof( parallaxPathSize );
+
 	char* effectPath = reinterpret_cast<char*>( currentOffset );
 	currentOffset += effectPathSize * sizeof( char );
 
@@ -61,6 +67,9 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const std::string& i_materia
 	currentOffset += normalPathSize* sizeof( char );
 
 	char* roughPath = reinterpret_cast<char*>( currentOffset );
+	currentOffset += roughPathSize * sizeof( char );
+
+	char* parallaxPath = reinterpret_cast<char*>( currentOffset );
 
 	// Allocate a new material
 	{
@@ -72,7 +81,7 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const std::string& i_materia
 		}
 	}
 
-	if ( !( result = newMaterial->InitializeMaterialData( effectPath, texturePath, normalPath, roughPath) ) )
+	if ( !( result = newMaterial->InitializeMaterialData( effectPath, texturePath, normalPath, roughPath, parallaxPath) ) )
 	{
 		EAE6320_ASSERTF( false, "Initialization of new mesh failed" );
 		goto OnExit;
@@ -98,7 +107,7 @@ OnExit:
 	return result;
 }
 
-eae6320::cResult eae6320::Graphics::cMaterial::InitializeMaterialData(const char i_effectPath[], const char i_texturePath[], const char i_normalPath[], const char i_roughPath[])
+eae6320::cResult eae6320::Graphics::cMaterial::InitializeMaterialData(const char i_effectPath[], const char i_texturePath[], const char i_normalPath[], const char i_roughPath[], const char i_parallaxPath[])
 {
 	auto result = Results::Success;
 
@@ -121,6 +130,12 @@ eae6320::cResult eae6320::Graphics::cMaterial::InitializeMaterialData(const char
 	}
 
 	if (!(result = eae6320::Graphics::cTexture::s_manager.Load(i_roughPath, m_rough)))
+	{
+		EAE6320_ASSERT(false);
+		goto OnExit;
+	}
+
+	if (!(result = eae6320::Graphics::cTexture::s_manager.Load(i_parallaxPath, m_parallax)))
 	{
 		EAE6320_ASSERT(false);
 		goto OnExit;
@@ -187,6 +202,19 @@ eae6320::cResult eae6320::Graphics::cMaterial::CleanUp()
 		}
 	}
 
+	if ( m_parallax )
+	{
+		const auto localResult = cTexture::s_manager.Release( m_parallax );
+		if ( !localResult )
+		{
+			EAE6320_ASSERT( false );
+			if ( result )
+			{
+				result = localResult;
+			}
+		}
+	}
+
 	return result;
 }
 
@@ -223,6 +251,13 @@ void eae6320::Graphics::cMaterial::BindTexture()
 		auto* const rough = cTexture::s_manager.Get( m_rough );
 		EAE6320_ASSERT(rough);
 		rough->Bind(2);
+	}
+
+	{
+		EAE6320_ASSERT( m_parallax );
+		auto* const parallax = cTexture::s_manager.Get( m_parallax );
+		EAE6320_ASSERT(parallax);
+		parallax->Bind(4);
 	}
 }
 

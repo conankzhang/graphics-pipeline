@@ -120,7 +120,7 @@ namespace eae6320
 		float lightMoveSpeed = 0.5f;
 		float lightClamp = 10.0f;
 
-		float gloss = 200.0f;
+		float height = 0.065f;
 
 		virtual cResult Initialize() override;
 		virtual cResult CleanUp() override;

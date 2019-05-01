@@ -78,6 +78,7 @@ namespace eae6320
 			cTexture::Handle m_texture;
 			cTexture::Handle m_normal;
 			cTexture::Handle m_rough;
+			cTexture::Handle m_parallax;
 
 			sColor m_color;
 			sColor m_reflectivity;
@@ -102,7 +103,7 @@ namespace eae6320
 
 			// Initialization / Clean Up
 			//--------------------------
-			cResult InitializeMaterialData(const char i_effectPath[], const char i_texturePath[], const char i_normalPath[], const char i_roughPath[]);
+			cResult InitializeMaterialData(const char i_effectPath[], const char i_texturePath[], const char i_normalPath[], const char i_roughPath[], const char i_parallaxPath[]);
 			cResult CleanUp();
 
 			cMaterial(const sColor& i_color, const sColor& i_reflectivity, float i_gloss, float i_fresnel);

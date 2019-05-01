@@ -36,7 +36,7 @@ void eae6320::cMyGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_s
 	for (auto GameObject : m_gameObjects)
 	{
 		Math::cMatrix_transformation transform_localToWorld = GameObject->GetTransform(i_elapsedSecondCount_sinceLastSimulationUpdate);
-		Graphics::SubmitDrawCommand(m_camera->CalculateNormalizedCameraDistance(GameObject->GetPosition()), GameObject->GetMesh(), GameObject->GetMaterial(), transform_localToWorld, transform_worldToProjected * transform_localToWorld, gloss, firstSubmit);
+		Graphics::SubmitDrawCommand(m_camera->CalculateNormalizedCameraDistance(GameObject->GetPosition()), GameObject->GetMesh(), GameObject->GetMaterial(), transform_localToWorld, transform_worldToProjected * transform_localToWorld, height, firstSubmit);
 		firstSubmit = false;
 	}
 }
@@ -213,19 +213,19 @@ void eae6320::cMyGame::UpdateSimulationBasedOnInput()
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::PageUp))
 	{
-		gloss += 10.0f;
+		height += 0.005f;
 	}
 
 	if (UserInput::IsKeyPressed(UserInput::KeyCodes::PageDown))
 	{
-		if (gloss > 5.0f)
+		if (height > 0.005f)
 		{
-			gloss -= 10.0f;
+			height -= 0.005f;
 		}
 
-		if(gloss < 5.0f)
+		if(height < 0.01f)
 		{
-			gloss = 0.1f;
+			height = 0.01f;
 		}
 	}
 }
@@ -283,7 +283,7 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	lightDirection.y = 1.0f;
 	lightDirection.z = -1.0f;
 
-	m_environment = new cEnvironmentObject("data/Environments/night.environment");
+	m_environment = new cEnvironmentObject("data/Environments/day.environment");
 
 	m_environmentObject = new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/environment.mesh", "data/Materials/environment.material");
 	m_gameObjects.push_back(m_environmentObject);
@@ -296,8 +296,8 @@ eae6320::cResult eae6320::cMyGame::Initialize()
 	//m_spritePad = new cSpriteObject(Math::sVector(-0.7f, 0.7f, 0.0f), Math::sVector(0.3f, 0.3f, 1.0f), Math::cQuaternion(), "data/Materials/spritePad.material");
 
 	// Grid
-	m_gameObjects.push_back( new cGameObject(Math::sVector(-2.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/chip.material") );
-	m_gameObjects.push_back( new cGameObject(Math::sVector(2.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/metal.material") );
+	m_gameObjects.push_back( new cGameObject(Math::sVector(0.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/parallax.material") );
+	//m_gameObjects.push_back( new cGameObject(Math::sVector(1.0f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/quad.mesh", "data/Materials/parallax.material") );
 
 	// Line
 	//m_gameObjects.push_back( new cGameObject(Math::sVector(-1.5f, 0.0f, 0.0f), Math::cQuaternion(), "data/Meshes/sphere.mesh", "data/Materials/blue.material") );
